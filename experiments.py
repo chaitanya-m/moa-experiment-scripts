@@ -19,7 +19,15 @@ MOA_DIR = '/home/chait/moa-release-2016.04/'
 
 processes=[]
 
-decision_stump = "java -cp commons-math3-3.6.1.jar:moa.jar:cdgen.jar -javaagent:sizeofag-1.0.0.jar moa.DoTask EvaluatePeriodicHeldOutTest \"\"\"-l trees.DecisionStump -s generators.WaveformGenerator -n 10 -i 100 -f 10 \"\"\""
+#Decision Stump... used for testing script.
+
+moa_stump = "java -cp commons-math3-3.6.1.jar:moa.jar:cdgen.jar -javaagent:sizeofag-1.0.0.jar"
+moa_task = "moa.DoTask EvaluatePeriodicHeldOutTest"
+task_options = "\"\"\" -l trees.DecisionStump -s generators.WaveformGenerator -n 10 -i 100 -f 20 \"\"\""
+cmd_seq = (moa_stump, moa_task, task_options)
+
+command = " ".join(cmd_seq)
+
 decision_stump_dir = "decision_stump"
 
 number_of_streams = 10
@@ -29,9 +37,11 @@ def main():
   remove_folder(decision_stump_dir)
   os.mkdir(decision_stump_dir)
 
-  average_over_streams(number_of_streams, decision_stump, decision_stump_dir, "result")
+  average_over_streams(number_of_streams, command, decision_stump_dir, "result")
 
   return 0
+
+
 
 def average_over_streams(num_streams, command_line, output_folder, file_prefix):
   output_files = []
@@ -54,8 +64,8 @@ def average_over_streams(num_streams, command_line, output_folder, file_prefix):
   #all_stream_learning_data.to_csv("Cumulative.csv")
 
   all_stream_mean = {}
-  for i in range(10): # 3 being number of generations
-    all_stream_mean[i] = all_stream_learning_data[i::10].mean()
+  for i in range(5): # 
+    all_stream_mean[i] = all_stream_learning_data[i::number_of_streams].mean()
     #print all_stream_mean[i]
   all_stream_mean_df = pd.DataFrame(all_stream_mean)
   all_stream_mean_df.to_csv(folder_file_prefix + "Mean.csv")
@@ -67,7 +77,7 @@ def run_experiment(command_line, output_file):
 
   args = shlex.split(command_line)
   file_handle = output_file
-  #print(args)
+  print(args)
 
   # create process
   with open(file_handle, "w+") as out:
@@ -91,10 +101,6 @@ def make_folder(path):
 if __name__=="__main__":
   main()
 
-
-#for (dirpath, dirnames, filenames) in os.walk(output_folder):
-  #output_files.extend(filenames)
-  #break
 
 # http://stackoverflow.com/questions/303200/how-do-i-remove-delete-a-folder-that-is-not-empty-with-python
 # http://stackoverflow.com/questions/273192/how-to-check-if-a-directory-exists-and-create-it-if-necessary
