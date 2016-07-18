@@ -23,7 +23,18 @@ processes=[]
 
 moa_stump = "java -cp commons-math3-3.6.1.jar:moa.jar:cdgen.jar -javaagent:sizeofag-1.0.0.jar"
 moa_task = "moa.DoTask EvaluatePeriodicHeldOutTest"
-task_options = "\"\"\" -l trees.DecisionStump -s generators.WaveformGenerator -n 10 -i 100 -f 20 \"\"\""
+learner = " -l trees.DecisionStump "
+generator = " -s generators.WaveformGenerator "
+
+num_test_examples = 10 
+num_instances = 100 
+test_interval = 25
+
+num_rows = num_instances/test_interval
+
+task_options = "\"\"\"" + learner + generator + " -n " + str(num_test_examples) + " -i " + str(num_instances) + " -f " + str(test_interval) + "\"\"\""
+
+
 cmd_seq = (moa_stump, moa_task, task_options)
 
 command = " ".join(cmd_seq)
@@ -64,8 +75,8 @@ def average_over_streams(num_streams, command_line, output_folder, file_prefix):
   #all_stream_learning_data.to_csv("Cumulative.csv")
 
   all_stream_mean = {}
-  for i in range(5): # 
-    all_stream_mean[i] = all_stream_learning_data[i::number_of_streams].mean()
+  for i in range(num_rows): # 
+    all_stream_mean[i] = all_stream_learning_data[i::num_rows].mean()
     #print all_stream_mean[i]
   all_stream_mean_df = pd.DataFrame(all_stream_mean)
   all_stream_mean_df.to_csv(folder_file_prefix + "Mean.csv")
