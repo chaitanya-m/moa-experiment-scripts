@@ -14,6 +14,7 @@
 
 import os, subprocess, shlex, shutil
 import pandas as pd
+import utilities
 
 MOA_DIR = '/home/chait/moa-release-2016.04/'
 
@@ -23,8 +24,8 @@ processes=[]
 
 moa_stump = "java -cp commons-math3-3.6.1.jar:moa.jar:cdgen.jar -javaagent:sizeofag-1.0.0.jar"
 moa_task = "moa.DoTask EvaluatePeriodicHeldOutTest"
-learner = " -l trees.DecisionStump "
-generator = " -s generators.WaveformGenerator "
+learner = "trees.DecisionStump"
+generator = "generators.WaveformGenerator"
 
 num_test_examples = 10 
 num_instances = 100 
@@ -32,8 +33,8 @@ test_interval = 25
 
 num_rows = num_instances/test_interval
 
-task_options = "\"\"\"" + learner + generator + " -n " + str(num_test_examples) + " -i " + str(num_instances) + " -f " + str(test_interval) + "\"\"\""
 
+task_options = "\"\"\"" + " -l " + learner + " -s " + generator + " -n " + str(num_test_examples) + " -i " + str(num_instances) + " -f " + str(test_interval) + "\"\"\""
 
 cmd_seq = (moa_stump, moa_task, task_options)
 
@@ -44,13 +45,28 @@ decision_stump_dir = "decision_stump"
 number_of_streams = 10
 
 def main():
-  os.chdir(MOA_DIR)
-  remove_folder(decision_stump_dir)
-  os.mkdir(decision_stump_dir)
 
-  average_over_streams(number_of_streams, command, decision_stump_dir, "result")
+  run_experiment("trees.DecisionStump", "generators.WaveformGenerator", 10, 100, 25, 10, "dec_stump", "res")
 
   return 0
+
+def run_experiment(learner, generator, num_test_examples, num_instances, test_interval, number_of_streams, exp_dir, file_prefix):
+
+  os.chdir(MOA_DIR)
+  utilities.remove_folder(exp_dir)
+  utilities.make_folder(exp_dir)
+
+  num_rows = num_instances/test_interval
+
+  task_options = "\"\"\"" + " -l " + learner + " -s " + generator + " -n " + str(num_test_examples) + " -i " + str(num_instances) + " -f " + str(test_interval) + "\"\"\""
+  cmd_seq = (moa_stump, moa_task, task_options)
+  command = " ".join(cmd_seq)
+
+  
+  average_over_streams(number_of_streams, command, exp_dir, file_prefix)
+
+  return
+
 
 
 
@@ -59,7 +75,7 @@ def average_over_streams(num_streams, command_line, output_folder, file_prefix):
   folder_file_prefix = output_folder + "/" + file_prefix
   for stream_num in range(0, num_streams):
     output_files.append(folder_file_prefix + str(stream_num) + '.csv')
-    run_experiment(command_line, output_files[stream_num])
+    run_single_experiment(command_line, output_files[stream_num])
 
   exit_codes = [p.wait() for p in processes]
   # wait until all experiments have finished running.
@@ -84,7 +100,7 @@ def average_over_streams(num_streams, command_line, output_folder, file_prefix):
  
 
 # Take a command line and create a process
-def run_experiment(command_line, output_file):
+def run_single_experiment(command_line, output_file):
 
   args = shlex.split(command_line)
   file_handle = output_file
@@ -93,21 +109,8 @@ def run_experiment(command_line, output_file):
   # create process
   with open(file_handle, "w+") as out:
     processes.append(subprocess.Popen(args, stdout=out))
-
   return
 
-#Utilities
-def remove_folder(path):
-  if(os.path.exists)(path):
-    shutil.rmtree(path)
-  return
-
-def make_folder(path):
-  try:
-    os.stat(path)
-  except:
-    os.mkdir(path)
-  return
 
 if __name__=="__main__":
   main()
