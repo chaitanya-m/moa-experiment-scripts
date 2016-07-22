@@ -27,9 +27,9 @@ moa_task = "moa.DoTask EvaluatePeriodicHeldOutTest"
 learner = "trees.DecisionStump"
 generator = "generators.WaveformGenerator"
 
-num_test_examples = 10 
-num_instances = 100 
-test_interval = 25
+num_test_examples = 200 
+num_instances = 3000 
+test_interval = 100
 
 num_rows = num_instances/test_interval
 
@@ -46,15 +46,16 @@ number_of_streams = 10
 
 def main():
 
-  run_experiment("trees.DecisionStump", "generators.WaveformGenerator", 10, 100, 25, 10, "dec_stump", "res")
+  #run_experiment("trees.DecisionStump", "generators.WaveformGenerator", 10, 100, 25, 10, "dec_stump", "res")
+  experiment_average_over_streams(10, moa_stump + " " + "moa.DoTask EvaluateInterleavedTestThenTrain -l moa.classifiers.bayes.NaiveBayes -s \"\"\"(generators.categorical.AbruptDriftGenerator -b 1000)\"\"\" -i {i_val} -f {f_val} -q {q_val}".format(i_val = num_instances, f_val=test_interval, q_val=num_test_examples), "naive_bayes", "out")
 
   return 0
 
-def run_experiment(learner, generator, num_test_examples, num_instances, test_interval, number_of_streams, exp_dir, file_prefix):
+def run_experiment(learner, generator, num_test_examples, num_instances, test_interval, number_of_streams, output_dir, file_prefix):
 
   os.chdir(MOA_DIR)
-  utilities.remove_folder(exp_dir)
-  utilities.make_folder(exp_dir)
+  utilities.remove_folder(output_dir)
+  utilities.make_folder(output_dir)
 
   num_rows = num_instances/test_interval
 
@@ -63,18 +64,26 @@ def run_experiment(learner, generator, num_test_examples, num_instances, test_in
   command = " ".join(cmd_seq)
 
   
-  average_over_streams(number_of_streams, command, exp_dir, file_prefix)
+  experiment_average_over_streams(number_of_streams, command, output_dir, file_prefix)
 
   return
 
-
-
-
-def average_over_streams(num_streams, command_line, output_folder, file_prefix):
+def experiment_average_over_streams(num_streams, command_line, output_folder, file_prefix):
   output_files = []
+
+  os.chdir(MOA_DIR)
+  utilities.remove_folder(output_folder)
+  utilities.make_folder(output_folder)
+  num_rows = num_instances/test_interval
+
   folder_file_prefix = output_folder + "/" + file_prefix
+  #folder_file_prefix =  file_prefix
+ 
   for stream_num in range(0, num_streams):
     output_files.append(folder_file_prefix + str(stream_num) + '.csv')
+  for stream_num in range(0, num_streams):
+    print output_files[stream_num]
+  for stream_num in range(0, num_streams):
     run_single_experiment(command_line, output_files[stream_num])
 
   exit_codes = [p.wait() for p in processes]
@@ -84,7 +93,9 @@ def average_over_streams(num_streams, command_line, output_folder, file_prefix):
 
   dataframes = []
   for file_name in output_files:
-    dataframes.append(pd.read_csv(file_name, index_col=False, header=0))
+    print file_name
+    dataframes.append(pd.read_csv(file_name, index_col=False, header=1, skiprows=0))
+    #dataframes.append(pd.read_csv(file_name, index_col=False, header=0))
     # index_col has to be False as col 0 isn't integer
 
   all_stream_learning_data = pd.concat(dataframes)
@@ -103,14 +114,17 @@ def average_over_streams(num_streams, command_line, output_folder, file_prefix):
 def run_single_experiment(command_line, output_file):
 
   args = shlex.split(command_line)
+  #file_handle = os.path.join(MOA_DIR, output_file)
   file_handle = output_file
   print(args)
+  print(file_handle) 
 
+  
   # create process
-  with open(file_handle, "w+") as out:
-    processes.append(subprocess.Popen(args, stdout=out))
-  return
+  os.chdir(MOA_DIR)
+  out1 = open(file_handle, "w+")
 
+  processes.append(subprocess.Popen(args, stdout=out1))
 
 if __name__=="__main__":
   main()
