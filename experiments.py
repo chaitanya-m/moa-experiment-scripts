@@ -13,10 +13,9 @@
 
 
 import os, subprocess, shlex, shutil
+import moa_command_vars as mcv
 import pandas as pd
 import utilities
-
-MOA_DIR = '/home/chait/moa-release-2016.04/'
 
 processes=[]
 
@@ -24,24 +23,21 @@ num_test_examples = 200
 num_instances = 3000 
 test_interval = 100
 
-moa_stump = "java -cp commons-math3-3.6.1.jar:moa.jar:cdgen.jar -javaagent:sizeofag-1.0.0.jar"
-moa_task = "moa.DoTask EvaluateInterleavedTestThenTrain"
 learner = "-l moa.classifiers,bayes.NaiveBayes"
 generator = "-s \"\"\"(generators.categorical.AbruptDriftGenerator -b 1000)\"\"\""
 
-
 num_rows = num_instances/test_interval
 
-cmd_seq = [moa_stump, moa_task, learner, generator, "-i {i_val} -f {f_val} -q {q_val}".format(i_val = num_instances, f_val=test_interval, q_val=num_test_examples)]
+cmd_seq = [mcv.MOA_STUMP, mcv.MOA_TASK_EITTT, learner, generator, "-i {i_val} -f {f_val} -q {q_val}".format(i_val = num_instances, f_val=test_interval, q_val=num_test_examples)]
 cmd = " ".join(cmd_seq) 
 
 number_of_streams = 10
 
 def main():
 
-  cmd = moa_stump + " " + "moa.DoTask EvaluateInterleavedTestThenTrain -l moa.classifiers.bayes.NaiveBayes -s \"\"\"(generators.categorical.AbruptDriftGenerator -b 1000)\"\"\" -i {i_val} -f {f_val} -q {q_val}".format(i_val = num_instances, f_val=test_interval, q_val=num_test_examples)
+  cmd = mcv.MOA_STUMP + " " + mcv.MOA_TASK_EITTT + " " +  mcv.MOA_LEARNER_NAIVE_BAYES + " -s \"\"\"(generators.categorical.AbruptDriftGenerator -b 1000)\"\"\" -i {i_val} -f {f_val} -q {q_val}".format(i_val = num_instances, f_val=test_interval, q_val=num_test_examples)
   mse = MultiStreamExperiment()
-  mse.average_over_streams(number_of_streams , cmd, "naive_bayes", "out")
+  mse.average_over_streams(number_of_streams , cmd, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX)
 
   return 0
 
@@ -60,7 +56,7 @@ class MultiStreamExperiment:
   def average_over_streams(self, num_streams, command_line, output_folder, file_prefix):
     output_files = []
   
-    os.chdir(MOA_DIR)
+    os.chdir(mcv.MOA_DIR)
     utilities.remove_folder(output_folder)
     utilities.make_folder(output_folder)
     num_rows = num_instances/test_interval
@@ -76,7 +72,7 @@ class MultiStreamExperiment:
       print output_files[stream_num]
     # Run experiments setting output files
     for stream_num in range(0, num_streams):
-      e = Experiment()
+      e = Command()
       e.run(command_line ,output_files[stream_num], self.processes)
   
     exit_codes = [p.wait() for p in self.processes]
@@ -106,31 +102,24 @@ class MultiStreamExperiment:
     all_stream_mean_df.to_csv(folder_file_prefix + "Mean.csv")
     # Print result to file 
 
-#class SeededExperiment(Experiment):
-
-#  def __init__(self, seed):
-#    self.seed = seed
-
-class Experiment:
+# A single MOA command creating a single MOA process
+class Command:
   
   # Take a command line and create a MOA process, which outputs results to a file.
   def run(self, cmd, output_file, processes):
   
     args = shlex.split(cmd)
-    file_handle = output_file
 
-    #file_handle = os.path.join(MOA_DIR, output_file)
     print(args)
-    print(file_handle) 
-  
+    print(output_file) 
     
     # create process
-    os.chdir(MOA_DIR)
-    out1 = open(file_handle, "w+")
+    output_file = open(output_file, "w+")
   
-    processes.append(subprocess.Popen(args, stdout=out1))
+    processes.append(subprocess.Popen(args, stdout=output_file))
 
 if __name__=="__main__":
+
   main()
 
 
@@ -140,4 +129,5 @@ if __name__=="__main__":
 # http://stackoverflow.com/questions/2331339/piping-output-of-subprocess-popen-to-files
 # http://stackoverflow.com/questions/24765017/how-to-calculate-average-of-numbers-from-multiple-csv-files
 # http://stackoverflow.com/questions/3207219/how-to-list-all-files-of-a-directory-in-python
+# http://stackoverflow.com/questions/4555932/public-or-private-attribute-in-python-what-is-the-best-way
 
