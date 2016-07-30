@@ -19,9 +19,9 @@ import utilities
 
 processes=[]
 
-num_test_examples = 200 
 num_instances = 3000 
 test_interval = 100
+num_test_examples = 200
 
 num_rows = num_instances/test_interval
 
@@ -29,8 +29,7 @@ number_of_streams = 10
 
 def main():
 
-  cmd = mcv.MOA_STUMP + " " + mcv.MOA_TASK_EITTT + " " +  mcv.MOA_LEARNER_NAIVE_BAYES + " " + mcv.CategoricalAbruptDriftGenCmd(None, None, 1000, None, None, None, False, False, None)   + " -i {i_val} -f {f_val} -q {q_val} ".format(i_val = num_instances, f_val=test_interval, q_val=num_test_examples)
-  #cmd = mcv.MOA_STUMP + " " + mcv.MOA_TASK_EITTT + " " +  mcv.MOA_LEARNER_NAIVE_BAYES + " -s \"\"\"(generators.categorical.AbruptDriftGenerator -b 1000)\"\"\" -i {i_val} -f {f_val} -q {q_val}".format(i_val = num_instances, f_val=test_interval, q_val=num_test_examples)
+  cmd = mcv.MOA_STUMP + " " + mcv.MOA_TASK_EITTT + " " +  mcv.MOA_LEARNER_NAIVE_BAYES + " " + mcv.CategoricalAbruptDriftGenCmd(None, None, 1000, None, None, None, False, False, None)   + mcv.setTrainingTestingParams(num_instances, test_interval, num_test_examples)
   mse = MultiStreamExperiment()
   mse.average_over_streams(number_of_streams , cmd, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX)
 
