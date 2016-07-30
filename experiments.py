@@ -39,8 +39,7 @@ moa_stump = mcv.MOA_STUMP
 def main():
 
   #cmd = " ".join([mcv.MOA_STUMP, mcv.MOA_TASK_EITTT, mcv.MOA_LEARNER_NAIVE_BAYES, gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(None, None, 1000, None, None, None, False, False, None).cmd(), mcv.setTrainingTestingParams(num_instances, test_interval, num_test_examples)])
-  ce = CompositeExperiment()
-  ce.average_over_streams(number_of_streams, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX)
+  ExperimentRunner.runExperiments()
 
   return 0
 
@@ -69,93 +68,119 @@ class Plot:
 # Composite of many instances of a given experiment running in parallel. 
 # Note that the seed for the random generator must change!
 # Multiple stream Processes for an experiment
-class CompositeExperiment:
+class ExperimentRunner:
 
   def __init__(self):
     self.processes = []  
   # Note that this is the way to create instance-specific variables- in init.
   # Anything outside would be shared across all instances.
+  @staticmethod
+  def runExperiments():
+    output_files = []
+    num_rows = num_instances/test_interval
+
+    os.chdir(mcv.MOA_DIR)
+    utilities.remove_folder(mcv.OUTPUT_DIR)
+    utilities.make_folder(mcv.OUTPUT_DIR)
+    
+
+    prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(10, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, processes)
+    for exp in prior_drift_mag_exp.getExperiments():
+      exp.run()
+      # Run experiments setting output files
+
+    exit_codes = [p.wait() for p in processes]
+    # wait until all experiments have finished running: each experiment corresponds to a process.
 
   # Create individual MOA processes, write to CSV output files. Average over these.
-  def average_over_streams(self, num_streams, output_folder, file_prefix):
-    output_files = []
-  
-    os.chdir(mcv.MOA_DIR)
-    utilities.remove_folder(output_folder)
-    utilities.make_folder(output_folder)
-    num_rows = num_instances/test_interval
-  
-    folder_file_prefix = output_folder + "/" + file_prefix
-    # folder_file_prefix =  file_prefix
-   
-    # Create file names
-    for stream_num in range(0, num_streams):
-      output_files.append(folder_file_prefix + str(stream_num) + '.csv')
-    # Print them
-    for stream_num in range(0, num_streams):
-      print output_files[stream_num]
-
-    # Run experiments setting output files
-    for stream_num in range(0, num_streams):
-
-      evaluator = evl.EvaluatorBuilder.EvaluateInterleavedTestThenTrainBuilder()
-      learner = lrn.LearnerBuilder.NaiveBayesLearnerBuilder()
-      generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(None, None, 1000, None, None, None, False, False, None)
-
-      e = Experiment(moa_stump, evaluator, learner, generator, parameters)
-      e.run(output_files[stream_num], self.processes)
-  
-    exit_codes = [p.wait() for p in self.processes]
-    # wait until all experiments have finished running: each experiment corresponds to a process.
-  
-    print output_files
-  
-    # Load the outputs into dataframes to prepare for averaging
-  
-    dataframes = []
-    for file_name in output_files:
-      print file_name
-      dataframes.append(pd.read_csv(file_name, index_col=False, header=1, skiprows=0))
-      # index_col has to be False as col 0 isn't integer
-  
-    # Concatenate all of these. This creates a very large file
-    # In order to make this faster, maybe just add values from other files into one file
-    all_stream_learning_data = pd.concat(dataframes)
-    all_stream_learning_data.to_csv(folder_file_prefix + "Cumulative.csv")
-
-    all_stream_mean = {}
-    # average row by row
-    for i in range(num_rows): 
-      all_stream_mean[i] = all_stream_learning_data[i::num_rows].mean()
-
-    #all_stream_mean_df = pd.DataFrame(all_stream_mean)
-    all_stream_mean_df = pd.DataFrame(all_stream_mean).transpose() 
-
-    all_stream_mean_df.to_csv(folder_file_prefix + "Mean.csv")
-    # Print result to file 
-    
-    all_stream_mean_df['error'] = (100.0 - all_stream_mean_df['classifications correct (percent)'])/100.0
-
-    Plot.plot_df(all_stream_mean_df)
+#  def average_over_streams(self, num_streams, output_folder, file_prefix):
+#  
+#  
+#    print output_files
+#  
+#    # Load the outputs into dataframes to prepare for averaging
+#  
+#    dataframes = []
+#    for file_name in output_files:
+#      print file_name
+#      dataframes.append(pd.read_csv(file_name, index_col=False, header=1, skiprows=0))
+#      # index_col has to be False as col 0 isn't integer
+#  
+#    # Concatenate all of these. This creates a very large file
+#    # In order to make this faster, maybe just add values from other files into one file
+#    all_stream_learning_data = pd.concat(dataframes)
+#    all_stream_learning_data.to_csv(folder_file_prefix + "Cumulative.csv")
+#
+#    all_stream_mean = {}
+#    # average row by row
+#    for i in range(num_rows): 
+#      all_stream_mean[i] = all_stream_learning_data[i::num_rows].mean()
+#
+#    #all_stream_mean_df = pd.DataFrame(all_stream_mean)
+#    all_stream_mean_df = pd.DataFrame(all_stream_mean).transpose() 
+#
+#    all_stream_mean_df.to_csv(folder_file_prefix + "Mean.csv")
+#    # Print result to file 
+#    
+#    all_stream_mean_df['error'] = (100.0 - all_stream_mean_df['classifications correct (percent)'])/100.0
+#
+#    Plot.plot_df(all_stream_mean_df)
 
 # A single MOA command creating a single MOA process
 class Experiment:
  
-  def __init__(self, stump, e, l, g, params):
+  def __init__(self, stump, e, l, g, params, output_file, processes):
     self.cmd = " ".join([stump, e.cmd(), l.cmd(), g.cmd(), params]) 
-   
+    self.output_file = output_file
+    self.processes = processes 
   # Take a command line and create a MOA process, which outputs results to a file.
-  def run(self, output_file, processes):
+  def run(self):
   
     args = shlex.split(self.cmd)
 
     print(args)
-    print(output_file) 
+    print(self.output_file) 
     
     # create process
-    output_file = open(output_file, "w+")
+    output_file = open(self.output_file, "w+")
   
     processes.append(subprocess.Popen(args, stdout=output_file))
+
+class ExperimentBuilder:
+
+  @staticmethod
+  def PriorDriftMagBuilder(driftMag, output_file, processes):
+    evaluator = evl.EvaluatorBuilder.EvaluateInterleavedTestThenTrainBuilder()
+    learner = lrn.LearnerBuilder.NaiveBayesLearnerBuilder()
+    generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(None, None, 1000, driftMag, None, None, False, False, None)
+
+    e = Experiment(moa_stump, evaluator, learner, generator, parameters, output_file, processes)
+    return e 
+
+class CompositeExperiment:
+
+  def __init__(self, exp_list):
+    self.exp_list = exp_list
+  def getExperiments(self):
+    return self.exp_list
+
+class CompositeExperimentBuilder:
+
+  @staticmethod
+  def varyPriorDriftMagBuilder(num_streams, output_folder, file_prefix, processes):
+    exp_list = []
+    drift_mag_list = [0.1, 0.3, 0.5, 0.7]
+    for drift_mag in drift_mag_list:
+      this_output_folder = output_folder + '/' + str(drift_mag)
+      folder_file_prefix = this_output_folder + '/' + file_prefix
+      utilities.remove_folder(this_output_folder)
+      utilities.make_folder(this_output_folder)
+
+      for i in range(0, num_streams):
+        output_file = folder_file_prefix + str(i) + '.csv'
+        exp_list.append(ExperimentBuilder.PriorDriftMagBuilder(drift_mag, output_file, processes))
+
+    return CompositeExperiment(exp_list)
 
 if __name__=="__main__":
 
