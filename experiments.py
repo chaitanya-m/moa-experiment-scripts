@@ -13,11 +13,13 @@
 ##############################################################################################################
 
 import os, subprocess, shlex, shutil
-import moa_command_vars as mcv
 import pandas as pd
-import utilities
 import matplotlib.pyplot as plt
 import matplotlib
+
+import utilities
+import generators as gen
+import moa_command_vars as mcv
 
 processes=[]
 
@@ -31,7 +33,7 @@ number_of_streams = 10
 
 def main():
 
-  cmd = " ".join([mcv.MOA_STUMP, mcv.MOA_TASK_EITTT, mcv.MOA_LEARNER_NAIVE_BAYES, mcv.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(None, None, 1000, None, None, None, False, False, None).cmd(), mcv.setTrainingTestingParams(num_instances, test_interval, num_test_examples)])
+  cmd = " ".join([mcv.MOA_STUMP, mcv.MOA_TASK_EITTT, mcv.MOA_LEARNER_NAIVE_BAYES, gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(None, None, 1000, None, None, None, False, False, None).cmd(), mcv.setTrainingTestingParams(num_instances, test_interval, num_test_examples)])
   mse = MultiStreamExperiment()
   mse.average_over_streams(number_of_streams , cmd, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX)
 
@@ -50,7 +52,9 @@ class Plot:
 
 
 # This is a composite of a Generator, Learner, and Evaluator
-#class CompositeExperiment(MultiStreamExperiment):
+class CompositeExperiment:
+  
+
 
 # This is an experiment with a single set of  
 #class SingleExperiment(MultiStreamExperiment):
