@@ -19,6 +19,8 @@ import matplotlib
 
 import utilities
 import generators as gen
+import learners as lrn
+import evaluators as evl
 import moa_command_vars as mcv
 
 processes=[]
@@ -31,11 +33,14 @@ num_rows = num_instances/test_interval
 
 number_of_streams = 10
 
+parameters = mcv.setTrainingTestingParams(num_instances, test_interval, num_test_examples)
+moa_stump = mcv.MOA_STUMP
+
 def main():
 
-  cmd = " ".join([mcv.MOA_STUMP, mcv.MOA_TASK_EITTT, mcv.MOA_LEARNER_NAIVE_BAYES, gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(None, None, 1000, None, None, None, False, False, None).cmd(), mcv.setTrainingTestingParams(num_instances, test_interval, num_test_examples)])
+  #cmd = " ".join([mcv.MOA_STUMP, mcv.MOA_TASK_EITTT, mcv.MOA_LEARNER_NAIVE_BAYES, gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(None, None, 1000, None, None, None, False, False, None).cmd(), mcv.setTrainingTestingParams(num_instances, test_interval, num_test_examples)])
   mse = MultiStreamExperiment()
-  mse.average_over_streams(number_of_streams , cmd, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX)
+  mse.average_over_streams(number_of_streams, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX)
 
   return 0
 
@@ -52,7 +57,7 @@ class Plot:
 
 
 # This is a composite of a Generator, Learner, and Evaluator
-class CompositeExperiment:
+#class CompositeExperiment:
   
 
 
@@ -72,7 +77,7 @@ class MultiStreamExperiment:
   # Anything outside would be shared across all instances.
 
   # Create individual MOA processes, write to CSV output files. Average over these.
-  def average_over_streams(self, num_streams, command_line, output_folder, file_prefix):
+  def average_over_streams(self, num_streams, output_folder, file_prefix):
     output_files = []
   
     os.chdir(mcv.MOA_DIR)
@@ -91,8 +96,13 @@ class MultiStreamExperiment:
       print output_files[stream_num]
     # Run experiments setting output files
     for stream_num in range(0, num_streams):
-      e = Stream()
-      e.run(command_line ,output_files[stream_num], self.processes)
+
+      generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(None, None, 1000, None, None, None, False, False, None)
+      learner = lrn.LearnerBuilder.NaiveBayesLearnerBuilder()
+      evaluator = evl.EvaluatorBuilder.EvaluateInterleavedTestThenTrainBuilder()
+
+      e = ExperimentInstance(moa_stump, evaluator, learner, generator, parameters)
+      e.run(output_files[stream_num], self.processes)
   
     exit_codes = [p.wait() for p in self.processes]
     # wait until all experiments have finished running: each experiment corresponds to a process.
@@ -128,12 +138,15 @@ class MultiStreamExperiment:
     Plot.plot_df(all_stream_mean_df)
 
 # A single MOA command creating a single MOA process
-class Stream:
-  
+class ExperimentInstance:
+ 
+  def __init__(self, stump, e, l, g, params):
+    self.cmd = " ".join([stump, e.cmd(), l.cmd(), g.cmd(), params]) 
+   
   # Take a command line and create a MOA process, which outputs results to a file.
-  def run(self, cmd, output_file, processes):
+  def run(self, output_file, processes):
   
-    args = shlex.split(cmd)
+    args = shlex.split(self.cmd)
 
     print(args)
     print(output_file) 

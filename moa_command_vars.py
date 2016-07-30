@@ -8,20 +8,6 @@ OUTPUT_PREFIX = 'out'
 
 MOA_STUMP = "java -cp commons-math3-3.6.1.jar:moa.jar:cdgen.jar -javaagent:sizeofag-1.0.0.jar"
 
-MOA_TASK_PREFIX = "moa.DoTask"
-MOA_LEARNER_PREFIX = "-l"
-MOA_GENERATOR_PREFIX = "-s"
-
-MOA_TASK_OPTION_EVALUATE_INTERLEAVED_TEST_THEN_TRAIN = "EvaluateInterleavedTestThenTrain"
-MOA_TASK_OPTION_EITTT = "EvaluateInterleavedTestThenTrain"
-MOA_TASK_EITTT = " ".join([MOA_TASK_PREFIX, MOA_TASK_OPTION_EITTT])
-
-MOA_LEARNER_OPTION_NAIVE_BAYES = "moa.classifiers.bayes.NaiveBayes" 
-MOA_LEARNER_NAIVE_BAYES = " ".join([MOA_LEARNER_PREFIX, MOA_LEARNER_OPTION_NAIVE_BAYES]) 
-
-MOA_GENERATOR_OPTION_ABRUPT_DRIFT = "generators.categorical.AbruptDriftGenerator"
-MOA_GENERATOR_ABRUPT_DRIFT = " ".join([MOA_GENERATOR_PREFIX, MOA_GENERATOR_OPTION_ABRUPT_DRIFT])
-
 
 def setTrainingTestingParams(nInstances=None, testInterval=None, nTestExamples=None):
 

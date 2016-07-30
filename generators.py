@@ -1,5 +1,11 @@
 # GeneratorBuilder, Generator classes
 
+MOA_GENERATOR_PREFIX = "-s"
+MOA_GENERATOR_OPTION_ABRUPT_DRIFT = "generators.categorical.AbruptDriftGenerator"
+MOA_GENERATOR_ABRUPT_DRIFT = " ".join([MOA_GENERATOR_PREFIX, MOA_GENERATOR_OPTION_ABRUPT_DRIFT])
+
+
+
 class Generator:
 
   def __init__(self, command):
