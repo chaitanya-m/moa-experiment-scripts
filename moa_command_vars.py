@@ -22,7 +22,7 @@ MOA_LEARNER_NAIVE_BAYES = " ".join([MOA_LEARNER_PREFIX, MOA_LEARNER_OPTION_NAIVE
 MOA_GENERATOR_OPTION_ABRUPT_DRIFT = "generators.categorical.AbruptDriftGenerator"
 MOA_GENERATOR_ABRUPT_DRIFT = " ".join([MOA_GENERATOR_PREFIX, MOA_GENERATOR_OPTION_ABRUPT_DRIFT])
 
-# Generator portion of the commandi
+# Generator portion of the command
 def CategoricalAbruptDriftGenCmd(nAttributes=None, nValuesPerAttribute=None, burnIn=None, driftMagPrior=None, driftMagConditional=None, epsilon=None, driftConditional=False, driftPrior=False, randomSeed=None):
 
   # We assume that these values already have defaults in MOA and only change them on a case-by-case basis 

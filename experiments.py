@@ -9,6 +9,7 @@
 # Bug? Note that the "evaluation instances" field also gets averaged!!
 # Also, the result has rows and columns swapped.
 #
+# By default a different random seed seems to be picked by the Categorical Abrupt Drift Generator for each stream.
 ##############################################################################################################
 
 
@@ -16,6 +17,9 @@ import os, subprocess, shlex, shutil
 import moa_command_vars as mcv
 import pandas as pd
 import utilities
+import matplotlib.pyplot as plt
+import matplotlib
+
 
 processes=[]
 
@@ -27,27 +31,41 @@ num_rows = num_instances/test_interval
 
 number_of_streams = 10
 
+#py.sign_in('username', 'api_key')
+
 def main():
 
-  cmd = mcv.MOA_STUMP + " " + mcv.MOA_TASK_EITTT + " " +  mcv.MOA_LEARNER_NAIVE_BAYES + " " + mcv.CategoricalAbruptDriftGenCmd(None, None, 1000, None, None, None, False, False, None)   + mcv.setTrainingTestingParams(num_instances, test_interval, num_test_examples)
+  cmd = " ".join([mcv.MOA_STUMP, mcv.MOA_TASK_EITTT, mcv.MOA_LEARNER_NAIVE_BAYES, mcv.CategoricalAbruptDriftGenCmd(None, None, 1000, None, None, None, False, False, None), mcv.setTrainingTestingParams(num_instances, test_interval, num_test_examples)])
   mse = MultiStreamExperiment()
   mse.average_over_streams(number_of_streams , cmd, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX)
 
   return 0
 
+class Plot:
+  # Assumption: Received data contains a correctly computed error column 
+
+  #def __init__(self):
+
+  @staticmethod
+  def plot_df1(data_frame):
+    matplotlib.style.use('ggplot')
+    #data_frame.head()
+    #data_frame.plot(x='learning evaluation instances', y='classifications correct (percent)' )
+    data_frame.plot(x='learning evaluation instances', y='error' )
+    plt.show()
+
+
 # Composite of many instances of a given experiment running in parallel. 
 # Note that the seed for the random generator must change!
+# Multiple stream Processes for an experiment
 class MultiStreamExperiment:
-
-  # Multiple stream Processes for this experiment
-  # https://docs.python.org/3/tutorial/classes.html
-  # Note that this is the way to create instance-specific variables- in init.
-  # Anything outside would be shared across all instances.
 
   def __init__(self):
     self.processes = []  
+  # Note that this is the way to create instance-specific variables- in init.
+  # Anything outside would be shared across all instances.
 
-  # The MOA processes created by the Experiment.run() method write to output files. Average over these.
+  # Create individual MOA processes, write to CSV output files. Average over these.
   def average_over_streams(self, num_streams, command_line, output_folder, file_prefix):
     output_files = []
   
@@ -86,16 +104,22 @@ class MultiStreamExperiment:
     # Concatenate all of these. This creates a very large file
     # In order to make this faster, maybe just add values from other files into one file
     all_stream_learning_data = pd.concat(dataframes)
-    all_stream_learning_data.to_csv(folder_file_prefix+"Cumulative.csv")
-  
+    all_stream_learning_data.to_csv(folder_file_prefix + "Cumulative.csv")
+
     all_stream_mean = {}
     # average row by row
     for i in range(num_rows): 
       all_stream_mean[i] = all_stream_learning_data[i::num_rows].mean()
-      #print all_stream_mean[i]
-    all_stream_mean_df = pd.DataFrame(all_stream_mean)
+
+    #all_stream_mean_df = pd.DataFrame(all_stream_mean)
+    all_stream_mean_df = pd.DataFrame(all_stream_mean).transpose() 
+
     all_stream_mean_df.to_csv(folder_file_prefix + "Mean.csv")
     # Print result to file 
+    
+    all_stream_mean_df['error'] = (100.0 - all_stream_mean_df['classifications correct (percent)'])/100.0
+
+    Plot.plot_df1(all_stream_mean_df)
 
 # A single MOA command creating a single MOA process
 class Command:
