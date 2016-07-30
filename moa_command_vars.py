@@ -56,6 +56,7 @@ def CategoricalAbruptDriftGenCmd(nAttributes=None, nValuesPerAttribute=None, bur
 
   return gen_cmd
 
+
 def setTrainingTestingParams(nInstances=None, testInterval=None, nTestExamples=None):
 
   cmd_options = ""

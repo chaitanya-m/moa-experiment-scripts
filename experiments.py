@@ -12,14 +12,12 @@
 # By default a different random seed seems to be picked by the Categorical Abrupt Drift Generator for each stream.
 ##############################################################################################################
 
-
 import os, subprocess, shlex, shutil
 import moa_command_vars as mcv
 import pandas as pd
 import utilities
 import matplotlib.pyplot as plt
 import matplotlib
-
 
 processes=[]
 
@@ -30,8 +28,6 @@ num_test_examples = 200
 num_rows = num_instances/test_interval
 
 number_of_streams = 10
-
-#py.sign_in('username', 'api_key')
 
 def main():
 
@@ -47,12 +43,16 @@ class Plot:
   #def __init__(self):
 
   @staticmethod
-  def plot_df1(data_frame):
+  def plot_df(data_frame):
     matplotlib.style.use('ggplot')
-    #data_frame.head()
-    #data_frame.plot(x='learning evaluation instances', y='classifications correct (percent)' )
-    data_frame.plot(x='learning evaluation instances', y='error' )
+    data_frame.plot(x='learning evaluation instances', y='error')
     plt.show()
+
+
+# This is a composite of a Generator, Learner, and Evaluator
+class CompositeExperiment(MultiStreamExperiment):
+
+
 
 
 # Composite of many instances of a given experiment running in parallel. 
@@ -85,7 +85,7 @@ class MultiStreamExperiment:
       print output_files[stream_num]
     # Run experiments setting output files
     for stream_num in range(0, num_streams):
-      e = Command()
+      e = Stream()
       e.run(command_line ,output_files[stream_num], self.processes)
   
     exit_codes = [p.wait() for p in self.processes]
@@ -119,10 +119,10 @@ class MultiStreamExperiment:
     
     all_stream_mean_df['error'] = (100.0 - all_stream_mean_df['classifications correct (percent)'])/100.0
 
-    Plot.plot_df1(all_stream_mean_df)
+    Plot.plot_df(all_stream_mean_df)
 
 # A single MOA command creating a single MOA process
-class Command:
+class Stream:
   
   # Take a command line and create a MOA process, which outputs results to a file.
   def run(self, cmd, output_file, processes):
