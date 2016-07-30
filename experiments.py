@@ -39,8 +39,8 @@ moa_stump = mcv.MOA_STUMP
 def main():
 
   #cmd = " ".join([mcv.MOA_STUMP, mcv.MOA_TASK_EITTT, mcv.MOA_LEARNER_NAIVE_BAYES, gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(None, None, 1000, None, None, None, False, False, None).cmd(), mcv.setTrainingTestingParams(num_instances, test_interval, num_test_examples)])
-  mse = MultiStreamExperiment()
-  mse.average_over_streams(number_of_streams, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX)
+  ce = CompositeExperiment()
+  ce.average_over_streams(number_of_streams, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX)
 
   return 0
 
@@ -69,7 +69,7 @@ class Plot:
 # Composite of many instances of a given experiment running in parallel. 
 # Note that the seed for the random generator must change!
 # Multiple stream Processes for an experiment
-class MultiStreamExperiment:
+class CompositeExperiment:
 
   def __init__(self):
     self.processes = []  
@@ -94,14 +94,15 @@ class MultiStreamExperiment:
     # Print them
     for stream_num in range(0, num_streams):
       print output_files[stream_num]
+
     # Run experiments setting output files
     for stream_num in range(0, num_streams):
 
-      generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(None, None, 1000, None, None, None, False, False, None)
-      learner = lrn.LearnerBuilder.NaiveBayesLearnerBuilder()
       evaluator = evl.EvaluatorBuilder.EvaluateInterleavedTestThenTrainBuilder()
+      learner = lrn.LearnerBuilder.NaiveBayesLearnerBuilder()
+      generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(None, None, 1000, None, None, None, False, False, None)
 
-      e = ExperimentInstance(moa_stump, evaluator, learner, generator, parameters)
+      e = Experiment(moa_stump, evaluator, learner, generator, parameters)
       e.run(output_files[stream_num], self.processes)
   
     exit_codes = [p.wait() for p in self.processes]
@@ -138,7 +139,7 @@ class MultiStreamExperiment:
     Plot.plot_df(all_stream_mean_df)
 
 # A single MOA command creating a single MOA process
-class ExperimentInstance:
+class Experiment:
  
   def __init__(self, stump, e, l, g, params):
     self.cmd = " ".join([stump, e.cmd(), l.cmd(), g.cmd(), params]) 
