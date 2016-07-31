@@ -23,9 +23,6 @@ class Plot:
     data_frame.plot()
     plt.show()
 
-
-
-
 # Composite of many instances of a given experiment running in parallel. 
 # Note that the seed for the random generator must change!
 # Multiple stream Processes for an experiment
@@ -121,7 +118,7 @@ class ExperimentBuilder:
   def PriorDriftMagBuilder(driftMag, output_file, processes):
     evaluator = evl.EvaluatorBuilder.EvaluateInterleavedTestThenTrainBuilder()
     learner = lrn.LearnerBuilder.NaiveBayesLearnerBuilder()
-    generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(None, None, 1000, driftMag, None, None, True, False, None)
+    generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(burnIn=1000, driftMagPrior=driftMag, driftPrior=True)
 
     e = Experiment(mcv.MOA_STUMP, evaluator, learner, generator, mcv.PARAMS, output_file, processes)
     return e 
@@ -144,10 +141,10 @@ class CompositeExperimentBuilder:
 
   @staticmethod
   def varyPriorDriftMagBuilder(num_streams, output_folder, file_prefix, processes):
-    skip_rows = 2
+    skip_rows = 3
     exp_list = []
     output_files = {} # dictionary mapping each experiment folder to the files contained within
-    drift_mag_list = [0.1, 0.3, 0.5, 0.7]
+    drift_mag_list = [1.0e-20, 0.25, 0.5, 0.7]
 
     # Create a separate folder for each drift magnitude.
     for drift_mag in drift_mag_list:
