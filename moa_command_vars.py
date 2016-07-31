@@ -1,14 +1,6 @@
 
 #The parameter style in this file is different when the parameters correspond to MOAparamters directly (camel case vs underscores).
 
-HOME_DIR = '/home/chait'
-MOA_DIR = '{home_dir}/moa-release-2016.04'.format(home_dir = HOME_DIR)
-OUTPUT_DIR = '{home_dir}/exp_dir/output'.format(home_dir = HOME_DIR)
-OUTPUT_PREFIX = 'out'
-
-MOA_STUMP = "java -cp commons-math3-3.6.1.jar:moa.jar:cdgen.jar -javaagent:sizeofag-1.0.0.jar"
-
-
 def setTrainingTestingParams(nInstances=None, testInterval=None, nTestExamples=None):
 
   cmd_options = ""
@@ -23,6 +15,24 @@ def setTrainingTestingParams(nInstances=None, testInterval=None, nTestExamples=N
     cmd_options += " -q {q_val}".format(q_val = nTestExamples)
 
   return cmd_options
+
+HOME_DIR = '/home/chait'
+MOA_DIR = '{home_dir}/moa-release-2016.04'.format(home_dir = HOME_DIR)
+OUTPUT_DIR = '{home_dir}/exp_dir/output'.format(home_dir = HOME_DIR)
+OUTPUT_PREFIX = 'out'
+
+MOA_STUMP = "java -cp commons-math3-3.6.1.jar:moa.jar:cdgen.jar -javaagent:sizeofag-1.0.0.jar"
+
+num_instances = 3000
+test_interval = 100
+num_test_examples = 200
+
+NUM_STREAMS = 10
+INDEX_COL = 'learning evaluation instances'
+NUM_ROWS = num_instances/test_interval
+
+PARAMS = setTrainingTestingParams(num_instances, test_interval, num_test_examples)
+
 
 # java -cp commons-math3-3.6.1.jar:moa.jar:cdgen.jar -javaagent:sizeofag-1.0.0.jar moa.gui.GUI
 

@@ -1,16 +1,3 @@
-#! /usr/bin/python
-
-##############################################################################################################
-#
-# Chaitanya Manapragada
-#
-# Generates multiple streams using MOA, waits until generation is completed, then averages data for all the streams
-#
-# Bug? Note that the "evaluation instances" field also gets averaged!!
-# Also, the result has rows and columns swapped.
-#
-# By default a different random seed seems to be picked by the Categorical Abrupt Drift Generator for each stream.
-##############################################################################################################
 
 import os, subprocess, shlex, shutil
 import pandas as pd
@@ -22,24 +9,6 @@ import generators as gen
 import learners as lrn
 import evaluators as evl
 import moa_command_vars as mcv
-
-processes=[]
-
-num_instances = 3000 
-test_interval = 100
-num_test_examples = 200
-
-num_rows = num_instances/test_interval
-
-number_of_streams = 10
-
-parameters = mcv.setTrainingTestingParams(num_instances, test_interval, num_test_examples)
-moa_stump = mcv.MOA_STUMP
-
-def main():
-
-  ExperimentRunner.runExperiments()
-  return 0
 
 class Plot:
   # Assumption: Received data contains a correctly computed error column 
@@ -55,31 +24,31 @@ class Plot:
     plt.show()
 
 
+
+
 # Composite of many instances of a given experiment running in parallel. 
 # Note that the seed for the random generator must change!
 # Multiple stream Processes for an experiment
 class ExperimentRunner:
 
-  def __init__(self):
-    self.processes = []  
-  # Note that this is the way to create instance-specific variables- in init.
-  # Anything outside would be shared across all instances.
-  @staticmethod
-  def runExperiments():
+  processes = [] 
+
+  @classmethod
+  def runExperiments(this):
     output_files = []
-    num_rows = num_instances/test_interval
 
     os.chdir(mcv.MOA_DIR)
     utilities.remove_folder(mcv.OUTPUT_DIR)
     utilities.make_folder(mcv.OUTPUT_DIR)
     
 
-    prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(10, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, processes)
+    prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes)
+
     for exp in prior_drift_mag_exp.getExperiments():
-      exp.run()
+      exp.run(this.processes)
       # Run experiments setting output files
 
-    exit_codes = [p.wait() for p in processes]
+    exit_codes = [p.wait() for p in this.processes]
     # wait until all experiments have finished running: each experiment corresponds to a process.
 
     output_files = prior_drift_mag_exp.getOutputFiles()
@@ -105,8 +74,8 @@ class ExperimentRunner:
   
       all_stream_mean = {}
       # average row by row
-      for i in range(num_rows): 
-        all_stream_mean[i] = all_stream_learning_data[i::num_rows].mean()
+      for i in range(mcv.NUM_ROWS): 
+        all_stream_mean[i] = all_stream_learning_data[i::mcv.NUM_ROWS].mean()
   
       all_stream_mean_df = pd.DataFrame(all_stream_mean).transpose() 
       #all_stream_mean_df.to_csv(folder_file_prefix + "Mean.csv")
@@ -117,8 +86,9 @@ class ExperimentRunner:
       error_df[str(folder)] = all_stream_mean_df['error'] 
       mean_dataframes.append(all_stream_mean_df)
 
-    error_df['learning evaluation instances'] = mean_dataframes[0]['learning evaluation instances']
-    error_df = error_df.set_index('learning evaluation instances')
+    # Set the index column
+    error_df[mcv.INDEX_COL] = mean_dataframes[0][mcv.INDEX_COL]
+    error_df = error_df.set_index(mcv.INDEX_COL)
     error_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Error.csv")
 
       #Plot.plot_df(all_stream_mean_df)
@@ -133,7 +103,7 @@ class Experiment:
     self.output_file = output_file
     self.processes = processes 
   # Take a command line and create a MOA process, which outputs results to a file.
-  def run(self):
+  def run(self, processes):
   
     args = shlex.split(self.cmd)
 
@@ -153,7 +123,7 @@ class ExperimentBuilder:
     learner = lrn.LearnerBuilder.NaiveBayesLearnerBuilder()
     generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(None, None, 1000, driftMag, None, None, False, False, None)
 
-    e = Experiment(moa_stump, evaluator, learner, generator, parameters, output_file, processes)
+    e = Experiment(mcv.MOA_STUMP, evaluator, learner, generator, mcv.PARAMS, output_file, processes)
     return e 
 
 class CompositeExperiment:
@@ -173,6 +143,8 @@ class CompositeExperimentBuilder:
     exp_list = []
     output_files = {} # dictionary mapping each experiment folder to the files contained within
     drift_mag_list = [0.1, 0.3, 0.5, 0.7]
+
+    # Create a separate folder for each drift magnitude.
     for drift_mag in drift_mag_list:
       this_output_folder = output_folder + '/' + str(drift_mag)
       folder_file_prefix = this_output_folder + '/' + file_prefix
@@ -188,17 +160,4 @@ class CompositeExperimentBuilder:
       output_files[drift_mag] = this_folder_output_files
 
     return CompositeExperiment(exp_list, output_files)
-
-if __name__=="__main__":
-
-  main()
-
-
-# http://stackoverflow.com/questions/303200/how-do-i-remove-delete-a-folder-that-is-not-empty-with-python
-# http://stackoverflow.com/questions/273192/how-to-check-if-a-directory-exists-and-create-it-if-necessary
-# https://docs.python.org/3.4/library/subprocess.html
-# http://stackoverflow.com/questions/2331339/piping-output-of-subprocess-popen-to-files
-# http://stackoverflow.com/questions/24765017/how-to-calculate-average-of-numbers-from-multiple-csv-files
-# http://stackoverflow.com/questions/3207219/how-to-list-all-files-of-a-directory-in-python
-# http://stackoverflow.com/questions/4555932/public-or-private-attribute-in-python-what-is-the-best-way
 
