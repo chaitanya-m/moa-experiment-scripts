@@ -64,7 +64,7 @@ class ExperimentRunner:
       # List of dataframes in this folder
       dataframes = []
       for this_file in files:
-        dataframes.append(pd.read_csv(this_file, index_col=False, header=1, skiprows=0))
+        dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=prior_drift_mag_exp.getSkipRows()))
         # index_col has to be False as col 0 isn't integer
 
       # Concatenate all of these. This creates a very large file
@@ -121,25 +121,30 @@ class ExperimentBuilder:
   def PriorDriftMagBuilder(driftMag, output_file, processes):
     evaluator = evl.EvaluatorBuilder.EvaluateInterleavedTestThenTrainBuilder()
     learner = lrn.LearnerBuilder.NaiveBayesLearnerBuilder()
-    generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(None, None, 1000, driftMag, None, None, False, False, None)
+    generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(None, None, 1000, driftMag, None, None, True, False, None)
 
     e = Experiment(mcv.MOA_STUMP, evaluator, learner, generator, mcv.PARAMS, output_file, processes)
     return e 
 
 class CompositeExperiment:
 
-  def __init__(self, exp_list, output_files):
+  def __init__(self, exp_list, output_files, skip_rows):
     self.exp_list = exp_list
     self.output_files = output_files
+    self.skip_rows = skip_rows
   def getExperiments(self):
     return self.exp_list
   def getOutputFiles(self):
     return self.output_files
+  def getSkipRows(self):
+    return self.skip_rows
+
 
 class CompositeExperimentBuilder:
 
   @staticmethod
   def varyPriorDriftMagBuilder(num_streams, output_folder, file_prefix, processes):
+    skip_rows = 2
     exp_list = []
     output_files = {} # dictionary mapping each experiment folder to the files contained within
     drift_mag_list = [0.1, 0.3, 0.5, 0.7]
@@ -159,5 +164,5 @@ class CompositeExperimentBuilder:
 
       output_files[drift_mag] = this_folder_output_files
 
-    return CompositeExperiment(exp_list, output_files)
+    return CompositeExperiment(exp_list, output_files, skip_rows)
 
