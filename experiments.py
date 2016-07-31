@@ -38,9 +38,7 @@ moa_stump = mcv.MOA_STUMP
 
 def main():
 
-  #cmd = " ".join([mcv.MOA_STUMP, mcv.MOA_TASK_EITTT, mcv.MOA_LEARNER_NAIVE_BAYES, gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(None, None, 1000, None, None, None, False, False, None).cmd(), mcv.setTrainingTestingParams(num_instances, test_interval, num_test_examples)])
   ExperimentRunner.runExperiments()
-
   return 0
 
 class Plot:
@@ -51,18 +49,10 @@ class Plot:
   @staticmethod
   def plot_df(data_frame):
     matplotlib.style.use('ggplot')
-    data_frame.plot(x='learning evaluation instances', y='error')
+    #plt.figure() 
+    #data_frame.plot(x='learning evaluation instances')
+    data_frame.plot()
     plt.show()
-
-
-# This is a composite of a Generator, Learner, and Evaluator
-#class CompositeExperiment:
-  
-
-
-# This is an experiment with a single set of  
-#class SingleExperiment(MultiStreamExperiment):
-
 
 
 # Composite of many instances of a given experiment running in parallel. 
@@ -94,15 +84,22 @@ class ExperimentRunner:
 
     output_files = prior_drift_mag_exp.getOutputFiles()
 
+    # List of mean_dataframes
+    mean_dataframes = []
+    # Dataframe that contains all the mean error columns for the experiments
+    error_df = pd.DataFrame([])
+
     # Load the outputs into dataframes to prepare for averaging
-    for folder in output_files:
+    # output_files is a 2D list. It has a folder-file structure.
+    for folder, files in output_files.iteritems():
+      # List of dataframes in this folder
       dataframes = []
-      for this_file in folder:
+      for this_file in files:
         dataframes.append(pd.read_csv(this_file, index_col=False, header=1, skiprows=0))
-       # index_col has to be False as col 0 isn't integer
+        # index_col has to be False as col 0 isn't integer
 
       # Concatenate all of these. This creates a very large file
-      # In order to make this faster, maybe just add values from other files into one file
+      # In order to be memory efficient, maybe just add values from other files into one file
       all_stream_learning_data = pd.concat(dataframes)
       #all_stream_learning_data.to_csv(folder_file_prefix + "Cumulative.csv")
   
@@ -111,16 +108,21 @@ class ExperimentRunner:
       for i in range(num_rows): 
         all_stream_mean[i] = all_stream_learning_data[i::num_rows].mean()
   
-      #all_stream_mean_df = pd.DataFrame(all_stream_mean)
       all_stream_mean_df = pd.DataFrame(all_stream_mean).transpose() 
-  
       #all_stream_mean_df.to_csv(folder_file_prefix + "Mean.csv")
-      # Print result to file 
       
       all_stream_mean_df['error'] = (100.0 - all_stream_mean_df['classifications correct (percent)'])/100.0
-  
-      Plot.plot_df(all_stream_mean_df)
 
+      # Add this folder's mean error column to the error_df 
+      error_df[str(folder)] = all_stream_mean_df['error'] 
+      mean_dataframes.append(all_stream_mean_df)
+
+    error_df['learning evaluation instances'] = mean_dataframes[0]['learning evaluation instances']
+    error_df = error_df.set_index('learning evaluation instances')
+    error_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Error.csv")
+
+      #Plot.plot_df(all_stream_mean_df)
+    Plot.plot_df(error_df)
    
 
 # A single MOA command creating a single MOA process
@@ -169,7 +171,7 @@ class CompositeExperimentBuilder:
   @staticmethod
   def varyPriorDriftMagBuilder(num_streams, output_folder, file_prefix, processes):
     exp_list = []
-    output_files = []
+    output_files = {} # dictionary mapping each experiment folder to the files contained within
     drift_mag_list = [0.1, 0.3, 0.5, 0.7]
     for drift_mag in drift_mag_list:
       this_output_folder = output_folder + '/' + str(drift_mag)
@@ -183,7 +185,7 @@ class CompositeExperimentBuilder:
         this_folder_output_files.append(output_file)
         exp_list.append(ExperimentBuilder.PriorDriftMagBuilder(drift_mag, output_file, processes))
 
-      output_files.append(this_folder_output_files)
+      output_files[drift_mag] = this_folder_output_files
 
     return CompositeExperiment(exp_list, output_files)
 
