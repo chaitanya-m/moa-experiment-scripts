@@ -118,7 +118,7 @@ class ExperimentBuilder:
   def PriorDriftMagBuilder(driftMag, output_file, processes):
     evaluator = evl.EvaluatorBuilder.EvaluateInterleavedTestThenTrainBuilder()
     learner = lrn.LearnerBuilder.NaiveBayesLearnerBuilder()
-    generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(burnIn=1000, driftMagPrior=driftMag, driftPrior=True)
+    generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(burnIn=1000, driftMagConditional=driftMag, driftConditional=True)
 
     e = Experiment(mcv.MOA_STUMP, evaluator, learner, generator, mcv.PARAMS, output_file, processes)
     return e 
@@ -141,7 +141,7 @@ class CompositeExperimentBuilder:
 
   @staticmethod
   def varyPriorDriftMagBuilder(num_streams, output_folder, file_prefix, processes):
-    skip_rows = 3
+    skip_rows = 2
     exp_list = []
     output_files = {} # dictionary mapping each experiment folder to the files contained within
     drift_mag_list = [1.0e-20, 0.25, 0.5, 0.7]
