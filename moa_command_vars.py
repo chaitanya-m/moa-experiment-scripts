@@ -27,7 +27,7 @@ num_instances = 1500
 test_interval = 10
 num_test_examples = 100
 
-NUM_STREAMS = 10
+NUM_STREAMS = 2
 INDEX_COL = 'learning evaluation instances'
 NUM_ROWS = num_instances/test_interval
 

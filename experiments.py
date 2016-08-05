@@ -9,6 +9,7 @@ import generators as gen
 import learners as lrn
 import evaluators as evl
 import moa_command_vars as mcv
+from textwrap import wrap
 
 class Plot:
   # Assumption: Received data contains a correctly computed error column 
@@ -16,17 +17,29 @@ class Plot:
   #def __init__(self):
 
   @staticmethod
-  def plot_df(data_frame):
+  def plot_df(data_frame, cmd, figPath):
     matplotlib.style.use('ggplot')
     #plt.figure() 
     #data_frame.plot(x='learning evaluation instances')
-    data_frame.plot()
+    ax = data_frame.plot()
+    ax.set_ylabel('Error rate')
+    wrapped_cmd = '\n'.join(wrap(cmd,60))
+    ax.text(0.0, 0.95, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.3), transform=ax.transAxes)
+    figure = ax.get_figure()
+    figure.savefig(figPath+'.png')
     plt.show()
+
+#class CompositeExperimentSuiteRunner:
+
+
+
+
+
 
 # Composite of many instances of a given experiment running in parallel. 
 # Note that the seed for the random generator must change!
 # Multiple stream Processes for an experiment
-class ExperimentRunner:
+class CompositeExperimentRunner:
 
   processes = [] 
 
@@ -100,7 +113,8 @@ class ExperimentRunner:
     error_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Error.csv")
 
     # Plot.plot_df(all_stream_mean_df)
-    Plot.plot_df(error_df)
+    figNo = 1
+    Plot.plot_df(error_df, exp.getCmd(), mcv.OUTPUT_DIR+"/"+str(figNo))
    
 
 # A single MOA command creating a single MOA process
@@ -122,6 +136,9 @@ class Experiment:
     output_file = open(self.output_file, "w+")
   
     processes.append(subprocess.Popen(args, stdout=output_file))
+
+  def getCmd(self):
+    return self.cmd
 
 class ExperimentBuilder:
 
