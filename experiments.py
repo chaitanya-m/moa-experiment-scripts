@@ -38,8 +38,19 @@ class ExperimentRunner:
     utilities.remove_folder(mcv.OUTPUT_DIR)
     utilities.make_folder(mcv.OUTPUT_DIR)
     
+    evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
 
-    prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes)
+    learner = lrn.LearnerBuilder.NaiveBayesLearnerBuilder()
+    learner = lrn.LearnerBuilder.HoeffdingAdaptiveLearnerBuilder()
+    learner = lrn.LearnerBuilder.HoeffdingOptionLearnerBuilder()
+    learner = lrn.LearnerBuilder.HoeffdingLearnerBuilder()
+    learner = lrn.LearnerBuilder.OzaBagLearnerBuilder()
+    learner = lrn.LearnerBuilder.OzaBoostLearnerBuilder()
+    learner = lrn.LearnerBuilder.OzaBagAdwinLearnerBuilder()
+    learner = lrn.LearnerBuilder.OzaBoostAdwinLearnerBuilder()
+    learner = lrn.LearnerBuilder.HoeffdingAdaptiveLearnerBuilder()
+
+    prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
 
     for exp in prior_drift_mag_exp.getExperiments():
       exp.run(this.processes)
@@ -88,7 +99,7 @@ class ExperimentRunner:
     error_df = error_df.set_index(mcv.INDEX_COL)
     error_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Error.csv")
 
-      #Plot.plot_df(all_stream_mean_df)
+    # Plot.plot_df(all_stream_mean_df)
     Plot.plot_df(error_df)
    
 
@@ -116,12 +127,11 @@ class ExperimentBuilder:
 
   @staticmethod
   def PriorDriftMagBuilder(output_file, processes, evaluator, learner, generator):
-
     e = Experiment(mcv.MOA_STUMP, evaluator, learner, generator, mcv.PARAMS, output_file, processes)
     return e 
+
   @staticmethod
   def ConditionalDriftMagBuilder(output_file, processes, evaluator, learner, generator):
-
     e = Experiment(mcv.MOA_STUMP, evaluator, learner, generator, mcv.PARAMS, output_file, processes)
     return e 
 
@@ -142,14 +152,11 @@ class CompositeExperiment:
 class CompositeExperimentBuilder:
 
   @staticmethod
-  def varyPriorDriftMagBuilder(num_streams, output_folder, file_prefix, processes):
+  def varyPriorDriftMagBuilder(num_streams, output_folder, file_prefix, processes, evaluator, learner):
     skip_rows = 3
     exp_list = []
     output_files = {} # dictionary mapping each experiment folder to the files contained within
     drift_mag_list = [1.0e-20, 0.3, 0.7, 0.9]
-
-    evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
-    learner = lrn.LearnerBuilder.NaiveBayesLearnerBuilder()
 
     # Create a separate folder for each drift magnitude.
     for drift_mag in drift_mag_list:
@@ -159,7 +166,7 @@ class CompositeExperimentBuilder:
       utilities.make_folder(this_output_folder)
       this_folder_output_files = []
 
-      generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(nAttributes=2, nValuesPerAttribute=2, burnIn=1000, driftMagPrior=drift_mag, driftPrior=True)
+      generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(nAttributes=2, nValuesPerAttribute=2, burnIn=50, driftMagPrior=drift_mag, driftPrior=True)
 
       for i in range(0, num_streams):
         output_file = folder_file_prefix + str(i) + '.csv'
@@ -172,14 +179,11 @@ class CompositeExperimentBuilder:
 
 
   @staticmethod
-  def varyConditionalDriftMagBuilder(num_streams, output_folder, file_prefix, processes):
+  def varyConditionalDriftMagBuilder(num_streams, output_folder, file_prefix, processes, evaluator, learner):
     skip_rows = 2
     exp_list = []
     output_files = {} # dictionary mapping each experiment folder to the files contained within
     drift_mag_list = [1.0e-20, 0.25, 0.5, 0.7]
-
-    evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
-    learner = lrn.LearnerBuilder.NaiveBayesLearnerBuilder()
 
     # Create a separate folder for each drift magnitude.
     for drift_mag in drift_mag_list:

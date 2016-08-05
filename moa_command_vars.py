@@ -23,7 +23,7 @@ OUTPUT_PREFIX = 'out'
 
 MOA_STUMP = "java -cp commons-math3-3.6.1.jar:moa.jar:cdgen.jar -javaagent:sizeofag-1.0.0.jar"
 
-num_instances = 30000
+num_instances = 1500
 test_interval = 10
 num_test_examples = 100
 

@@ -28,5 +28,3 @@ class EvaluatorBuilder:
   def EvaluatePrequentialBuilder():
     return Evaluator(MOA_TASK_EVALUATE_PREQUENTIAL)
 
-
-
