@@ -45,9 +45,7 @@ class CompositeExperimentRunner:
     os.chdir(mcv.MOA_DIR)
     utilities.remove_folder(mcv.OUTPUT_DIR)
     utilities.make_folder(mcv.OUTPUT_DIR)
-    utilities.remove_folder(mcv.FIG_DIR)
-    utilities.make_folder(mcv.FIG_DIR)
-    
+
     evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
 
     prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
@@ -100,8 +98,7 @@ class CompositeExperimentRunner:
     error_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Error.csv")
 
     # Plot.plot_df(all_stream_mean_df)
-    Plot.plot_df(error_df, exp.getCmd(), mcv.FIG_DIR+"/fig"+str(figNo))
-   
+    Plot.plot_df(error_df, exp.getCmd(), mcv.FIG_DIR+"/"+str(figNo))
 
 # A single MOA command creating a single MOA process
 class Experiment:
@@ -221,6 +218,9 @@ class CompositeExperimentSuiteRunner:
                       lrn.LearnerBuilder.HoeffdingAdaptiveLearnerBuilder] 
   @classmethod
   def runExperimentSuite(cls):
+    utilities.remove_folder(mcv.FIG_DIR)
+    utilities.make_folder(mcv.FIG_DIR)
+
     i = 0
     for learnerBuilder in cls.learnerBuilders:
       CompositeExperimentRunner.runExperiments(learnerBuilder(), i)
