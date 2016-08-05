@@ -22,6 +22,12 @@ class GeneratorBuilder:
     gen_options = ""
     gen_cmd = ""
 
+    if nAttributes is not None:
+      gen_options += " -n {n_val}".format(n_val = nAttributes)
+
+    if nValuesPerAttribute is not None:
+      gen_options += " -v {v_val}".format(v_val = nValuesPerAttribute)
+
     if burnIn is not None:
       gen_options += " -b {b_val} ".format(b_val = burnIn)
 

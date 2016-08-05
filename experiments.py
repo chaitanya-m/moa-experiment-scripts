@@ -116,9 +116,17 @@ class ExperimentBuilder:
 
   @staticmethod
   def PriorDriftMagBuilder(driftMag, output_file, processes):
+    evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
+    learner = lrn.LearnerBuilder.NaiveBayesLearnerBuilder()
+    generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(nAttributes=2, nValuesPerAttribute=2, burnIn=1000, driftMagPrior=driftMag, driftPrior=True)
+
+    e = Experiment(mcv.MOA_STUMP, evaluator, learner, generator, mcv.PARAMS, output_file, processes)
+    return e 
+  @staticmethod
+  def ConditionalDriftMagBuilder(driftMag, output_file, processes):
     evaluator = evl.EvaluatorBuilder.EvaluateInterleavedTestThenTrainBuilder()
     learner = lrn.LearnerBuilder.NaiveBayesLearnerBuilder()
-    generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(burnIn=1000, driftMagPrior=driftMag, driftPrior=True)
+    generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(burnIn=1000, driftMagConditional=driftMag, driftConditional=True)
 
     e = Experiment(mcv.MOA_STUMP, evaluator, learner, generator, mcv.PARAMS, output_file, processes)
     return e 
@@ -144,7 +152,7 @@ class CompositeExperimentBuilder:
     skip_rows = 3
     exp_list = []
     output_files = {} # dictionary mapping each experiment folder to the files contained within
-    drift_mag_list = [1.0e-20, 0.25, 0.5, 0.7]
+    drift_mag_list = [1.0e-20, 0.3, 0.7, 0.9]
 
     # Create a separate folder for each drift magnitude.
     for drift_mag in drift_mag_list:
@@ -158,6 +166,31 @@ class CompositeExperimentBuilder:
         output_file = folder_file_prefix + str(i) + '.csv'
         this_folder_output_files.append(output_file)
         exp_list.append(ExperimentBuilder.PriorDriftMagBuilder(drift_mag, output_file, processes))
+
+      output_files[drift_mag] = this_folder_output_files
+
+    return CompositeExperiment(exp_list, output_files, skip_rows)
+
+
+  @staticmethod
+  def varyConditionalDriftMagBuilder(num_streams, output_folder, file_prefix, processes):
+    skip_rows = 2
+    exp_list = []
+    output_files = {} # dictionary mapping each experiment folder to the files contained within
+    drift_mag_list = [1.0e-20, 0.25, 0.5, 0.7]
+
+    # Create a separate folder for each drift magnitude.
+    for drift_mag in drift_mag_list:
+      this_output_folder = output_folder + '/' + str(drift_mag)
+      folder_file_prefix = this_output_folder + '/' + file_prefix
+      utilities.remove_folder(this_output_folder)
+      utilities.make_folder(this_output_folder)
+      this_folder_output_files = []
+
+      for i in range(0, num_streams):
+        output_file = folder_file_prefix + str(i) + '.csv'
+        this_folder_output_files.append(output_file)
+        exp_list.append(ExperimentBuilder.ConditionalDriftMagBuilder(drift_mag, output_file, processes))
 
       output_files[drift_mag] = this_folder_output_files
 

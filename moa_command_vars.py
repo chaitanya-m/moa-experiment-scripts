@@ -23,9 +23,9 @@ OUTPUT_PREFIX = 'out'
 
 MOA_STUMP = "java -cp commons-math3-3.6.1.jar:moa.jar:cdgen.jar -javaagent:sizeofag-1.0.0.jar"
 
-num_instances = 3000
-test_interval = 100
-num_test_examples = 200
+num_instances = 30000
+test_interval = 10
+num_test_examples = 100
 
 NUM_STREAMS = 10
 INDEX_COL = 'learning evaluation instances'
