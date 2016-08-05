@@ -27,12 +27,7 @@ class Plot:
     ax.text(0.0, 0.95, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.3), transform=ax.transAxes)
     figure = ax.get_figure()
     figure.savefig(figPath+'.png')
-    plt.show()
-
-#class CompositeExperimentSuiteRunner:
-
-
-
+    #plt.show()
 
 
 
@@ -44,24 +39,16 @@ class CompositeExperimentRunner:
   processes = [] 
 
   @classmethod
-  def runExperiments(this):
+  def runExperiments(this, learner, figNo):
     output_files = []
 
     os.chdir(mcv.MOA_DIR)
     utilities.remove_folder(mcv.OUTPUT_DIR)
     utilities.make_folder(mcv.OUTPUT_DIR)
+    utilities.remove_folder(mcv.FIG_DIR)
+    utilities.make_folder(mcv.FIG_DIR)
     
     evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
-
-    learner = lrn.LearnerBuilder.NaiveBayesLearnerBuilder()
-    learner = lrn.LearnerBuilder.HoeffdingAdaptiveLearnerBuilder()
-    learner = lrn.LearnerBuilder.HoeffdingOptionLearnerBuilder()
-    learner = lrn.LearnerBuilder.HoeffdingLearnerBuilder()
-    learner = lrn.LearnerBuilder.OzaBagLearnerBuilder()
-    learner = lrn.LearnerBuilder.OzaBoostLearnerBuilder()
-    learner = lrn.LearnerBuilder.OzaBagAdwinLearnerBuilder()
-    learner = lrn.LearnerBuilder.OzaBoostAdwinLearnerBuilder()
-    learner = lrn.LearnerBuilder.HoeffdingAdaptiveLearnerBuilder()
 
     prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
 
@@ -113,8 +100,7 @@ class CompositeExperimentRunner:
     error_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Error.csv")
 
     # Plot.plot_df(all_stream_mean_df)
-    figNo = 1
-    Plot.plot_df(error_df, exp.getCmd(), mcv.OUTPUT_DIR+"/"+str(figNo))
+    Plot.plot_df(error_df, exp.getCmd(), mcv.FIG_DIR+"/fig"+str(figNo))
    
 
 # A single MOA command creating a single MOA process
@@ -221,3 +207,23 @@ class CompositeExperimentBuilder:
 
     return CompositeExperiment(exp_list, output_files, skip_rows)
 
+
+class CompositeExperimentSuiteRunner:
+
+  learnerBuilders = [lrn.LearnerBuilder.NaiveBayesLearnerBuilder, 
+                      lrn.LearnerBuilder.HoeffdingAdaptiveLearnerBuilder,
+                      lrn.LearnerBuilder.HoeffdingOptionLearnerBuilder,
+                      lrn.LearnerBuilder.HoeffdingLearnerBuilder,
+                      lrn.LearnerBuilder.OzaBagLearnerBuilder,
+                      lrn.LearnerBuilder.OzaBoostLearnerBuilder,
+                      #lrn.LearnerBuilder.OzaBagAdwinLearnerBuilder,
+                      #lrn.LearnerBuilder.OzaBoostAdwinLearnerBuilder,
+                      lrn.LearnerBuilder.HoeffdingAdaptiveLearnerBuilder] 
+  @classmethod
+  def runExperimentSuite(cls):
+    i = 0
+    for learnerBuilder in cls.learnerBuilders:
+      CompositeExperimentRunner.runExperiments(learnerBuilder(), i)
+      i+=1
+
+    

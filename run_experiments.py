@@ -23,7 +23,7 @@ import experiments as exp
 
 def main():
 
-  exp.CompositeExperimentRunner.runExperiments()
+  exp.CompositeExperimentSuiteRunner.runExperimentSuite()
   return 0
 
 

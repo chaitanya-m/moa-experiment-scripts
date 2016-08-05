@@ -19,6 +19,7 @@ def setTrainingTestingParams(nInstances=None, testInterval=None, nTestExamples=N
 HOME_DIR = '/home/chait'
 MOA_DIR = '{home_dir}/moa-release-2016.04'.format(home_dir = HOME_DIR)
 OUTPUT_DIR = '{home_dir}/exp_dir/output'.format(home_dir = HOME_DIR)
+FIG_DIR = '{home_dir}/exp_dir/figures'.format(home_dir = HOME_DIR)
 OUTPUT_PREFIX = 'out'
 
 MOA_STUMP = "java -cp commons-math3-3.6.1.jar:moa.jar:cdgen.jar -javaagent:sizeofag-1.0.0.jar"
