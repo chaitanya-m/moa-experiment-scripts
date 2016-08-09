@@ -1,5 +1,5 @@
 
-#The parameter style in this file is different when the parameters correspond to MOAparamters directly (camel case vs underscores).
+#The parameter style in this file is different when the parameters correspond to MOAparameters directly (camel case vs underscores).
 
 def setTrainingTestingParams(nInstances=None, testInterval=None, nTestExamples=None):
 
@@ -34,8 +34,5 @@ NUM_ROWS = num_instances/test_interval
 
 PARAMS = setTrainingTestingParams(num_instances, test_interval, num_test_examples)
 
-
 # java -cp commons-math3-3.6.1.jar:moa.jar:cdgen.jar -javaagent:sizeofag-1.0.0.jar moa.gui.GUI
-
-
 

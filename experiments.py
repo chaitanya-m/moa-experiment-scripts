@@ -48,7 +48,7 @@ class CompositeExperimentRunner:
 
     evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
 
-    prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
+    prior_drift_mag_exp = CompositeExperimentBuilder.varyConditionalDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
 
     for exp in prior_drift_mag_exp.getExperiments():
       exp.run(this.processes)
@@ -213,6 +213,9 @@ class CompositeExperimentSuiteRunner:
                       lrn.LearnerBuilder.HoeffdingLearnerBuilder,
                       lrn.LearnerBuilder.OzaBagLearnerBuilder,
                       lrn.LearnerBuilder.OzaBoostLearnerBuilder,
+                      lrn.LearnerBuilder.AccuracyUpdatedEnsembleLearnerBuilder,
+                      lrn.LearnerBuilder.AccuracyWeightedEnsembleLearnerBuilder,
+                      lrn.LearnerBuilder.DriftDetectionMethodClassifierLearnerBuilder,
                       #lrn.LearnerBuilder.OzaBagAdwinLearnerBuilder,
                       #lrn.LearnerBuilder.OzaBoostAdwinLearnerBuilder,
                       lrn.LearnerBuilder.HoeffdingAdaptiveLearnerBuilder] 
