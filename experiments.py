@@ -24,7 +24,7 @@ class Plot:
     ax = data_frame.plot()
     ax.set_ylabel('Error rate')
     wrapped_cmd = '\n'.join(wrap(cmd,60))
-    ax.text(0.0, 0.95, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.3), transform=ax.transAxes)
+    ax.text(0.0, 0.95, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.3), transform=ax.transAxes, zorder=100)
     figure = ax.get_figure()
     figure.savefig(figPath+'.png')
     #plt.show()
@@ -66,7 +66,7 @@ class CompositeExperimentRunner:
 
     # Load the outputs into dataframes to prepare for averaging
     # output_files is a 2D list. It has a folder-file structure.
-    for folder, files in output_files.iteritems():
+    for folder, files in output_files.items():
       # List of dataframes in this folder
       dataframes = []
       for this_file in files:
@@ -80,8 +80,9 @@ class CompositeExperimentRunner:
   
       all_stream_mean = {}
       # average row by row
-      for i in range(mcv.NUM_ROWS): 
-        all_stream_mean[i] = all_stream_learning_data[i::mcv.NUM_ROWS].mean()
+      int_mcv_num_rows = int(mcv.NUM_ROWS) #for python 3
+      for i in range(int_mcv_num_rows): 
+        all_stream_mean[i] = all_stream_learning_data[i::int_mcv_num_rows].mean()
   
       all_stream_mean_df = pd.DataFrame(all_stream_mean).transpose() 
       #all_stream_mean_df.to_csv(folder_file_prefix + "Mean.csv")

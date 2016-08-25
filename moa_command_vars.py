@@ -1,6 +1,11 @@
 
 #The parameter style in this file is different when the parameters correspond to MOAparameters directly (camel case vs underscores).
 
+from os.path import expanduser
+HOME_DIR = expanduser("~")
+
+
+
 def setTrainingTestingParams(nInstances=None, testInterval=None, nTestExamples=None):
 
   cmd_options = ""
@@ -16,7 +21,7 @@ def setTrainingTestingParams(nInstances=None, testInterval=None, nTestExamples=N
 
   return cmd_options
 
-HOME_DIR = '/home/chait'
+#HOME_DIR = '/home/chait'
 MOA_DIR = '{home_dir}/moa-release-2016.04'.format(home_dir = HOME_DIR)
 OUTPUT_DIR = '{home_dir}/exp_dir/output'.format(home_dir = HOME_DIR)
 FIG_DIR = '{home_dir}/exp_dir/figures'.format(home_dir = HOME_DIR)
