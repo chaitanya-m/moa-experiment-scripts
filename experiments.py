@@ -48,7 +48,7 @@ class CompositeExperimentRunner:
 
     evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
 
-    prior_drift_mag_exp = CompositeExperimentBuilder.varyConditionalDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
+    prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
 
     for exp in prior_drift_mag_exp.getExperiments():
       exp.run(this.processes)
@@ -167,7 +167,7 @@ class CompositeExperimentBuilder:
       utilities.make_folder(this_output_folder)
       this_folder_output_files = []
 
-      generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(nAttributes=2, nValuesPerAttribute=2, burnIn=50, driftMagPrior=drift_mag, driftPrior=True)
+      generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(nAttributes=3, nValuesPerAttribute=5, burnIn=100, driftMagPrior=drift_mag, driftPrior=True)
 
       for i in range(0, num_streams):
         output_file = folder_file_prefix + str(i) + '.csv'
@@ -194,7 +194,7 @@ class CompositeExperimentBuilder:
       utilities.make_folder(this_output_folder)
       this_folder_output_files = []
 
-      generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(burnIn=1000, driftMagConditional=drift_mag, driftConditional=True)
+      generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(nAttributes=3, nValuesPerAttribute=5, burnIn=100000, driftMagConditional=drift_mag, driftConditional=True)
 
       for i in range(0, num_streams):
         output_file = folder_file_prefix + str(i) + '.csv'
