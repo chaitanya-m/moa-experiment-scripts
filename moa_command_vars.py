@@ -27,13 +27,13 @@ OUTPUT_DIR = '{home_dir}/exp_dir/output'.format(home_dir = HOME_DIR)
 FIG_DIR = '{home_dir}/exp_dir/figures'.format(home_dir = HOME_DIR)
 OUTPUT_PREFIX = 'out'
 
-MOA_STUMP = "java -cp commons-math3-3.6.1.jar:moa.jar:cdgen.jar -javaagent:sizeofag-1.0.0.jar"
+MOA_STUMP = "java -cp commons-math3-3.6.1.jar:moa.jar:cdgen3.jar -javaagent:sizeofag-1.0.0.jar"
 
-num_instances = 3000
-test_interval = 100
-num_test_examples = 100
+num_instances = 400000
+test_interval = 1000
+num_test_examples = 1000
 
-NUM_STREAMS = 2
+NUM_STREAMS = 5
 INDEX_COL = 'learning evaluation instances'
 NUM_ROWS = num_instances/test_interval
 
