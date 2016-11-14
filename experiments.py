@@ -167,9 +167,11 @@ class CompositeExperimentBuilder:
       utilities.make_folder(this_output_folder)
       this_folder_output_files = []
 
-      generator = gen.GeneratorBuilder.MonashGradualDriftGenBuilder(nAttributes=3, nValuesPerAttribute=5, burnIn=10000, driftDuration=100000)
 
       for i in range(0, num_streams):
+
+        generator = gen.GeneratorBuilder.MonashGradualDriftGenBuilder(nAttributes=3, nValuesPerAttribute=5, burnIn=100000, driftDuration=200000, driftMagPrior=drift_mag, randomSeed=i+1)
+	# Same seed for each stream index across magnitudes
         output_file = folder_file_prefix + str(i) + '.csv'
         this_folder_output_files.append(output_file)
         exp_list.append(ExperimentBuilder.PriorDriftMagBuilder(output_file, processes, evaluator, learner, generator))
