@@ -46,7 +46,8 @@ class CompositeExperimentRunner:
     utilities.remove_folder(mcv.OUTPUT_DIR)
     utilities.make_folder(mcv.OUTPUT_DIR)
 
-    evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
+    evaluator = evl.EvaluatorBuilder.EvaluatePrequentialAdwinBuilder()
+    #evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
 
     #prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
     conditional_drift_mag_exp = CompositeExperimentBuilder.varyConditionalDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
