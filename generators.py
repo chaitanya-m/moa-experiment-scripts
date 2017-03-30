@@ -2,7 +2,7 @@
 
 MOA_GENERATOR_PREFIX = "-s"
 
-MOA_GENERATOR_OPTION_ABRUPT_DRIFT = "generators.categorical.AbruptDriftGenerator"
+MOA_GENERATOR_OPTION_ABRUPT_DRIFT = "generators.monash.AbruptDriftGenerator"
 MOA_GENERATOR_ABRUPT_DRIFT = " ".join([MOA_GENERATOR_PREFIX, MOA_GENERATOR_OPTION_ABRUPT_DRIFT])
 
 MOA_GENERATOR_OPTION_GRADUAL_DRIFT = "generators.monash.GradualDriftGenerator"
@@ -19,10 +19,10 @@ class Generator:
 class GeneratorBuilder:
 
   @staticmethod
-  def CategoricalAbruptDriftGenBuilder(nAttributes=None, nValuesPerAttribute=None, burnIn=None, driftMagPrior=None, driftMagConditional=None, epsilon=None, driftConditional=False, driftPrior=False, randomSeed=None):
+  def MonashAbruptDriftGenBuilder(nAttributes=None, nValuesPerAttribute=None, burnIn=None, driftMagPrior=None, driftMagConditional=None, epsilon=None, driftConditional=False, driftPrior=False, randomSeed=None):
 
     # We assume that these values already have defaults in MOA and only change them on a case-by-case basis 
-    gen_stump_begin = " -s \"\"\"(generators.categorical.AbruptDriftGenerator "
+    gen_stump_begin = " -s \"\"\"(generators.monash.AbruptDriftGenerator "
     gen_stump_end = " )\"\"\" "
     gen_options = ""
     gen_cmd = ""

@@ -5,6 +5,9 @@ MOA_LEARNER_PREFIX = "-l"
 MOA_LEARNER_OPTION_NAIVE_BAYES = "moa.classifiers.bayes.NaiveBayes"
 MOA_LEARNER_NAIVE_BAYES = " ".join([MOA_LEARNER_PREFIX, MOA_LEARNER_OPTION_NAIVE_BAYES])
 
+MOA_LEARNER_OPTION_DECISION_STUMP = "moa.classifiers.trees.DecisionStump"
+MOA_LEARNER_DECISION_STUMP = " ".join([MOA_LEARNER_PREFIX, MOA_LEARNER_OPTION_DECISION_STUMP])
+
 MOA_LEARNER_OPTION_DRIFT_DETECTION_METHOD_CLASSIFIER = "moa.classifiers.drift.DriftDetectionMethodClassifier"
 MOA_LEARNER_DRIFT_DETECTION_METHOD_CLASSIFIER = " ".join([MOA_LEARNER_PREFIX, MOA_LEARNER_OPTION_DRIFT_DETECTION_METHOD_CLASSIFIER])
 
@@ -53,6 +56,10 @@ class LearnerBuilder:
   @staticmethod
   def NaiveBayesLearnerBuilder():
     return Learner(MOA_LEARNER_NAIVE_BAYES)
+
+  @staticmethod
+  def DecisionStumpLearnerBuilder():
+    return Learner(MOA_LEARNER_DECISION_STUMP)
 
   @staticmethod
   def HoeffdingAdaptiveLearnerBuilder():

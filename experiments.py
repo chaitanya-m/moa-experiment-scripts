@@ -48,16 +48,20 @@ class CompositeExperimentRunner:
 
     evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
 
-    prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
+    #prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
+    conditional_drift_mag_exp = CompositeExperimentBuilder.varyConditionalDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
 
-    for exp in prior_drift_mag_exp.getExperiments():
+    #for exp in prior_drift_mag_exp.getExperiments():
+    for exp in conditional_drift_mag_exp.getExperiments():
       exp.run(this.processes)
       # Run experiments setting output files
 
     exit_codes = [p.wait() for p in this.processes]
     # wait until all experiments have finished running: each experiment corresponds to a process.
 
-    output_files = prior_drift_mag_exp.getOutputFiles()
+
+    #output_files = prior_drift_mag_exp.getOutputFiles()
+    output_files = conditional_drift_mag_exp.getOutputFiles()
 
     # List of mean_dataframes
     mean_dataframes = []
@@ -70,7 +74,8 @@ class CompositeExperimentRunner:
       # List of dataframes in this folder
       dataframes = []
       for this_file in files:
-        dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=prior_drift_mag_exp.getSkipRows()))
+        #dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=prior_drift_mag_exp.getSkipRows()))
+        dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=conditional_drift_mag_exp.getSkipRows()))
         # index_col has to be False as col 0 isn't integer
 
       # Concatenate all of these. This creates a very large file
@@ -169,8 +174,7 @@ class CompositeExperimentBuilder:
 
 
       for i in range(0, num_streams):
-
-        generator = gen.GeneratorBuilder.MonashGradualDriftGenBuilder(nAttributes=3, nValuesPerAttribute=5, burnIn=100000, driftDuration=200000, driftMagPrior=drift_mag, randomSeed=i+1)
+        generator = gen.GeneratorBuilder.MonashAbruptDriftGenBuilder(nAttributes=2, nValuesPerAttribute=2, burnIn=100000000, driftMagPrior=drift_mag, driftPrior=True, randomSeed=i+1)
 	# Same seed for each stream index across magnitudes
         output_file = folder_file_prefix + str(i) + '.csv'
         this_folder_output_files.append(output_file)
@@ -196,9 +200,10 @@ class CompositeExperimentBuilder:
       utilities.make_folder(this_output_folder)
       this_folder_output_files = []
 
-      generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(nAttributes=3, nValuesPerAttribute=5, burnIn=100000, driftMagConditional=drift_mag, driftConditional=True)
+      #generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(nAttributes=3, nValuesPerAttribute=5, burnIn=100000, driftMagConditional=drift_mag, driftConditional=True)
 
       for i in range(0, num_streams):
+        generator = gen.GeneratorBuilder.MonashAbruptDriftGenBuilder(nAttributes=4, nValuesPerAttribute=4, burnIn=100000, driftMagConditional=drift_mag, driftConditional=True, randomSeed=i+1)
         output_file = folder_file_prefix + str(i) + '.csv'
         this_folder_output_files.append(output_file)
         exp_list.append(ExperimentBuilder.ConditionalDriftMagBuilder(output_file, processes, evaluator, learner, generator))
@@ -210,18 +215,21 @@ class CompositeExperimentBuilder:
 
 class CompositeExperimentSuiteRunner:
 
-  learnerBuilders = [lrn.LearnerBuilder.NaiveBayesLearnerBuilder, 
+  learnerBuilders = [
+                      #lrn.LearnerBuilder.NaiveBayesLearnerBuilder, 
+                      lrn.LearnerBuilder.DecisionStumpLearnerBuilder,
                       lrn.LearnerBuilder.HoeffdingAdaptiveLearnerBuilder,
-                      lrn.LearnerBuilder.HoeffdingOptionLearnerBuilder,
+                      #lrn.LearnerBuilder.HoeffdingOptionLearnerBuilder,
                       lrn.LearnerBuilder.HoeffdingLearnerBuilder,
-                      lrn.LearnerBuilder.OzaBagLearnerBuilder,
+                      #lrn.LearnerBuilder.OzaBagLearnerBuilder,
                       lrn.LearnerBuilder.OzaBoostLearnerBuilder,
-                      lrn.LearnerBuilder.AccuracyUpdatedEnsembleLearnerBuilder,
-                      lrn.LearnerBuilder.AccuracyWeightedEnsembleLearnerBuilder,
-                      lrn.LearnerBuilder.DriftDetectionMethodClassifierLearnerBuilder,
+                      #lrn.LearnerBuilder.AccuracyUpdatedEnsembleLearnerBuilder,
+                      #lrn.LearnerBuilder.AccuracyWeightedEnsembleLearnerBuilder,
+                      #lrn.LearnerBuilder.DriftDetectionMethodClassifierLearnerBuilder,
                       #lrn.LearnerBuilder.OzaBagAdwinLearnerBuilder,
                       #lrn.LearnerBuilder.OzaBoostAdwinLearnerBuilder,
-                      lrn.LearnerBuilder.HoeffdingAdaptiveLearnerBuilder] 
+                      #lrn.LearnerBuilder.HoeffdingAdaptiveLearnerBuilder
+                      ] 
   @classmethod
   def runExperimentSuite(cls):
     utilities.remove_folder(mcv.FIG_DIR)
