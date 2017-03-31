@@ -16,7 +16,7 @@ def setTrainingTestingParams(nInstances=None, testInterval=None, nTestExamples=N
   if testInterval is not None:
     cmd_options += " -f {f_val}".format(f_val = testInterval)
 
-  if nInstances is not None:
+  if nTestExamples is not None:
     cmd_options += " -q {q_val}".format(q_val = nTestExamples)
 
   return cmd_options
