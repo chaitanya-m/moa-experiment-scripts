@@ -48,8 +48,8 @@ class CompositeExperimentRunner:
     evaluator = evl.EvaluatorBuilder.EvaluatePrequentialAdwinBuilder()
     #evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
 
-    gen_string = r"generators.monash.AbruptDriftGenerator  -n 2 -v 2 -b 100000  -o 0.5  -c  -r 0 "
-    seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_string)
+    gen_strings = [r"generators.monash.AbruptDriftGenerator  -n 2 -v 2 -b 100000  -o 0.3  -c  -r 0 ", r"generators.monash.AbruptDriftGenerator  -n 2 -v 2 -b 100000  -o 0.7  -c  -r 0 "]
+    seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
     #prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
     #conditional_drift_mag_exp = CompositeExperimentBuilder.varyConditionalDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
 
@@ -226,20 +226,28 @@ class CompositeExperimentBuilder:
   # As of now I won't have a list of experiments, so just one folder for multiple seeded runs of same exp.
   # Change this to add a list of experiments.
   @staticmethod
-  def seededExpBuilder(num_streams, output_folder, file_prefix, processes, evaluator, learner, gen_string):
+  def seededExpBuilder(num_streams, output_folder, file_prefix, processes, evaluator, learner, gen_strings):
     skip_rows = 2
     exp_list = []
-    output_files = {} 
-    output_files_list = []
+    output_files = {}
 
-    for i in range(0, num_streams):
-      generator = gen.GeneratorBuilder.SimpleSeededGenBuilder(gen_string, randomSeed=i+1) 
-      # give as input a generator seeded with 0. We then increment the seed. This works for our purposes.
-      output_file = output_folder + '/' + str(i) + '.csv'
-      output_files_list.append(output_file)
-      exp_list.append(ExperimentBuilder.ConditionalDriftMagBuilder(output_file, processes, evaluator, learner, generator))
+    exp_no = 0
+    for gen_string in gen_strings:
+      exp_no+=1
+      this_output_folder = output_folder + '/' + str(exp_no)
+      folder_file_prefix = this_output_folder + '/' + file_prefix
+      utilities.remove_folder(this_output_folder)
+      utilities.make_folder(this_output_folder)
+      this_folder_output_files = []
 
-    output_files[0] = output_files_list
+      for i in range(0, num_streams):
+        generator = gen.GeneratorBuilder.SimpleSeededGenBuilder(gen_string, randomSeed=i+1)
+        # give as input a generator seeded with 0. We then increment the seed. This works for our purposes.
+        output_file =  folder_file_prefix +  str(i) + '.csv'
+        this_folder_output_files.append(output_file)
+        exp_list.append(ExperimentBuilder.ConditionalDriftMagBuilder(output_file, processes, evaluator, learner, generator))
+
+      output_files[exp_no] = this_folder_output_files
 
     return CompositeExperiment(exp_list, output_files, skip_rows)
 
