@@ -48,7 +48,7 @@ class CompositeExperimentRunner:
     evaluator = evl.EvaluatorBuilder.EvaluatePrequentialAdwinBuilder()
     #evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
 
-    gen_strings = [r"generators.monash.AbruptDriftGenerator  -n 2 -v 2 -b 100000  -o 0.3  -c  -r 0 ", r"generators.monash.AbruptDriftGenerator  -n 2 -v 2 -b 100000  -o 0.7  -c  -r 0 "]
+    gen_strings = [r"generators.monash.AbruptDriftGenerator  -n 4 -v 4 -b 100000  -o 0.3  -c  -r 0 ", r"generators.monash.AbruptDriftGenerator  -n 4 -v 4 -b 100000  -o 0.7  -c  -r 0 "]
     seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
     #prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
     #conditional_drift_mag_exp = CompositeExperimentBuilder.varyConditionalDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
