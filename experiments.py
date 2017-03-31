@@ -30,7 +30,6 @@ class Plot:
     #plt.show()
 
 
-
 # Composite of many instances of a given experiment running in parallel. 
 # Note that the seed for the random generator must change!
 # Multiple stream Processes for an experiment
@@ -95,9 +94,9 @@ class CompositeExperimentRunner:
   
       all_stream_mean = {}
       # average row by row
-      int_mcv_num_rows = int(mcv.NUM_ROWS) #for python 3
-      for i in range(int_mcv_num_rows): 
-        all_stream_mean[i] = all_stream_learning_data[i::int_mcv_num_rows].mean()
+      int_evl_num_rows = int(evl.NUM_ROWS) #for python 3
+      for i in range(int_evl_num_rows): 
+        all_stream_mean[i] = all_stream_learning_data[i::int_evl_num_rows].mean()
   
       all_stream_mean_df = pd.DataFrame(all_stream_mean).transpose() 
       #all_stream_mean_df.to_csv(folder_file_prefix + "Mean.csv")
@@ -143,12 +142,12 @@ class ExperimentBuilder:
 
   @staticmethod
   def PriorDriftMagBuilder(output_file, processes, evaluator, learner, generator):
-    e = Experiment(mcv.MOA_STUMP, evaluator, learner, generator, mcv.PARAMS, output_file, processes)
+    e = Experiment(mcv.MOA_STUMP, evaluator, learner, generator, evl.PARAMS, output_file, processes)
     return e 
 
   @staticmethod
   def ConditionalDriftMagBuilder(output_file, processes, evaluator, learner, generator):
-    e = Experiment(mcv.MOA_STUMP, evaluator, learner, generator, mcv.PARAMS, output_file, processes)
+    e = Experiment(mcv.MOA_STUMP, evaluator, learner, generator, evl.PARAMS, output_file, processes)
     return e 
 
 class CompositeExperiment:
