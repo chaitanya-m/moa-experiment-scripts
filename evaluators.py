@@ -2,7 +2,6 @@
 
 MOA_TASK_PREFIX = "moa.DoTask"
 
-
 MOA_TASK_OPTION_EVALUATE_INTERLEAVED_TEST_THEN_TRAIN = "EvaluateInterleavedTestThenTrain"
 MOA_TASK_OPTION_EITTT = "EvaluateInterleavedTestThenTrain"
 MOA_TASK_EITTT = " ".join([MOA_TASK_PREFIX, MOA_TASK_OPTION_EITTT])
@@ -40,7 +39,7 @@ PARAMS = setTrainingTestingParams(num_instances, test_interval, num_test_example
 class Evaluator:
 
   def __init__(self, command):
-    self.command = command
+    self.command = command + PARAMS
   def cmd(self):
     return self.command
 

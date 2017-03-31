@@ -48,7 +48,8 @@ class CompositeExperimentRunner:
     evaluator = evl.EvaluatorBuilder.EvaluatePrequentialAdwinBuilder()
     #evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
 
-    seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
+    gen_string = r"generators.monash.AbruptDriftGenerator  -n 2 -v 2 -b 100000  -o 0.5  -c  -r 0 "
+    seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_string)
     #prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
     #conditional_drift_mag_exp = CompositeExperimentBuilder.varyConditionalDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
 
@@ -139,7 +140,7 @@ class Experiment:
     return self.cmd
 
 class ExperimentBuilder:
-
+# identical. refactor.
   @staticmethod
   def PriorDriftMagBuilder(output_file, processes, evaluator, learner, generator):
     e = Experiment(mcv.MOA_STUMP, evaluator, learner, generator, evl.PARAMS, output_file, processes)
@@ -225,14 +226,15 @@ class CompositeExperimentBuilder:
   # As of now I won't have a list of experiments, so just one folder for multiple seeded runs of same exp.
   # Change this to add a list of experiments.
   @staticmethod
-  def seededExpBuilder(num_streams, output_folder, file_prefix, processes, evaluator, learner):
+  def seededExpBuilder(num_streams, output_folder, file_prefix, processes, evaluator, learner, gen_string):
     skip_rows = 2
     exp_list = []
     output_files = {} 
     output_files_list = []
 
     for i in range(0, num_streams):
-      generator = gen.GeneratorBuilder.MonashAbruptDriftGenBuilder(nAttributes=2, nValuesPerAttribute=2, burnIn=100000, driftMagConditional=0.5, driftConditional=True, randomSeed=i+1)
+      generator = gen.GeneratorBuilder.SimpleSeededGenBuilder(gen_string, randomSeed=i+1) 
+      # give as input a generator seeded with 0. We then increment the seed. This works for our purposes.
       output_file = output_folder + '/' + str(i) + '.csv'
       output_files_list.append(output_file)
       exp_list.append(ExperimentBuilder.ConditionalDriftMagBuilder(output_file, processes, evaluator, learner, generator))

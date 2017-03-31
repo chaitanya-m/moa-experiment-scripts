@@ -1,5 +1,7 @@
 # GeneratorBuilder, Generator classes
 
+import re
+
 MOA_GENERATOR_PREFIX = "-s"
 
 MOA_GENERATOR_OPTION_ABRUPT_DRIFT = "generators.monash.AbruptDriftGenerator"
@@ -59,6 +61,7 @@ class GeneratorBuilder:
     return Generator(gen_cmd)
 
 
+
   @staticmethod
   def MonashGradualDriftGenBuilder(nAttributes=None, nValuesPerAttribute=None, burnIn=None, driftMagPrior=None, driftDuration=None, epsilon=None, randomSeed=None):
 
@@ -90,6 +93,20 @@ class GeneratorBuilder:
       gen_options += " -r {r_val} ".format(r_val = randomSeed)
 
     gen_cmd = gen_stump_begin + gen_options + gen_stump_end
+
+    return Generator(gen_cmd)
+
+
+  @staticmethod
+  def SimpleSeededGenBuilder(gen_string, randomSeed=None):
+
+    # if random seed is not none, just substitute any -r options with the correct seed
+    # the -r options must be clearly visible... 
+    # imagine the amount of refactoring needed every time new options are added... that's too
+    # much complexity for a piece of code custom-built to work with MOA.
+
+    print("====" + str(gen_string))
+    gen_cmd = " -s (" + re.sub("-r [0-9]+", "-r "+ str(randomSeed)+ " ", str(gen_string)) + " )"
 
     return Generator(gen_cmd)
 
