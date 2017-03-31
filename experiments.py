@@ -49,11 +49,13 @@ class CompositeExperimentRunner:
     evaluator = evl.EvaluatorBuilder.EvaluatePrequentialAdwinBuilder()
     #evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
 
+    seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
     #prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
-    conditional_drift_mag_exp = CompositeExperimentBuilder.varyConditionalDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
+    #conditional_drift_mag_exp = CompositeExperimentBuilder.varyConditionalDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
 
     #for exp in prior_drift_mag_exp.getExperiments():
-    for exp in conditional_drift_mag_exp.getExperiments():
+    #for exp in conditional_drift_mag_exp.getExperiments():
+    for exp in seeded_exp.getExperiments():
       exp.run(this.processes)
       # Run experiments setting output files
 
@@ -62,7 +64,11 @@ class CompositeExperimentRunner:
 
 
     #output_files = prior_drift_mag_exp.getOutputFiles()
-    output_files = conditional_drift_mag_exp.getOutputFiles()
+    #output_files = conditional_drift_mag_exp.getOutputFiles()
+    output_files = seeded_exp.getOutputFiles()
+    #for key, item in output_files.items():
+    #    print("====" + str(key)) 
+    #    print("====" + item) 
 
     # List of mean_dataframes
     mean_dataframes = []
@@ -76,7 +82,10 @@ class CompositeExperimentRunner:
       dataframes = []
       for this_file in files:
         #dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=prior_drift_mag_exp.getSkipRows()))
-        dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=conditional_drift_mag_exp.getSkipRows()))
+        #dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=conditional_drift_mag_exp.getSkipRows()))
+        print("====" + this_file) 
+        dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=seeded_exp.getSkipRows()))
+
         # index_col has to be False as col 0 isn't integer
 
       # Concatenate all of these. This creates a very large file
@@ -210,6 +219,26 @@ class CompositeExperimentBuilder:
         exp_list.append(ExperimentBuilder.ConditionalDriftMagBuilder(output_file, processes, evaluator, learner, generator))
 
       output_files[drift_mag] = this_folder_output_files
+
+    return CompositeExperiment(exp_list, output_files, skip_rows)
+
+
+  # As of now I won't have a list of experiments, so just one folder for multiple seeded runs of same exp.
+  # Change this to add a list of experiments.
+  @staticmethod
+  def seededExpBuilder(num_streams, output_folder, file_prefix, processes, evaluator, learner):
+    skip_rows = 2
+    exp_list = []
+    output_files = {} 
+    output_files_list = []
+
+    for i in range(0, num_streams):
+      generator = gen.GeneratorBuilder.MonashAbruptDriftGenBuilder(nAttributes=2, nValuesPerAttribute=2, burnIn=100000, driftMagConditional=0.5, driftConditional=True, randomSeed=i+1)
+      output_file = output_folder + '/' + str(i) + '.csv'
+      output_files_list.append(output_file)
+      exp_list.append(ExperimentBuilder.ConditionalDriftMagBuilder(output_file, processes, evaluator, learner, generator))
+
+    output_files[0] = output_files_list
 
     return CompositeExperiment(exp_list, output_files, skip_rows)
 
