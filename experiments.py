@@ -48,7 +48,17 @@ class CompositeExperimentRunner:
     evaluator = evl.EvaluatorBuilder.EvaluatePrequentialAdwinBuilder()
     #evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
 
-    gen_strings = [r"generators.monash.AbruptDriftGenerator  -n 4 -v 4 -b 100000  -o 0.3  -c  -r 0 ", r"generators.monash.AbruptDriftGenerator  -n 4 -v 4 -b 100000  -o 0.7  -c  -r 0 "]
+    gen_strings_abrupt_conditional = [
+            r"generators.monash.AbruptDriftGenerator  -n 4 -v 4 -b 100000  -o 0.3  -c  -r 0 ",
+            r"generators.monash.AbruptDriftGenerator  -n 4 -v 4 -b 100000  -o 0.7  -c  -r 0 ",
+            ]
+
+    gen_strings_gradual = [
+
+            ]
+
+    gen_strings = gen_strings_abrupt_conditional
+
     seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
     #prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
     #conditional_drift_mag_exp = CompositeExperimentBuilder.varyConditionalDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
@@ -140,14 +150,9 @@ class Experiment:
     return self.cmd
 
 class ExperimentBuilder:
-# identical. refactor.
-  @staticmethod
-  def PriorDriftMagBuilder(output_file, processes, evaluator, learner, generator):
-    e = Experiment(mcv.MOA_STUMP, evaluator, learner, generator, evl.PARAMS, output_file, processes)
-    return e 
 
   @staticmethod
-  def ConditionalDriftMagBuilder(output_file, processes, evaluator, learner, generator):
+  def buildExp(output_file, processes, evaluator, learner, generator):
     e = Experiment(mcv.MOA_STUMP, evaluator, learner, generator, evl.PARAMS, output_file, processes)
     return e 
 
@@ -245,7 +250,7 @@ class CompositeExperimentBuilder:
         # give as input a generator seeded with 0. We then increment the seed. This works for our purposes.
         output_file =  folder_file_prefix +  str(i) + '.csv'
         this_folder_output_files.append(output_file)
-        exp_list.append(ExperimentBuilder.ConditionalDriftMagBuilder(output_file, processes, evaluator, learner, generator))
+        exp_list.append(ExperimentBuilder.buildExp(output_file, processes, evaluator, learner, generator))
 
       output_files[exp_no] = this_folder_output_files
 
