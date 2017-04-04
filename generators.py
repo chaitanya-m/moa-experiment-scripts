@@ -105,7 +105,7 @@ class GeneratorBuilder:
     # imagine the amount of refactoring needed every time new options are added... that's too
     # much complexity for a piece of code custom-built to work with MOA.
 
-    print("====" + str(gen_string))
+    #print("====" + str(gen_string))
     gen_cmd = " -s \"\"\"(" + re.sub("-r [0-9]+", "-r "+ str(randomSeed)+ " ", str(gen_string)) + " )\"\"\""
 
     return Generator(gen_cmd)

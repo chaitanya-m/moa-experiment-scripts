@@ -54,10 +54,11 @@ class CompositeExperimentRunner:
             ]
 
     gen_strings_gradual = [
-
+            r"ConceptDriftStream -s (generators.monash.AbruptDriftGenerator -o 0.800001 -c -n 4 -v 4 -r 1 -b 999999) -d (generators.monash.AbruptDriftGenerator -o 0.800001 -c -n 4 -v 4 -r 1 -b 1) -p 200000"
             ]
 
-    gen_strings = gen_strings_abrupt_conditional
+
+    gen_strings = gen_strings_gradual
 
     seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
     #prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
@@ -232,7 +233,7 @@ class CompositeExperimentBuilder:
   # Change this to add a list of experiments.
   @staticmethod
   def seededExpBuilder(num_streams, output_folder, file_prefix, processes, evaluator, learner, gen_strings):
-    skip_rows = 2
+    skip_rows = 4
     exp_list = []
     output_files = {}
 
@@ -274,14 +275,23 @@ class CompositeExperimentSuiteRunner:
                       #lrn.LearnerBuilder.OzaBoostAdwinLearnerBuilder,
                       #lrn.LearnerBuilder.HoeffdingAdaptiveLearnerBuilder
                       ] 
+  learners = [
+                r"-l (trees.HoeffdingTree)",
+                r"-l (trees.HoeffdingTree -t 1.0)",
+                r"-l (trees.HoeffdingTree -g 10 -t 1.0)"
+                ]
   @classmethod
   def runExperimentSuite(cls):
     utilities.remove_folder(mcv.FIG_DIR)
     utilities.make_folder(mcv.FIG_DIR)
 
     i = 0
-    for learnerBuilder in cls.learnerBuilders:
-      CompositeExperimentRunner.runExperiments(learnerBuilder(), i)
+
+    #for learnerBuilder in cls.learnerBuilders:
+    #  CompositeExperimentRunner.runExperiments(learnerBuilder(), i)
+    #  i+=1
+
+    for learner in cls.learners:
+      CompositeExperimentRunner.runExperiments(lrn.Learner(learner), i)
       i+=1
 
-    
