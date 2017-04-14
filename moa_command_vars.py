@@ -13,7 +13,7 @@ OUTPUT_PREFIX = 'out'
 
 MOA_STUMP = "java -cp commons-math3-3.6.1.jar:moa.jar:cdgen3.jar -javaagent:sizeofag-1.0.0.jar"
 
-NUM_STREAMS = 5
+NUM_STREAMS = 10
 INDEX_COL = 'learning evaluation instances'
 
 # java -cp commons-math3-3.6.1.jar:moa.jar:cdgen.jar -javaagent:sizeofag-1.0.0.jar moa.gui.GUI

@@ -24,7 +24,7 @@ class Plot:
     ax = data_frame.plot()
     ax.set_ylabel('Error rate')
     wrapped_cmd = '\n'.join(wrap(cmd,60))
-    ax.text(0.0, 0.95, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.3), transform=ax.transAxes, zorder=100)
+    ax.text(-0.03, 0.95, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.3), transform=ax.transAxes, zorder=100)
     figure = ax.get_figure()
     figure.savefig(figPath+'.png')
     #plt.show()
@@ -49,16 +49,19 @@ class CompositeExperimentRunner:
     #evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
 
     gen_strings_abrupt_conditional = [
+            r"generators.monash.AbruptDriftGenerator  -n 4 -v 4 -b 9999999  -o 0.2  -c  -r 0 ",
             r"generators.monash.AbruptDriftGenerator  -n 4 -v 4 -b 100000  -o 0.3  -c  -r 0 ",
-            r"generators.monash.AbruptDriftGenerator  -n 4 -v 4 -b 100000  -o 0.7  -c  -r 0 ",
+            r"generators.monash.AbruptDriftGenerator  -n 4 -v 4 -b 100000  -o 0.5  -c  -r 0 ",
+            r"generators.monash.AbruptDriftGenerator  -n 4 -v 4 -b 100000  -o 0.8  -c  -r 0 ",
             ]
 
     gen_strings_gradual = [
-            r"ConceptDriftStream -s (generators.monash.AbruptDriftGenerator -o 0.800001 -c -n 4 -v 4 -r 1 -b 999999) -d (generators.monash.AbruptDriftGenerator -o 0.800001 -c -n 4 -v 4 -r 1 -b 1) -p 200000"
+            #r"ConceptDriftStream -s (generators.monash.AbruptDriftGenerator -o 0.800001 -c -n 4 -v 4 -r 1 -b 999999) -d (generators.monash.AbruptDriftGenerator -o 0.800001 -c -n 4 -v 4 -r 1 -b 1) -p 200000"
+            r"ConceptDriftStream -s (generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.700002 -c -n 4 -v 4 -r 1 -b 1) -p 200000 -w 2000 -r 1"
             ]
 
 
-    gen_strings = gen_strings_gradual
+    gen_strings = gen_strings_abrupt_conditional
 
     seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
     #prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
@@ -233,7 +236,7 @@ class CompositeExperimentBuilder:
   # Change this to add a list of experiments.
   @staticmethod
   def seededExpBuilder(num_streams, output_folder, file_prefix, processes, evaluator, learner, gen_strings):
-    skip_rows = 4
+    skip_rows = 2
     exp_list = []
     output_files = {}
 
@@ -287,11 +290,11 @@ class CompositeExperimentSuiteRunner:
 
     i = 0
 
-    #for learnerBuilder in cls.learnerBuilders:
-    #  CompositeExperimentRunner.runExperiments(learnerBuilder(), i)
-    #  i+=1
-
-    for learner in cls.learners:
-      CompositeExperimentRunner.runExperiments(lrn.Learner(learner), i)
+    for learnerBuilder in cls.learnerBuilders:
+      CompositeExperimentRunner.runExperiments(learnerBuilder(), i)
       i+=1
+
+    #for learner in cls.learners:
+    #  CompositeExperimentRunner.runExperiments(lrn.Learner(learner), i)
+    #  i+=1
 
