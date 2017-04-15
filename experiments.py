@@ -3,7 +3,9 @@ import os, subprocess, shlex, shutil
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
+import pylab
 
+import re
 import utilities
 import generators as gen
 import learners as lrn
@@ -21,9 +23,11 @@ class Plot:
     matplotlib.style.use('ggplot')
     #plt.figure() 
     #data_frame.plot(x='learning evaluation instances')
-    ax = data_frame.plot()
+    ax = data_frame.plot(figsize=(20,5))
     ax.set_ylabel('Error rate')
-    wrapped_cmd = '\n'.join(wrap(cmd,60))
+    ax.set_ylim([0.0, 1.0])
+    #ax.set_xlim([0.0, evl.num_instances])
+    wrapped_cmd = '\n'.join(wrap(cmd, 100))
     ax.text(-0.03, 0.95, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.3), transform=ax.transAxes, zorder=100)
     figure = ax.get_figure()
     figure.savefig(figPath+'.png')
@@ -57,11 +61,24 @@ class CompositeExperimentRunner:
 
     gen_strings_gradual = [
             #r"ConceptDriftStream -s (generators.monash.AbruptDriftGenerator -o 0.800001 -c -n 4 -v 4 -r 1 -b 999999) -d (generators.monash.AbruptDriftGenerator -o 0.800001 -c -n 4 -v 4 -r 1 -b 1) -p 200000"
-            r"ConceptDriftStream -s (generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.700002 -c -n 4 -v 4 -r 1 -b 1) -p 200000 -w 2000 -r 1"
+            #r"ConceptDriftStream -s (generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.700002 -c -n 4 -v 4 -r 1 -b 1) -p 200000 -w 2000 -r 1"
+            r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.8 -c -n 4 -v 4 -r 1 -b 1) -w 4000",
+            r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.5 -c -n 4 -v 4 -r 1 -b 1) -w 4000",
+            r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.3 -c -n 4 -v 4 -r 1 -b 1) -w 4000",
+            r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.1 -c -n 4 -v 4 -r 1 -b 1) -w 4000"
             ]
 
+    gen_strings_square_wave = [
+            r"generators.monash.PeriodicBlip -b 20000 -l 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.8 -c -n 4 -v 4 -r 1 -b 1)",
+            r"generators.monash.PeriodicBlip -b 20000 -l 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.5 -c -n 4 -v 4 -r 1 -b 1)",
+            r"generators.monash.PeriodicBlip -b 20000 -l 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.3 -c -n 4 -v 4 -r 1 -b 1)",
+            r"generators.monash.PeriodicBlip -b 20000 -l 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.1 -c -n 4 -v 4 -r 1 -b 1)"
 
-    gen_strings = gen_strings_abrupt_conditional
+        ]
+
+    #gen_strings = gen_strings_abrupt_conditional
+    gen_strings = gen_strings_square_wave
+    #gen_strings = gen_strings_gradual
 
     seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
     #prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
@@ -236,7 +253,7 @@ class CompositeExperimentBuilder:
   # Change this to add a list of experiments.
   @staticmethod
   def seededExpBuilder(num_streams, output_folder, file_prefix, processes, evaluator, learner, gen_strings):
-    skip_rows = 2
+    skip_rows = 3
     exp_list = []
     output_files = {}
 
@@ -256,7 +273,9 @@ class CompositeExperimentBuilder:
         this_folder_output_files.append(output_file)
         exp_list.append(ExperimentBuilder.buildExp(output_file, processes, evaluator, learner, generator))
 
-      output_files[exp_no] = this_folder_output_files
+# best place to provide a legend... the index becomes the legend
+      legend = re.search(r"-o (0\.\d+)", gen_string)
+      output_files[legend.group(1)] = this_folder_output_files
 
     return CompositeExperiment(exp_list, output_files, skip_rows)
 
@@ -279,9 +298,15 @@ class CompositeExperimentSuiteRunner:
                       #lrn.LearnerBuilder.HoeffdingAdaptiveLearnerBuilder
                       ] 
   learners = [
-                r"-l (trees.HoeffdingTree)",
-                r"-l (trees.HoeffdingTree -t 1.0)",
-                r"-l (trees.HoeffdingTree -g 10 -t 1.0)"
+                r"-l (trees.HoeffdingTree -g 100 -c 0.01)",
+                r"-l meta.AccuracyUpdatedEnsemble",
+                r"-l (meta.OzaBoost -l (trees.HoeffdingTree -g 100 -c 0.01))",
+
+                r"-l (trees.HoeffdingAdaptiveTree -g 100 -c 0.01)",
+                r"-l (meta.OzaBoost -l (trees.HoeffdingAdaptiveTree -g 100 -c 0.1)) ",
+                r"-l (meta.AccuracyUpdatedEnsemble -l (trees.HoeffdingAdaptiveTree -g 100 -c 0.01))",
+
+                r"-l (meta.OzaBoost -l trees.HoeffdingTree)"
                 ]
   @classmethod
   def runExperimentSuite(cls):
@@ -290,11 +315,11 @@ class CompositeExperimentSuiteRunner:
 
     i = 0
 
-    for learnerBuilder in cls.learnerBuilders:
-      CompositeExperimentRunner.runExperiments(learnerBuilder(), i)
-      i+=1
-
-    #for learner in cls.learners:
-    #  CompositeExperimentRunner.runExperiments(lrn.Learner(learner), i)
+    #for learnerBuilder in cls.learnerBuilders:
+    #  CompositeExperimentRunner.runExperiments(learnerBuilder(), i)
     #  i+=1
+
+    for learner in cls.learners:
+      CompositeExperimentRunner.runExperiments(lrn.Learner(learner), i)
+      i+=1
 
