@@ -12,6 +12,7 @@ import learners as lrn
 import evaluators as evl
 import moa_command_vars as mcv
 from textwrap import wrap
+from collections import OrderedDict
 
 class Plot:
   # Assumption: Received data contains a correctly computed error column 
@@ -27,8 +28,11 @@ class Plot:
     ax.set_ylabel('Error rate')
     ax.set_ylim([0.0, 1.0])
     #ax.set_xlim([0.0, evl.num_instances])
-    wrapped_cmd = '\n'.join(wrap(cmd, 100))
+    wrapped_cmd = '\n'.join(wrap(cmd, 140))
     ax.text(-0.03, 0.95, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.3), transform=ax.transAxes, zorder=100)
+    ax.text(0.93, 0.98, r'Drift Magnitude', bbox=dict(facecolor='blue', alpha=0.2), transform=ax.transAxes, zorder=100)
+    ax.text(-0.03, -0.05, r'Error Curves', bbox=dict(facecolor='white', alpha=0.3), transform=ax.transAxes, zorder=100)
+    #ax.text(left, top, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.3), transform=ax.transAxes, zorder=100)
     figure = ax.get_figure()
     figure.savefig(figPath+'.png')
     #plt.show()
@@ -69,15 +73,45 @@ class CompositeExperimentRunner:
             ]
 
     gen_strings_square_wave = [
-            r"generators.monash.PeriodicBlip -b 20000 -l 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.8 -c -n 4 -v 4 -r 1 -b 1)",
-            r"generators.monash.PeriodicBlip -b 20000 -l 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.5 -c -n 4 -v 4 -r 1 -b 1)",
-            r"generators.monash.PeriodicBlip -b 20000 -l 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.3 -c -n 4 -v 4 -r 1 -b 1)",
-            r"generators.monash.PeriodicBlip -b 20000 -l 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.1 -c -n 4 -v 4 -r 1 -b 1)"
-
+            r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.8 -c -n 4 -v 4 -r 1 -b 1) -w 1",
+            r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.5 -c -n 4 -v 4 -r 1 -b 1) -w 1",
+            r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.3 -c -n 4 -v 4 -r 1 -b 1) -w 1",
+            r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.1 -c -n 4 -v 4 -r 1 -b 1) -w 1"
         ]
 
+
+    gen_strings_exp_1_1 = [
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 10000 -o 0.3",
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 10000 -o 0.5",
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 10000 -o 0.8"
+            ]
+
+    gen_strings_exp_1_2 = [
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 50000 -o 0.3",
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 50000 -o 0.5",
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 50000 -o 0.8"
+            ]
+
+    gen_strings_exp_1_3 = [
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 100000 -o 0.3",
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 100000 -o 0.5",
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 100000 -o 0.8"
+            ]
+
+    gen_strings_exp_1_4 = [
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 200000 -o 0.3",
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 200000 -o 0.5",
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 200000 -o 0.8"
+            ]
+
+    gen_strings_exp_2 = [
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 10000 -o 0.3",
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 10000 -o 0.5",
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 10000 -o 0.8"
+            ]
+
     #gen_strings = gen_strings_abrupt_conditional
-    gen_strings = gen_strings_square_wave
+    gen_strings = gen_strings_exp_1_4
     #gen_strings = gen_strings_gradual
 
     seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
@@ -96,10 +130,10 @@ class CompositeExperimentRunner:
 
     #output_files = prior_drift_mag_exp.getOutputFiles()
     #output_files = conditional_drift_mag_exp.getOutputFiles()
-    output_files = seeded_exp.getOutputFiles()
-    #for key, item in output_files.items():
-    #    print("====" + str(key)) 
-    #    print("====" + item) 
+    output_files_u = seeded_exp.getOutputFiles() #this is dict, it's unsorted, this messes up colors in plots
+    output_files = OrderedDict(sorted(output_files_u.items(), key = lambda t: t[0])) # sort entries by key
+    #for key in output_files:
+    #    print("====" + str(key) + str(output_files[key]))
 
     # List of mean_dataframes
     mean_dataframes = []
@@ -108,7 +142,7 @@ class CompositeExperimentRunner:
 
     # Load the outputs into dataframes to prepare for averaging
     # output_files is a 2D list. It has a folder-file structure.
-    for folder, files in output_files.items():
+    for folder, files in output_files.items(): 
       # List of dataframes in this folder
       dataframes = []
       for this_file in files:
@@ -195,7 +229,7 @@ class CompositeExperimentBuilder:
 
   @staticmethod
   def varyPriorDriftMagBuilder(num_streams, output_folder, file_prefix, processes, evaluator, learner):
-    skip_rows = 3
+    skip_rows = 0
     exp_list = []
     output_files = {} # dictionary mapping each experiment folder to the files contained within
     drift_mag_list = [1.0e-20, 0.3, 0.7, 0.9]
@@ -253,7 +287,7 @@ class CompositeExperimentBuilder:
   # Change this to add a list of experiments.
   @staticmethod
   def seededExpBuilder(num_streams, output_folder, file_prefix, processes, evaluator, learner, gen_strings):
-    skip_rows = 3
+    skip_rows = 2
     exp_list = []
     output_files = {}
 
@@ -297,17 +331,26 @@ class CompositeExperimentSuiteRunner:
                       #lrn.LearnerBuilder.OzaBoostAdwinLearnerBuilder,
                       #lrn.LearnerBuilder.HoeffdingAdaptiveLearnerBuilder
                       ] 
-  learners = [
+  learners_exp_1 = [
                 r"-l (trees.HoeffdingTree -g 100 -c 0.01)",
-                r"-l meta.AccuracyUpdatedEnsemble",
+            ]
+  temp =    [
                 r"-l (meta.OzaBoost -l (trees.HoeffdingTree -g 100 -c 0.01))",
+                r"-l meta.AccuracyUpdatedEnsemble",
 
                 r"-l (trees.HoeffdingAdaptiveTree -g 100 -c 0.01)",
                 r"-l (meta.OzaBoost -l (trees.HoeffdingAdaptiveTree -g 100 -c 0.1)) ",
                 r"-l (meta.AccuracyUpdatedEnsemble -l (trees.HoeffdingAdaptiveTree -g 100 -c 0.01))",
 
+                r"-l (meta.OzaBoostAdwin -l (trees.HoeffdingTree -g 100 -c 0.01))",
+                r"-l (meta.OzaBoostAdwin -l (trees.HoeffdingAdaptiveTree -g 100 -c 0.01))",
+
                 r"-l (meta.OzaBoost -l trees.HoeffdingTree)"
                 ]
+  learners = learners_exp_1
+
+
+
   @classmethod
   def runExperimentSuite(cls):
     utilities.remove_folder(mcv.FIG_DIR)
