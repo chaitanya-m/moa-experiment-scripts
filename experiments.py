@@ -27,6 +27,7 @@ class Plot:
     ax = data_frame.plot(figsize=(20,5))
     ax.set_ylabel('Error rate')
     ax.set_ylim([0.0, 1.0])
+    
     #ax.set_xlim([0.0, evl.num_instances])
     wrapped_cmd = '\n'.join(wrap(cmd, 140))
     ax.text(-0.03, 0.95, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.3), transform=ax.transAxes, zorder=100)
@@ -67,13 +68,25 @@ class CompositeExperimentSuiteRunner:
                 r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree -d ADWINChangeDetector)",
                 r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree -d SeqDrift2ChangeDetector)"
                 ]
+  
   learners_2_1 = [
+                r"-l trees.EFDT",
                 r"-l trees.HoeffdingTree",
                 r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree)",
-                r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree -d ADWINChangeDetector)",
+                r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree -d ADWINChangeDetector)", 
+                r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree -d ADWINMonotoneChangeDetector)",
                 r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree -d SeqDrift2ChangeDetector)",
                 r"-l trees.HoeffdingAdaptiveTree",
                 r"-l trees.HoeffdingOptionTree"
+                ]
+
+  learners_3_1 = [
+                #r"-l trees.EFDT",
+                r"-l trees.HoeffdingTree",
+                r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree)",
+                r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree -d ADWINMonotoneChangeDetector)",
+                r"-l trees.HoeffdingAdaptiveTree",
+                #r"-l trees.HoeffdingOptionTree"
                 ]
 
   temp =    [
@@ -90,7 +103,7 @@ class CompositeExperimentSuiteRunner:
                 r"-l (meta.OzaBoost -l trees.HoeffdingTree)"
                 ]
 
-  learners = learners_2_1
+  learners = learners_3_1
 
   @classmethod
   def runExperimentSuite(cls):
@@ -123,8 +136,8 @@ class CompositeExperimentRunner:
     utilities.remove_folder(mcv.OUTPUT_DIR)
     utilities.make_folder(mcv.OUTPUT_DIR)
 
-    evaluator = evl.EvaluatorBuilder.EvaluatePrequentialAdwinBuilder()
-    #evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
+    #evaluator = evl.EvaluatorBuilder.EvaluatePrequentialAdwinBuilder()
+    evaluator = evl.EvaluatorBuilder.EvaluatePrequentialBuilder()
 
     gen_strings_abrupt_conditional = [
             r"generators.monash.AbruptDriftGenerator  -n 4 -v 4 -b 9999999  -o 0.2  -c  -r 0 ",
@@ -213,8 +226,43 @@ class CompositeExperimentRunner:
             r"generators.monash.AbruptDriftGenerator -c -n 10 -v 2 -r 1 -b 150000 -o 0.8"
             ]
 
+    gen_strings_exp_2_6 = [
+            r"generators.monash.AbruptDriftGenerator -c -n 12 -v 2 -r 1 -b 9999999 -o 0.0",
+            r"generators.monash.AbruptDriftGenerator -c -n 12 -v 2 -r 1 -b 300000 -o 0.3",
+            r"generators.monash.AbruptDriftGenerator -c -n 12 -v 2 -r 1 -b 300000 -o 0.5",
+            r"generators.monash.AbruptDriftGenerator -c -n 12 -v 2 -r 1 -b 300000 -o 0.8"
+            ]
+
+    gen_strings_exp_2_7 = [
+            r"generators.monash.AbruptDriftGenerator -c -n 14 -v 2 -r 1 -b 9999999 -o 0.0",
+            r"generators.monash.AbruptDriftGenerator -c -n 14 -v 2 -r 1 -b 150000 -o 0.3",
+            r"generators.monash.AbruptDriftGenerator -c -n 14 -v 2 -r 1 -b 150000 -o 0.5",
+            r"generators.monash.AbruptDriftGenerator -c -n 14 -v 2 -r 1 -b 150000 -o 0.8"
+            ]
+
+    gen_strings_exp_3_1 = [
+            r"generators.monash.AbruptDriftGenerator -c -n 7 -v 3 -r 2 -z 2 -b 9999999 -o 0.0",
+            r"generators.monash.AbruptDriftGenerator -c -n 7 -v 3 -r 2 -z 2 -b 300000 -o 0.3",
+            r"generators.monash.AbruptDriftGenerator -c -n 7 -v 3 -r 2 -z 2 -b 300000 -o 0.5",
+            r"generators.monash.AbruptDriftGenerator -c -n 7 -v 3 -r 2 -z 2 -b 300000 -o 0.8"
+            ]
+
+    gen_strings_exp_3_2 = [
+            r"generators.monash.AbruptDriftGenerator -c -n 7 -v 4 -r 2 -z 7 -b 9999999 -o 0.0",
+            r"generators.monash.AbruptDriftGenerator -c -n 7 -v 4 -r 2 -z 7 -b 300000 -o 0.3",
+            r"generators.monash.AbruptDriftGenerator -c -n 7 -v 4 -r 2 -z 7 -b 300000 -o 0.5",
+            r"generators.monash.AbruptDriftGenerator -c -n 7 -v 4 -r 2 -z 7 -b 300000 -o 0.8"
+            ]
+
+    gen_strings_exp_3_3 = [
+            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 2 -z 7 -b 9999999 -o 0.0",
+            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 2 -z 7 -b 300000 -o 0.3",
+            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 2 -z 7 -b 300000 -o 0.5",
+            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 2 -z 7 -b 300000 -o 0.8"
+            ]
+
     #gen_strings = gen_strings_abrupt_conditional
-    gen_strings = gen_strings_exp_2_2
+    gen_strings = gen_strings_exp_3_2
     #gen_strings = gen_strings_gradual
 
     seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
