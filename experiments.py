@@ -32,7 +32,7 @@ class Plot:
     wrapped_cmd = '\n'.join(wrap(cmd, 140))
     ax.text(-0.03, 0.95, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.3), transform=ax.transAxes, zorder=100)
     #ax.text(0.93, 0.98, r'Drift Magnitude', bbox=dict(facecolor='blue', alpha=0.2), transform=ax.transAxes, zorder=100)
-    ax.text(-0.03, -0.05, r'Error Curves', bbox=dict(facecolor='white', alpha=0.3), transform=ax.transAxes, zorder=100)
+    ax.text(-0.03, -0.05, r'[Error Curves]', bbox=dict(facecolor='white', alpha=0.3), transform=ax.transAxes, zorder=100)
     #ax.text(left, top, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.3), transform=ax.transAxes, zorder=100)
     figure = ax.get_figure()
     figure.savefig(figPath+'.png')
@@ -60,7 +60,7 @@ class CompositeExperimentSuiteRunner:
 
   learners_1 = [
                 r"-l trees.HoeffdingTree",
-                #r"-l (trees.HoeffdingTree -g 100 -c 0.01)",
+                r"-l (trees.HoeffdingTree -g 100 -c 0.01)",
             ]
   learners_2 = [
                 r"-l trees.HoeffdingTree",
@@ -173,7 +173,8 @@ class CompositeExperimentSuiteRunner:
           ]
  
   #learners = report0
-  learners = amnesia
+  #learners = amnesia
+  learners = learners_1
 
   @classmethod
   def runExperimentSuite(cls):
@@ -266,8 +267,8 @@ class CompositeExperimentRunner:
     #gen_strings = gen_strings_MOA_TREE
     gen_strings = gen_strings_exp_4_4
 
-    #seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
-    seeded_exp = CompositeExperimentBuilder.seededExpBuilderMOATREE(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
+    seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
+    #seeded_exp = CompositeExperimentBuilder.seededExpBuilderMOATREE(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
     #prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
     #conditional_drift_mag_exp = CompositeExperimentBuilder.varyConditionalDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
 
@@ -320,15 +321,20 @@ class CompositeExperimentRunner:
   
       all_stream_mean_df = pd.DataFrame(all_stream_mean).transpose() 
       #all_stream_mean_df.to_csv(folder_file_prefix + "Mean.csv")
-      
+
       all_stream_mean_df['error'] = (100.0 - all_stream_mean_df['classifications correct (percent)'])/100.0
 
       # Add this folder's mean error column to the error_df 
-      error_df[str(folder)] = all_stream_mean_df['error'] 
+      #error_df[str(folder)] = all_stream_mean_df['error'] 
+      cpu_time = all_stream_mean_df['evaluation time (cpu seconds)'].iloc[int_evl_num_rows-1] 
+      #print("+++++++++++" + str(jkl))
+      error_df[str(folder)+ ' : ' + str(cpu_time) + 's'] = all_stream_mean_df['error']
+      #error_df[str(folder)+" "+"5"] = all_stream_mean_df['error']
+
       mean_dataframes.append(all_stream_mean_df)
 
     # Set the index column
-    #error_df[mcv.INDEX_COL]
+    # error_df[mcv.INDEX_COL]
     error_df[mcv.INDEX_COL] = mean_dataframes[0][mcv.INDEX_COL]
     error_df = error_df.set_index(mcv.INDEX_COL)
     error_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Error.csv")
@@ -465,7 +471,6 @@ class CompositeExperimentBuilder:
 # best place to provide a legend... the index becomes the legend
       legend = re.search(r"-o (0\.\d+)", gen_string)
       output_files[legend.group(1)] = this_folder_output_files
-
 
     return CompositeExperiment(exp_list, output_files, skip_rows)
 
