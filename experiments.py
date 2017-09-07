@@ -31,7 +31,7 @@ class Plot:
     #ax.set_xlim([0.0, evl.num_instances])
     wrapped_cmd = '\n'.join(wrap(cmd, 140))
     ax.text(-0.03, 0.95, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.3), transform=ax.transAxes, zorder=100)
-    ax.text(0.93, 0.98, r'Drift Magnitude', bbox=dict(facecolor='blue', alpha=0.2), transform=ax.transAxes, zorder=100)
+    #ax.text(0.93, 0.98, r'Drift Magnitude', bbox=dict(facecolor='blue', alpha=0.2), transform=ax.transAxes, zorder=100)
     ax.text(-0.03, -0.05, r'Error Curves', bbox=dict(facecolor='white', alpha=0.3), transform=ax.transAxes, zorder=100)
     #ax.text(left, top, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.3), transform=ax.transAxes, zorder=100)
     figure = ax.get_figure()
@@ -88,8 +88,8 @@ class CompositeExperimentSuiteRunner:
                 r"-l trees.HoeffdingAdaptiveTree",
                 #r"-l trees.HoeffdingOptionTree"
                 ]
-
-  temp =    [
+ 
+  temp = [
                 r"-l (meta.OzaBoost -l (trees.HoeffdingTree -g 100 -c 0.01))",
                 r"-l meta.AccuracyUpdatedEnsemble",
 
@@ -103,7 +103,77 @@ class CompositeExperimentSuiteRunner:
                 r"-l (meta.OzaBoost -l trees.HoeffdingTree)"
                 ]
 
-  learners = learners_3_1
+
+  report0 =    [
+
+                # Plain Hoeffding Tree
+
+                r"-l trees.HoeffdingTree",
+
+                # Show AUE2 doesn't outperform OzaBoost once you match grace and split decision values
+
+                r"-l (meta.OzaBoost -l (trees.HoeffdingTree -g 100 -c 0.01))",
+                r"-l (meta.OzaBoost -l (trees.HoeffdingTree))",
+                r"-l meta.OnlineAccuracyUpdatedEnsemble",
+
+                # HAT-ADWIN base, normal default values
+
+                r"-l (meta.OzaBoost -l (trees.HATADWIN))",
+                r"-l (meta.OnlineAccuracyUpdatedEnsemble -l (trees.HATADWIN))",
+
+                # Is this required?
+                #r"-l (meta.OzaBoostAdwin -l (trees.HoeffdingTree -g 100 -c 0.01))",
+
+                # Show how well HATADWIN does
+                #r"-l (trees.HATADWIN) -g 100 -c 0.01)",
+                r"-l (trees.HATADWIN)",
+                r"-l (meta.OzaBoost -l (trees.HATADWIN -g 100 -c 0.1)) ",
+                r"-l (meta.AccuracyUpdatedEnsemble -l (trees.HATADWIN -g 100 -c 0.01))",
+
+                # Show OzaBoost is no beaten when wrapped with a change detector
+                r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree -d ADWINMonotoneChangeDetector)",
+                r"-l (drift.SingleClassifierDrift -l meta.OzaBoost -d ADWINMonotoneChangeDetector)",
+                r"-l (drift.SingleClassifierDrift -l meta.AdaptableDiversityBasedOnlineBoosting -d ADWINMonotoneChangeDetector)",
+                r"-l (drift.SingleClassifierDrift -l meta.BOLE -d ADWINMonotoneChangeDetector)",
+
+                #r"-l (meta.OzaBoostAdwin -l (trees.HoeffdingAdaptiveTree -g 100 -c 0.01))",
+
+                ]
+
+  temp_1 = [
+ #               r"-l (meta.OzaBoost -l (trees.HATADWIN -g 100 -c 0.1)) ",
+                r"-l (meta.OzaBoost -l (trees.HATADWIN))",
+#                r"-l trees.HATADWIN ",
+          ]
+
+  amnesia = [
+                #r"-l trees.HoeffdingTree",
+                #r"-l trees.VFDT",
+
+                r"-l (trees.VFDTWindow -W 25000)",
+                #r"-l (trees.VFDTWindow -W 50000)",
+                r"-l (trees.VFDTWindow -W 75000)",
+                r"-l (trees.VFDTWindow -W 125000)",
+                #r"-l (trees.VFDTWindow -W 150000)",
+                #r"-l (trees.VFDTWindow -W 200000)",
+
+                r"-l (trees.VFDTLeafWindow -W 1000)",
+                r"-l (trees.VFDTLeafWindow -W 5000)",
+                r"-l (trees.VFDTLeafWindow -W 10000)",
+                r"-l (trees.VFDTLeafWindow -W 12000)",
+                r"-l (trees.VFDTLeafWindow -W 13000)",
+                r"-l (trees.VFDTLeafWindow -W 15000)",
+
+                #r"-l (trees.VFDTLeafWindowADWIN -W 25000)",
+                #r"-l (trees.VFDTLeafWindowADWIN -W 50000)",
+                #r"-l (trees.VFDTLeafWindowADWIN -W 75000)",
+                #r"-l (trees.VFDTLeafWindowADWIN -W 125000)",
+
+                #r"-l (trees.VFDTDecay -D 0.9999)",
+          ]
+ 
+  #learners = report0
+  learners = amnesia
 
   @classmethod
   def runExperimentSuite(cls):
@@ -156,116 +226,48 @@ class CompositeExperimentRunner:
             ]
 
     gen_strings_square_wave = [
-            r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.8 -c -n 4 -v 4 -r 1 -b 1) -w 1",
-            r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.5 -c -n 4 -v 4 -r 1 -b 1) -w 1",
-            r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.3 -c -n 4 -v 4 -r 1 -b 1) -w 1",
-            r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.1 -c -n 4 -v 4 -r 1 -b 1) -w 1"
+            r"RecurrentConceptDriftStream -x 40000 -y 40000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.8 -c -n 4 -v 4 -r 1 -b 40001) -w 1",
+            r"RecurrentConceptDriftStream -x 40000 -y 40000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.5 -c -n 4 -v 4 -r 1 -b 40001) -w 1",
+            r"RecurrentConceptDriftStream -x 40000 -y 40000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.3 -c -n 4 -v 4 -r 1 -b 40001) -w 1",
+            r"RecurrentConceptDriftStream -x 40000 -y 40000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.1 -c -n 4 -v 4 -r 1 -b 40001) -w 1"
         ]
 
 
-    gen_strings_exp_1_1 = [
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 999999 -o 0.0",
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 10000 -o 0.3",
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 10000 -o 0.5",
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 10000 -o 0.8"
-            ]
-
-    gen_strings_exp_1_2 = [
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 999999 -o 0.0",
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 50000 -o 0.3",
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 50000 -o 0.5",
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 50000 -o 0.8"
-            ]
-
-    gen_strings_exp_1_3 = [
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 999999 -o 0.0",
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 100000 -o 0.3",
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 100000 -o 0.5",
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 100000 -o 0.8"
-            ]
-
-    gen_strings_exp_1_4 = [
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 999999 -o 0.0",
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 200000 -o 0.3",
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 200000 -o 0.5",
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 200000 -o 0.8"
-            ]
-
-    gen_strings_exp_2_1 = [
-            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 1 -b 999999 -o 0.0",
-            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 1 -b 150000 -o 0.3",
-            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 1 -b 150000 -o 0.5",
-            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 1 -b 150000 -o 0.8"
-            ]
-
     gen_strings_exp_2_2 = [
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 2 -r 1 -b 999999 -o 0.0",
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 2 -r 1 -b 150000 -o 0.3",
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 2 -r 1 -b 150000 -o 0.5",
-            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 2 -r 1 -b 150000 -o 0.8"
-            ]
-
-    gen_strings_exp_2_3 = [
-            r"generators.monash.AbruptDriftGenerator -c -n 6 -v 2 -r 1 -b 999999 -o 0.0",
-            r"generators.monash.AbruptDriftGenerator -c -n 6 -v 2 -r 1 -b 150000 -o 0.3",
-            r"generators.monash.AbruptDriftGenerator -c -n 6 -v 2 -r 1 -b 150000 -o 0.5",
-            r"generators.monash.AbruptDriftGenerator -c -n 6 -v 2 -r 1 -b 150000 -o 0.8"
-            ]
-
-    gen_strings_exp_2_4 = [
-            r"generators.monash.AbruptDriftGenerator -c -n 8 -v 2 -r 1 -b 999999 -o 0.0",
-            r"generators.monash.AbruptDriftGenerator -c -n 8 -v 2 -r 1 -b 150000 -o 0.3",
-            r"generators.monash.AbruptDriftGenerator -c -n 8 -v 2 -r 1 -b 150000 -o 0.5",
-            r"generators.monash.AbruptDriftGenerator -c -n 8 -v 2 -r 1 -b 150000 -o 0.8"
-            ]
-
-    gen_strings_exp_2_5 = [
-            r"generators.monash.AbruptDriftGenerator -c -n 10 -v 2 -r 1 -b 999999 -o 0.0",
-            r"generators.monash.AbruptDriftGenerator -c -n 10 -v 2 -r 1 -b 150000 -o 0.3",
-            r"generators.monash.AbruptDriftGenerator -c -n 10 -v 2 -r 1 -b 150000 -o 0.5",
-            r"generators.monash.AbruptDriftGenerator -c -n 10 -v 2 -r 1 -b 150000 -o 0.8"
-            ]
-
-    gen_strings_exp_2_6 = [
-            r"generators.monash.AbruptDriftGenerator -c -n 12 -v 2 -r 1 -b 9999999 -o 0.0",
-            r"generators.monash.AbruptDriftGenerator -c -n 12 -v 2 -r 1 -b 300000 -o 0.3",
-            r"generators.monash.AbruptDriftGenerator -c -n 12 -v 2 -r 1 -b 300000 -o 0.5",
-            r"generators.monash.AbruptDriftGenerator -c -n 12 -v 2 -r 1 -b 300000 -o 0.8"
-            ]
-
-    gen_strings_exp_2_7 = [
-            r"generators.monash.AbruptDriftGenerator -c -n 14 -v 2 -r 1 -b 9999999 -o 0.0",
-            r"generators.monash.AbruptDriftGenerator -c -n 14 -v 2 -r 1 -b 150000 -o 0.3",
-            r"generators.monash.AbruptDriftGenerator -c -n 14 -v 2 -r 1 -b 150000 -o 0.5",
-            r"generators.monash.AbruptDriftGenerator -c -n 14 -v 2 -r 1 -b 150000 -o 0.8"
-            ]
-
-    gen_strings_exp_3_1 = [
-            r"generators.monash.AbruptDriftGenerator -c -n 7 -v 3 -r 2 -z 2 -b 9999999 -o 0.0",
-            r"generators.monash.AbruptDriftGenerator -c -n 7 -v 3 -r 2 -z 2 -b 300000 -o 0.3",
-            r"generators.monash.AbruptDriftGenerator -c -n 7 -v 3 -r 2 -z 2 -b 300000 -o 0.5",
-            r"generators.monash.AbruptDriftGenerator -c -n 7 -v 3 -r 2 -z 2 -b 300000 -o 0.8"
-            ]
-
-    gen_strings_exp_3_2 = [
-            r"generators.monash.AbruptDriftGenerator -c -n 7 -v 4 -r 2 -z 7 -b 9999999 -o 0.0",
-            r"generators.monash.AbruptDriftGenerator -c -n 7 -v 4 -r 2 -z 7 -b 300000 -o 0.3",
-            r"generators.monash.AbruptDriftGenerator -c -n 7 -v 4 -r 2 -z 7 -b 300000 -o 0.5",
-            r"generators.monash.AbruptDriftGenerator -c -n 7 -v 4 -r 2 -z 7 -b 300000 -o 0.8"
-            ]
+            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 1 -b 9999999 -o 0.0",
+            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 1 -b 100000 -o 0.3",
+            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 1 -b 100000 -o 0.5",
+            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 1 -b 100000 -o 0.8"
+        ]
 
     gen_strings_exp_3_3 = [
-            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 2 -z 7 -b 9999999 -o 0.0",
-            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 2 -z 7 -b 300000 -o 0.3",
-            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 2 -z 7 -b 300000 -o 0.5",
-            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 2 -z 7 -b 300000 -o 0.8"
-            ]
+            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -r 1 -b 999999 -o 0.0",
+            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -r 1 -b 100000 -o 0.3",
+            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -r 1 -b 100000 -o 0.5",
+            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -r 1 -b 100000 -o 0.8"
+        ]
 
+    gen_strings_exp_4_4 = [
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 9999999 -o 0.0",
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 150000 -o 0.3",
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 150000 -o 0.5",
+            r"generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 150000 -o 0.8"
+        ]
+
+    gen_strings_gradual = [
+            #r"ConceptDriftStream -p 200000 -w 100000 -s (generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -z 2 -r 1 -b 99999999 -o 0.8) -d (generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -z 2 -r 1 -b 1 -o 0.8)"
+            r"ConceptDriftStream -p 200000 -w 100000 -s (generators.monash.AbruptDriftGenerator -c -z 2 -r 1 -b 99999999 -o 0.8) -d (generators.monash.AbruptDriftGenerator -c -z 2 -r 1 -b 1 -o 0.8)"
+        ]
+
+#EvaluatePrequential -l trees.HATADWIN -s (ConceptDriftStream -s (generators.RandomTreeGenerator -r 2 -i 2 -u 0) -d (generators.RandomTreeGenerator -r 3 -i 3 -u 0) -p 200000 -w 10 -r 20) -i 400000 -f 1000
     #gen_strings = gen_strings_abrupt_conditional
-    gen_strings = gen_strings_exp_3_2
-    #gen_strings = gen_strings_gradual
+    #gen_strings = gen_strings_exp_1_4
+    #gen_strings = gen_strings_square_wave
+    #gen_strings = gen_strings_MOA_TREE
+    gen_strings = gen_strings_exp_4_4
 
-    seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
+    #seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
+    seeded_exp = CompositeExperimentBuilder.seededExpBuilderMOATREE(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
     #prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
     #conditional_drift_mag_exp = CompositeExperimentBuilder.varyConditionalDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
 
@@ -283,8 +285,9 @@ class CompositeExperimentRunner:
     #output_files = conditional_drift_mag_exp.getOutputFiles()
     output_files_u = seeded_exp.getOutputFiles() #this is dict, it's unsorted, this messes up colors in plots
     output_files = OrderedDict(sorted(output_files_u.items(), key = lambda t: t[0])) # sort entries by key
+
     #for key in output_files:
-    #    print("====" + str(key) + str(output_files[key]))
+    #  print("====" + str(key) + str(output_files[key]))
 
     # List of mean_dataframes
     mean_dataframes = []
@@ -325,6 +328,7 @@ class CompositeExperimentRunner:
       mean_dataframes.append(all_stream_mean_df)
 
     # Set the index column
+    #error_df[mcv.INDEX_COL]
     error_df[mcv.INDEX_COL] = mean_dataframes[0][mcv.INDEX_COL]
     error_df = error_df.set_index(mcv.INDEX_COL)
     error_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Error.csv")
@@ -452,7 +456,7 @@ class CompositeExperimentBuilder:
       this_folder_output_files = []
 
       for i in range(0, num_streams):
-        generator = gen.GeneratorBuilder.SimpleSeededGenBuilder(gen_string, randomSeed=i+1)
+        generator = gen.GeneratorBuilder.SimpleSeededGenBuilder(gen_string, randomSeed=i+2)
         # give as input a generator seeded with 0. We then increment the seed. This works for our purposes.
         output_file =  folder_file_prefix +  str(i) + '.csv'
         this_folder_output_files.append(output_file)
@@ -461,6 +465,34 @@ class CompositeExperimentBuilder:
 # best place to provide a legend... the index becomes the legend
       legend = re.search(r"-o (0\.\d+)", gen_string)
       output_files[legend.group(1)] = this_folder_output_files
+
+
+    return CompositeExperiment(exp_list, output_files, skip_rows)
+
+
+  @staticmethod
+  def seededExpBuilderMOATREE(num_streams, output_folder, file_prefix, processes, evaluator, learner, gen_strings):
+    skip_rows = 2
+    exp_list = []
+    output_files = {}
+
+    exp_no = 0
+    for gen_string in gen_strings:
+      exp_no+=1
+      this_output_folder = output_folder + '/' + str(exp_no)
+      folder_file_prefix = this_output_folder + '/' + file_prefix
+      utilities.remove_folder(this_output_folder)
+      utilities.make_folder(this_output_folder)
+      this_folder_output_files = []
+
+      for i in range(0, num_streams):
+        generator = gen.GeneratorBuilder.SimpleSeededGenBuilderMOATREE(gen_string, randomSeed=i+2)
+        # give as input a generator seeded with 0. We then increment the seed. This works for our purposes.
+        output_file =  folder_file_prefix +  str(i) + '.csv'
+        this_folder_output_files.append(output_file)
+        exp_list.append(ExperimentBuilder.buildExp(output_file, processes, evaluator, learner, generator))
+
+      output_files[exp_no] = this_folder_output_files
 
     return CompositeExperiment(exp_list, output_files, skip_rows)
 

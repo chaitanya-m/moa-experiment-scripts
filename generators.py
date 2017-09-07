@@ -110,3 +110,22 @@ class GeneratorBuilder:
 
     return Generator(gen_cmd)
 
+
+
+  @staticmethod
+  def SimpleSeededGenBuilderMOATREE(gen_string, randomSeed=None):
+
+    # if random seed is not none, just substitute any -r options with the correct seed
+    # the -r options must be clearly visible... 
+    # imagine the amount of refactoring needed every time new options are added... that's too
+    # much complexity for a piece of code custom-built to work with MOA.
+
+    #print("====" + str(gen_string))
+    tmp = re.sub("-r [0-9]+", "-r "+ str(randomSeed)+ " ", str(gen_string)) 
+    tmp = re.sub("-i [0-9]+", "-i "+ str(randomSeed)+ " ", str(tmp))
+
+    gen_cmd = " -s \"\"\"(" + str(tmp) + " )\"\"\""
+
+    return Generator(gen_cmd)
+
+

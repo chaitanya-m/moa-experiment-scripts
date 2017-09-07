@@ -28,7 +28,7 @@ def setTrainingTestingParams(nInstances=None, testInterval=None, nTestExamples=N
 
   return cmd_options
 
-num_instances = 800000
+num_instances = 400000
 test_interval = 1000
 num_test_examples = 1000
 
