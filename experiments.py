@@ -147,34 +147,34 @@ class CompositeExperimentSuiteRunner:
           ]
 
   amnesia = [
-                #r"-l trees.HoeffdingTree",
-                #r"-l trees.VFDT",
+                #r"-l t#rees.HoeffdingT#ree",
+                #r"-l t#rees.VFDT",
 
-                r"-l (trees.VFDTWindow -W 25000)",
+                #r"-l (trees.VFDTWindow -W 25000)",
                 #r"-l (trees.VFDTWindow -W 50000)",
                 r"-l (trees.VFDTWindow -W 75000)",
-                r"-l (trees.VFDTWindow -W 125000)",
+                #r"-l (trees.VFDTWindow -W 125000)",
                 #r"-l (trees.VFDTWindow -W 150000)",
                 #r"-l (trees.VFDTWindow -W 200000)",
 
-                r"-l (trees.VFDTLeafWindow -W 1000)",
-                r"-l (trees.VFDTLeafWindow -W 5000)",
-                r"-l (trees.VFDTLeafWindow -W 10000)",
-                r"-l (trees.VFDTLeafWindow -W 12000)",
-                r"-l (trees.VFDTLeafWindow -W 13000)",
-                r"-l (trees.VFDTLeafWindow -W 15000)",
+                #r"-l (t#rees.VFDTLeafWindow -W 1000)",
+                #r"-l (t#rees.VFDTLeafWindow -W 5000)",
+                #r"-l (t#rees.VFDTLeafWindow -W 10000)",
+                #r"-l (t#rees.VFDTLeafWindow -W 12000)",
+                #r"-l (t#rees.VFDTLeafWindow -W 13000)",
+                #r"-l (t#rees.VFDTLeafWindow -W 15000)",
 
-                #r"-l (trees.VFDTLeafWindowADWIN -W 25000)",
-                #r"-l (trees.VFDTLeafWindowADWIN -W 50000)",
-                #r"-l (trees.VFDTLeafWindowADWIN -W 75000)",
-                #r"-l (trees.VFDTLeafWindowADWIN -W 125000)",
+                #r"-l (t#rees.VFDTLeafWindowADWIN -W 25000)",
+                #r"-l (t#rees.VFDTLeafWindowADWIN -W 50000)",
+                #r"-l (t#rees.VFDTLeafWindowADWIN -W 75000)",
+                #r"-l (t#rees.VFDTLeafWindowADWIN -W 125000)",
 
                 #r"-l (trees.VFDTDecay -D 0.9999)",
           ]
  
   #learners = report0
-  #learners = amnesia
-  learners = learners_1
+  learners = amnesia
+  #learners = learners_1
 
   @classmethod
   def runExperimentSuite(cls):
