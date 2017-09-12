@@ -152,7 +152,7 @@ class CompositeExperimentSuiteRunner:
 
                 #r"-l (trees.VFDTWindow -W 25000)",
                 #r"-l (trees.VFDTWindow -W 50000)",
-                r"-l (trees.VFDTWindow -W 75000)",
+                #r"-l (trees.VFDTWindow -W 75000)",
                 #r"-l (trees.VFDTWindow -W 125000)",
                 #r"-l (trees.VFDTWindow -W 150000)",
                 #r"-l (trees.VFDTWindow -W 200000)",
@@ -164,12 +164,50 @@ class CompositeExperimentSuiteRunner:
                 #r"-l (t#rees.VFDTLeafWindow -W 13000)",
                 #r"-l (t#rees.VFDTLeafWindow -W 15000)",
 
+                #r"-l (t#rees.VFDTLeafWindowADWIN -W 1000)",
+                #r"-l (t#rees.VFDTLeafWindowADWIN -W 5000)",
+                #r"-l (t#rees.VFDTLeafWindowADWIN -W 10000)",
+                #r"-l (t#rees.VFDTLeafWindowADWIN -W 15000)",
+                #r"-l (t#rees.VFDTLeafWindowADWIN -W 20000)",
                 #r"-l (t#rees.VFDTLeafWindowADWIN -W 25000)",
                 #r"-l (t#rees.VFDTLeafWindowADWIN -W 50000)",
                 #r"-l (t#rees.VFDTLeafWindowADWIN -W 75000)",
+                #r"-l (t#rees.VFDTLeafWindowADWIN -W 100000)",
                 #r"-l (t#rees.VFDTLeafWindowADWIN -W 125000)",
 
-                #r"-l (trees.VFDTDecay -D 0.9999)",
+               #r"-l (trees.VFDTDecay -D 0.999999)",
+               #r"-l (trees.VFDTDecay -D 0.999995)",
+               #r"-l (trees.VFDTDecay -D 0.99999)",
+               #r"-l (trees.VFDTDecay -D 0.9999)",
+               #r"-l (trees.VFDTDecay -D 0.999)",
+               #r"-l (trees.VFDTDecay -D 0.99)",
+               #r"-l (trees.VFDTDecay -D 0.9)",
+               #r"-l (trees.VFDTDecay -D 0.85)",
+               #r"-l (trees.VFDTDecay -D 0.8)",
+               #r"-l (trees.VFDTDecay -D 0.75)",
+               #r"-l (trees.VFDTDecay -D 0.7)",
+
+                #r"-l (trees.CVFDT -f 1000 -L 200 -W 400000)",
+                #r"-l (trees.CVFDT -f 1000 -L 200 -W 200000)",
+                #r"-l (trees.CVFDT -f 1000 -L 200 -W 100000)",
+                #r"-l (trees.CVFDT -f 1000 -L 200 -W 50000)",
+                #r"-l (trees.CVFDT -f 1000 -L 200 -W 25000)",
+                #r"-l (trees.CVFDT -f 1000 -L 200 -W 10000)",
+                #r"-l (trees.CVFDT -f 1000 -L 200 -W 5000)",
+
+                #r"-l (trees.CVFDT -f 10000 -L 200 -W 400000)",
+                #r"-l (trees.CVFDT -f 10000 -L 200 -W 200000)",
+                #r"-l (trees.CVFDT -f 10000 -L 200 -W 100000)",
+                #r"-l (trees.CVFDT -f 10000 -L 200 -W 50000)",
+                #r"-l (trees.CVFDT -f 10000 -L 200 -W 25000)",
+                #r"-l (trees.CVFDT -f 10000 -L 200 -W 10000)",
+                #r"-l (trees.CVFDT -f 10000 -L 200 -W 5000)",
+
+
+
+
+		#r"-l trees.HATADWIN",
+                #r"-l (drift.SingleClassifierDrift -l trees.VFDT -d ADWINMonotoneChangeDetector)",
           ]
  
   #learners = report0
