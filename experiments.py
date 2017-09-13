@@ -364,9 +364,10 @@ class CompositeExperimentRunner:
 
       # Add this folder's mean error column to the error_df 
       #error_df[str(folder)] = all_stream_mean_df['error'] 
-      cpu_time = all_stream_mean_df['evaluation time (cpu seconds)'].iloc[int_evl_num_rows-1] 
+      average_error = all_stream_mean_df['error'].sum()/int_evl_num_rows
+      cpu_time = all_stream_mean_df['evaluation time (cpu seconds)'].iloc[int_evl_num_rows-1] # yes this is avg cpu_time
       #print("+++++++++++" + str(jkl))
-      error_df[str(folder)+ ' : ' + str(cpu_time) + 's'] = all_stream_mean_df['error']
+      error_df["M: "+ str(folder)+ " T: " + str(cpu_time) + 's' + " E:" + str(average_error)] = all_stream_mean_df['error']
       #error_df[str(folder)+" "+"5"] = all_stream_mean_df['error']
 
       mean_dataframes.append(all_stream_mean_df)
