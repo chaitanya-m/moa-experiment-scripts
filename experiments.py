@@ -24,18 +24,34 @@ class Plot:
     matplotlib.style.use('ggplot')
     #plt.figure() 
     #data_frame.plot(x='learning evaluation instances')
-    ax = data_frame.plot(figsize=(20,5))
+
+    font = {'family' : 'normal',
+                'weight' : 'bold',
+                        'size'   : 24}
+
+    matplotlib.rc('font', **font)
+
+    ax = data_frame.plot(figsize=(18,10))
     ax.set_ylabel('Error rate')
+    ax.set_xlabel('Instances')
     ax.set_ylim([0.0, 1.0])
-    
+    ax.set_facecolor((0.94, 0.999, 0.999))
+
+        
     #ax.set_xlim([0.0, evl.num_instances])
-    wrapped_cmd = '\n'.join(wrap(cmd, 140))
-    ax.text(-0.03, 0.95, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.3), transform=ax.transAxes, zorder=100)
+    wrapped_cmd = '\n'.join(wrap(cmd, 100))
+    #ax.text(0.0, 1.025, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.2), transform=ax.transAxes, zorder=100)
     #ax.text(0.93, 0.98, r'Drift Magnitude', bbox=dict(facecolor='blue', alpha=0.2), transform=ax.transAxes, zorder=100)
-    ax.text(-0.03, -0.05, r'[Error Curves]', bbox=dict(facecolor='white', alpha=0.3), transform=ax.transAxes, zorder=100)
+    #ax.text(-0.03, -0.1, r'|Error Curves|', bbox=dict(facecolor='white', alpha=0.3), transform=ax.transAxes, zorder=100)
     #ax.text(left, top, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.3), transform=ax.transAxes, zorder=100)
     figure = ax.get_figure()
-    figure.savefig(figPath+'.png')
+
+    legend = plt.legend(loc=1, fancybox=True, prop={'size': 24}) #loc = upper right
+    legend.get_frame().set_alpha(0.1)
+
+    #plt.annotate(fontsize=1)
+
+    figure.savefig(figPath+'.png', bbox_inches='tight')
     #plt.show()
 
 
@@ -148,7 +164,7 @@ class CompositeExperimentSuiteRunner:
 
   amnesia = [
                 #r"-l t#rees.HoeffdingT#ree",
-                #r"-l t#rees.VFDT",
+                r"-l trees.VFDT",
 
                 #r"-l (trees.VFDTWindow -W 25000)",
                 #r"-l (trees.VFDTWindow -W 50000)",
@@ -303,7 +319,7 @@ class CompositeExperimentRunner:
     #gen_strings = gen_strings_exp_1_4
     #gen_strings = gen_strings_square_wave
     #gen_strings = gen_strings_MOA_TREE
-    gen_strings = gen_strings_exp_4_4
+    gen_strings = gen_strings_exp_2_2
 
     seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
     #seeded_exp = CompositeExperimentBuilder.seededExpBuilderMOATREE(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
@@ -367,7 +383,7 @@ class CompositeExperimentRunner:
       average_error = all_stream_mean_df['error'].sum()/int_evl_num_rows
       cpu_time = all_stream_mean_df['evaluation time (cpu seconds)'].iloc[int_evl_num_rows-1] # yes this is avg cpu_time
       #print("+++++++++++" + str(jkl))
-      error_df["M: "+ str(folder)+ " T: " + str(cpu_time) + 's' + " E:" + str(average_error)] = all_stream_mean_df['error']
+      error_df[" M: "+ str(folder)+ " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
       #error_df[str(folder)+" "+"5"] = all_stream_mean_df['error']
 
       mean_dataframes.append(all_stream_mean_df)
