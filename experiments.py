@@ -163,53 +163,49 @@ class CompositeExperimentSuiteRunner:
           ]
 
   amnesia = [
-                #r"-l t#rees.HoeffdingT#ree",
-                r"-l trees.VFDT",
+                #r"-l trees.HoeffdingTree",
+                #r"-l trees.VFDT",
 
-                #r"-l (trees.VFDTWindow -W 25000)",
-                #r"-l (trees.VFDTWindow -W 50000)",
-                #r"-l (trees.VFDTWindow -W 75000)",
-                #r"-l (trees.VFDTWindow -W 125000)",
-                #r"-l (trees.VFDTWindow -W 150000)",
-                #r"-l (trees.VFDTWindow -W 200000)",
+                #r"-l (trees.VFDTGlobalWindow -W 25000)",
+                #r"-l (trees.VFDTGlobalWindow -W 50000)",
+                #r"-l (trees.VFDTGlobalWindow -W 75000)",
+                #r"-l (trees.VFDTGlobalWindow -W 100000)",
+                #r"-l (trees.VFDTGlobalWindow -W 125000)",
+                #r"-l (trees.VFDTGlobalWindow -W 150000)",
 
-                #r"-l (t#rees.VFDTLeafWindow -W 1000)",
-                #r"-l (t#rees.VFDTLeafWindow -W 5000)",
-                #r"-l (t#rees.VFDTLeafWindow -W 10000)",
-                #r"-l (t#rees.VFDTLeafWindow -W 12000)",
-                #r"-l (t#rees.VFDTLeafWindow -W 13000)",
-                #r"-l (t#rees.VFDTLeafWindow -W 15000)",
+                #r"-l (trees.VFDTLeafWindow -W 1000)",
+                #r"-l (trees.VFDTLeafWindow -W 5000)",
+                #r"-l (trees.VFDTLeafWindow -W 10000)",
+                #r"-l (trees.VFDTLeafWindow -W 12000)",
+                #r"-l (trees.VFDTLeafWindow -W 13000)",
+                #r"-l (trees.VFDTLeafWindow -W 15000)",
+                #r"-l (trees.VFDTLeafWindow -W 20000)",
+                #r"-l (trees.VFDTLeafWindow -W 25000)",
+                #r"-l (trees.VFDTLeafWindow -W 999999)",
 
-                #r"-l (t#rees.VFDTLeafWindowADWIN -W 1000)",
-                #r"-l (t#rees.VFDTLeafWindowADWIN -W 5000)",
-                #r"-l (t#rees.VFDTLeafWindowADWIN -W 10000)",
-                #r"-l (t#rees.VFDTLeafWindowADWIN -W 15000)",
-                #r"-l (t#rees.VFDTLeafWindowADWIN -W 20000)",
-                #r"-l (t#rees.VFDTLeafWindowADWIN -W 25000)",
-                #r"-l (t#rees.VFDTLeafWindowADWIN -W 50000)",
-                #r"-l (t#rees.VFDTLeafWindowADWIN -W 75000)",
-                #r"-l (t#rees.VFDTLeafWindowADWIN -W 100000)",
-                #r"-l (t#rees.VFDTLeafWindowADWIN -W 125000)",
+                #r"-l (trees.VFDTLeafWindowADWIN -W 1000)",
+                #r"-l (trees.VFDTLeafWindowADWIN -W 5000)",
+                #r"-l (trees.VFDTLeafWindowADWIN -W 10000)",
+                #r"-l (trees.VFDTLeafWindowADWIN -W 15000)",
+                #r"-l (trees.VFDTLeafWindowADWIN -W 20000)",
+                #r"-l (trees.VFDTLeafWindowADWIN -W 25000)",
+                #r"-l (trees.VFDTLeafWindowADWIN -W 50000)",
+                #r"-l (trees.VFDTLeafWindowADWIN -W 75000)",
+                #r"-l (trees.VFDTLeafWindowADWIN -W 100000)",
+                #r"-l (trees.VFDTLeafWindowADWIN -W 125000)",
+                #r"-l (trees.VFDTLeafWindowADWIN -W 999999)",
 
-               #r"-l (trees.VFDTDecay -D 0.999999)",
-               #r"-l (trees.VFDTDecay -D 0.999995)",
-               #r"-l (trees.VFDTDecay -D 0.99999)",
-               #r"-l (trees.VFDTDecay -D 0.9999)",
-               #r"-l (trees.VFDTDecay -D 0.999)",
-               #r"-l (trees.VFDTDecay -D 0.99)",
-               #r"-l (trees.VFDTDecay -D 0.9)",
-               #r"-l (trees.VFDTDecay -D 0.85)",
-               #r"-l (trees.VFDTDecay -D 0.8)",
-               #r"-l (trees.VFDTDecay -D 0.75)",
-               #r"-l (trees.VFDTDecay -D 0.7)",
-
-                #r"-l (trees.CVFDT -f 1000 -L 200 -W 400000)",
-                #r"-l (trees.CVFDT -f 1000 -L 200 -W 200000)",
-                #r"-l (trees.CVFDT -f 1000 -L 200 -W 100000)",
-                #r"-l (trees.CVFDT -f 1000 -L 200 -W 50000)",
-                #r"-l (trees.CVFDT -f 1000 -L 200 -W 25000)",
-                #r"-l (trees.CVFDT -f 1000 -L 200 -W 10000)",
-                #r"-l (trees.CVFDT -f 1000 -L 200 -W 5000)",
+                #r"-l (trees.VFDTDecay -D 0.999999)",
+                #r"-l (trees.VFDTDecay -D 0.999995)",
+                #r"-l (trees.VFDTDecay -D 0.99999)",
+                #r"-l (trees.VFDTDecay -D 0.9999)",
+                #r"-l (trees.VFDTDecay -D 0.999)",
+                #r"-l (trees.VFDTDecay -D 0.99)",
+                #r"-l (trees.VFDTDecay -D 0.9)",
+                #r"-l (trees.VFDTDecay -D 0.85)",
+                #r"-l (trees.VFDTDecay -D 0.8)",
+                #r"-l (trees.VFDTDecay -D 0.75)",
+                #r"-l (trees.VFDTDecay -D 0.7)",
 
                 #r"-l (trees.CVFDT -f 10000 -L 200 -W 400000)",
                 #r"-l (trees.CVFDT -f 10000 -L 200 -W 200000)",
@@ -219,11 +215,18 @@ class CompositeExperimentSuiteRunner:
                 #r"-l (trees.CVFDT -f 10000 -L 200 -W 10000)",
                 #r"-l (trees.CVFDT -f 10000 -L 200 -W 5000)",
 
+                #r"-l (trees.CVFDT -f 1000 -L 200 -W 400000)",
+                #r"-l (trees.CVFDT -f 1000 -L 200 -W 200000)",
+                #r"-l (trees.CVFDT -f 1000 -L 200 -W 100000)",
+                #r"-l (trees.CVFDT -f 1000 -L 200 -W 50000)",
+                #r"-l (trees.CVFDT -f 1000 -L 200 -W 25000)",
+                #r"-l (trees.CVFDT -f 1000 -L 200 -W 10000)",
+                #r"-l (trees.CVFDT -f 1000 -L 200 -W 5000)",
 
 
 
-		#r"-l trees.HATADWIN",
-                #r"-l (drift.SingleClassifierDrift -l trees.VFDT -d ADWINMonotoneChangeDetector)",
+		r"-l trees.HATADWIN",
+                r"-l (drift.SingleClassifierDrift -l trees.VFDT -d ADWINMonotoneChangeDetector)",
           ]
  
   #learners = report0
@@ -271,35 +274,34 @@ class CompositeExperimentRunner:
             r"generators.monash.AbruptDriftGenerator  -n 4 -v 4 -b 100000  -o 0.8  -c  -r 0 ",
             ]
 
-    gen_strings_gradual = [
-            #r"ConceptDriftStream -s (generators.monash.AbruptDriftGenerator -o 0.800001 -c -n 4 -v 4 -r 1 -b 999999) -d (generators.monash.AbruptDriftGenerator -o 0.800001 -c -n 4 -v 4 -r 1 -b 1) -p 200000"
+    gen_strings_recurrent = [
             #r"ConceptDriftStream -s (generators.monash.AbruptDriftGenerator -c -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.700002 -c -n 4 -v 4 -r 1 -b 1) -p 200000 -w 2000 -r 1"
-            r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.8 -c -n 4 -v 4 -r 1 -b 1) -w 4000",
-            r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.5 -c -n 4 -v 4 -r 1 -b 1) -w 4000",
-            r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.3 -c -n 4 -v 4 -r 1 -b 1) -w 4000",
-            r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.1 -c -n 4 -v 4 -r 1 -b 1) -w 4000"
+            #r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.8 -c -n 4 -v 4 -r 1 -b 1) -w 4000",
+            #r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.5 -c -n 4 -v 4 -r 1 -b 1) -w 4000",
+            #r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.3 -c -n 4 -v 4 -r 1 -b 1) -w 4000",
+            #r"RecurrentConceptDriftStream -x 20000 -y 20000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.1 -c -n 4 -v 4 -r 1 -b 1) -w 4000"
             ]
 
     gen_strings_square_wave = [
-            r"RecurrentConceptDriftStream -x 40000 -y 40000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.8 -c -n 4 -v 4 -r 1 -b 40001) -w 1",
-            r"RecurrentConceptDriftStream -x 40000 -y 40000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.5 -c -n 4 -v 4 -r 1 -b 40001) -w 1",
-            r"RecurrentConceptDriftStream -x 40000 -y 40000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.3 -c -n 4 -v 4 -r 1 -b 40001) -w 1",
-            r"RecurrentConceptDriftStream -x 40000 -y 40000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.1 -c -n 4 -v 4 -r 1 -b 40001) -w 1"
+            r"RecurrentConceptDriftStream -x 100000 -y 100000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -z 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.75 -c -n 4 -v 4 -z 4 -r 1 -b 1) -w 50000 -p 150000",
+            r"RecurrentConceptDriftStream -x 100000 -y 100000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -z 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.5 -c -n 4 -v 4 -z 4 -r 1 -b 1) -w 50000 -p 150000",
+            r"RecurrentConceptDriftStream -x 100000 -y 100000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -z 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.25 -c -n 4 -v 4 -z 4 -r 1 -b 1) -w 50000 -p 150000",
+            r"RecurrentConceptDriftStream -x 100000 -y 100000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -z 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.0 -c -n 4 -v 4 -z 4 -r 1 -b 1) -w 50000 -p 150000"
         ]
 
 
     gen_strings_exp_2_2 = [
-            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 1 -b 9999999 -o 0.0",
-            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 1 -b 100000 -o 0.3",
-            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 1 -b 100000 -o 0.5",
-            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -r 1 -b 100000 -o 0.8"
+            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -z 2 -r 3 -b 9999999 -o 0.0",
+            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -z 2 -r 3 -b 150000 -o 0.25",
+            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -z 2 -r 3 -b 150000 -o 0.5",
+            r"generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -z 2 -r 3 -b 150000 -o 0.75"
         ]
 
     gen_strings_exp_3_3 = [
-            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -r 1 -b 999999 -o 0.0",
-            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -r 1 -b 100000 -o 0.3",
-            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -r 1 -b 100000 -o 0.5",
-            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -r 1 -b 100000 -o 0.8"
+            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -z 3 -r 1 -b 999999 -o 0.0",
+            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -z 3 -r 1 -b 100000 -o 0.25",
+            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -z 3 -r 1 -b 100000 -o 0.5",
+            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -z 3 -r 1 -b 100000 -o 0.75"
         ]
 
     gen_strings_exp_4_4 = [
@@ -311,15 +313,22 @@ class CompositeExperimentRunner:
 
     gen_strings_gradual = [
             #r"ConceptDriftStream -p 200000 -w 100000 -s (generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -z 2 -r 1 -b 99999999 -o 0.8) -d (generators.monash.AbruptDriftGenerator -c -n 2 -v 2 -z 2 -r 1 -b 1 -o 0.8)"
-            r"ConceptDriftStream -p 200000 -w 100000 -s (generators.monash.AbruptDriftGenerator -c -z 2 -r 1 -b 99999999 -o 0.8) -d (generators.monash.AbruptDriftGenerator -c -z 2 -r 1 -b 1 -o 0.8)"
+            #r"ConceptDriftStream -p 200000 -w 100000 -s (generators.monash.AbruptDriftGenerator -c -z 2 -r 1 -b 99999999 -o 0.8) -d (generators.monash.AbruptDriftGenerator -c -z 2 -r 1 -b 1 -o 0.8)"
+            r"ConceptDriftStream -s (generators.monash.AbruptDriftGenerator -o 0.75 -c -n 2 -v 2 -z 2 -r 1 -b 999999) -d (generators.monash.AbruptDriftGenerator -o 0.75 -c -n 2 -v 2 -z 2 -r 1 -b 1) -p 150000 -w 20000 -r 1",
+            r"ConceptDriftStream -s (generators.monash.AbruptDriftGenerator -o 0.50 -c -n 2 -v 2 -z 2 -r 1 -b 999999) -d (generators.monash.AbruptDriftGenerator -o 0.5 -c -n 2 -v 2 -z 2 -r 1 -b 1) -p 150000 -w 20000 -r 1",
+            r"ConceptDriftStream -s (generators.monash.AbruptDriftGenerator -o 0.25 -c -n 2 -v 2 -z 2 -r 1 -b 999999) -d (generators.monash.AbruptDriftGenerator -o 0.25 -c -n 2 -v 2 -z 2 -r 1 -b 1) -p 150000 -w 20000 -r 1",
+            r"ConceptDriftStream -s (generators.monash.AbruptDriftGenerator -o 0.0 -c -n 2 -v 2 -z 2 -r 1 -b 999999) -d (generators.monash.AbruptDriftGenerator -o 0.0 -c -n 2 -v 2 -z 2 -r 1 -b 1) -p 150000 -w 20000 -r 1",
         ]
 
 #EvaluatePrequential -l trees.HATADWIN -s (ConceptDriftStream -s (generators.RandomTreeGenerator -r 2 -i 2 -u 0) -d (generators.RandomTreeGenerator -r 3 -i 3 -u 0) -p 200000 -w 10 -r 20) -i 400000 -f 1000
     #gen_strings = gen_strings_abrupt_conditional
     #gen_strings = gen_strings_exp_1_4
-    #gen_strings = gen_strings_square_wave
+    gen_strings = gen_strings_square_wave
     #gen_strings = gen_strings_MOA_TREE
-    gen_strings = gen_strings_exp_2_2
+    #gen_strings = gen_strings_exp_2_2 #Use for showing VFDT bug in paper_amnesia
+    #gen_strings = gen_strings_exp_2_2
+    #gen_strings = gen_strings_exp_3_3
+    #gen_strings = gen_strings_gradual
 
     seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
     #seeded_exp = CompositeExperimentBuilder.seededExpBuilderMOATREE(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
@@ -503,7 +512,7 @@ class CompositeExperimentBuilder:
   # Change this to add a list of experiments.
   @staticmethod
   def seededExpBuilder(num_streams, output_folder, file_prefix, processes, evaluator, learner, gen_strings):
-    skip_rows = 2
+    skip_rows = 3
     exp_list = []
     output_files = {}
 
