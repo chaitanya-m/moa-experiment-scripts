@@ -14,6 +14,8 @@ import moa_command_vars as mcv
 from textwrap import wrap
 from collections import OrderedDict
 
+import listOfLearners
+
 class Plot:
   # Assumption: Received data contains a correctly computed error column 
 
@@ -58,179 +60,8 @@ class Plot:
 
 class CompositeExperimentSuiteRunner:
 
-  learnerBuilders = [
-                      #lrn.LearnerBuilder.NaiveBayesLearnerBuilder, 
-                      lrn.LearnerBuilder.DecisionStumpLearnerBuilder,
-                      lrn.LearnerBuilder.HoeffdingAdaptiveLearnerBuilder,
-                      #lrn.LearnerBuilder.HoeffdingOptionLearnerBuilder,
-                      lrn.LearnerBuilder.HoeffdingLearnerBuilder,
-                      #lrn.LearnerBuilder.OzaBagLearnerBuilder,
-                      lrn.LearnerBuilder.OzaBoostLearnerBuilder,
-                      #lrn.LearnerBuilder.AccuracyUpdatedEnsembleLearnerBuilder,
-                      #lrn.LearnerBuilder.AccuracyWeightedEnsembleLearnerBuilder,
-                      #lrn.LearnerBuilder.DriftDetectionMethodClassifierLearnerBuilder,
-                      #lrn.LearnerBuilder.OzaBagAdwinLearnerBuilder,
-                      #lrn.LearnerBuilder.OzaBoostAdwinLearnerBuilder,
-                      #lrn.LearnerBuilder.HoeffdingAdaptiveLearnerBuilder
-                      ] 
-
-  learners_1 = [
-                r"-l trees.HoeffdingTree",
-                r"-l (trees.HoeffdingTree -g 100 -c 0.01)",
-            ]
-  learners_2 = [
-                r"-l trees.HoeffdingTree",
-                r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree)",
-                r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree -d ADWINChangeDetector)",
-                r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree -d SeqDrift2ChangeDetector)"
-                ]
-  
-  learners_2_1 = [
-                r"-l trees.EFDT",
-                r"-l trees.HoeffdingTree",
-                r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree)",
-                r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree -d ADWINChangeDetector)", 
-                r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree -d ADWINMonotoneChangeDetector)",
-                r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree -d SeqDrift2ChangeDetector)",
-                r"-l trees.HoeffdingAdaptiveTree",
-                r"-l trees.HoeffdingOptionTree"
-                ]
-
-  learners_3_1 = [
-                #r"-l trees.EFDT",
-                r"-l trees.HoeffdingTree",
-                r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree)",
-                r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree -d ADWINMonotoneChangeDetector)",
-                r"-l trees.HoeffdingAdaptiveTree",
-                #r"-l trees.HoeffdingOptionTree"
-                ]
- 
-  temp = [
-                r"-l (meta.OzaBoost -l (trees.HoeffdingTree -g 100 -c 0.01))",
-                r"-l meta.AccuracyUpdatedEnsemble",
-
-                r"-l (trees.HoeffdingAdaptiveTree -g 100 -c 0.01)",
-                r"-l (meta.OzaBoost -l (trees.HoeffdingAdaptiveTree -g 100 -c 0.1)) ",
-                r"-l (meta.AccuracyUpdatedEnsemble -l (trees.HoeffdingAdaptiveTree -g 100 -c 0.01))",
-
-                r"-l (meta.OzaBoostAdwin -l (trees.HoeffdingTree -g 100 -c 0.01))",
-                r"-l (meta.OzaBoostAdwin -l (trees.HoeffdingAdaptiveTree -g 100 -c 0.01))",
-
-                r"-l (meta.OzaBoost -l trees.HoeffdingTree)"
-                ]
-
-
-  report0 =    [
-
-                # Plain Hoeffding Tree
-
-                r"-l trees.HoeffdingTree",
-
-                # Show AUE2 doesn't outperform OzaBoost once you match grace and split decision values
-
-                r"-l (meta.OzaBoost -l (trees.HoeffdingTree -g 100 -c 0.01))",
-                r"-l (meta.OzaBoost -l (trees.HoeffdingTree))",
-                r"-l meta.OnlineAccuracyUpdatedEnsemble",
-
-                # HAT-ADWIN base, normal default values
-
-                r"-l (meta.OzaBoost -l (trees.HATADWIN))",
-                r"-l (meta.OnlineAccuracyUpdatedEnsemble -l (trees.HATADWIN))",
-
-                # Is this required?
-                #r"-l (meta.OzaBoostAdwin -l (trees.HoeffdingTree -g 100 -c 0.01))",
-
-                # Show how well HATADWIN does
-                #r"-l (trees.HATADWIN) -g 100 -c 0.01)",
-                r"-l (trees.HATADWIN)",
-                r"-l (meta.OzaBoost -l (trees.HATADWIN -g 100 -c 0.1)) ",
-                r"-l (meta.AccuracyUpdatedEnsemble -l (trees.HATADWIN -g 100 -c 0.01))",
-
-                # Show OzaBoost is no beaten when wrapped with a change detector
-                r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree -d ADWINMonotoneChangeDetector)",
-                r"-l (drift.SingleClassifierDrift -l meta.OzaBoost -d ADWINMonotoneChangeDetector)",
-                r"-l (drift.SingleClassifierDrift -l meta.AdaptableDiversityBasedOnlineBoosting -d ADWINMonotoneChangeDetector)",
-                r"-l (drift.SingleClassifierDrift -l meta.BOLE -d ADWINMonotoneChangeDetector)",
-
-                #r"-l (meta.OzaBoostAdwin -l (trees.HoeffdingAdaptiveTree -g 100 -c 0.01))",
-
-                ]
-
-  temp_1 = [
- #               r"-l (meta.OzaBoost -l (trees.HATADWIN -g 100 -c 0.1)) ",
-                r"-l (meta.OzaBoost -l (trees.HATADWIN))",
-#                r"-l trees.HATADWIN ",
-          ]
-
-  amnesia = [
-                #r"-l trees.HoeffdingTree",
-                #r"-l trees.VFDT",
-
-                #r"-l (trees.VFDTGlobalWindow -W 25000)",
-                #r"-l (trees.VFDTGlobalWindow -W 50000)",
-                #r"-l (trees.VFDTGlobalWindow -W 75000)",
-                #r"-l (trees.VFDTGlobalWindow -W 100000)",
-                #r"-l (trees.VFDTGlobalWindow -W 125000)",
-                #r"-l (trees.VFDTGlobalWindow -W 150000)",
-
-                #r"-l (trees.VFDTLeafWindow -W 1000)",
-                #r"-l (trees.VFDTLeafWindow -W 5000)",
-                #r"-l (trees.VFDTLeafWindow -W 10000)",
-                #r"-l (trees.VFDTLeafWindow -W 12000)",
-                #r"-l (trees.VFDTLeafWindow -W 13000)",
-                #r"-l (trees.VFDTLeafWindow -W 15000)",
-                #r"-l (trees.VFDTLeafWindow -W 20000)",
-                #r"-l (trees.VFDTLeafWindow -W 25000)",
-                #r"-l (trees.VFDTLeafWindow -W 999999)",
-
-                #r"-l (trees.VFDTLeafWindowADWIN -W 1000)",
-                #r"-l (trees.VFDTLeafWindowADWIN -W 5000)",
-                #r"-l (trees.VFDTLeafWindowADWIN -W 10000)",
-                #r"-l (trees.VFDTLeafWindowADWIN -W 15000)",
-                #r"-l (trees.VFDTLeafWindowADWIN -W 20000)",
-                #r"-l (trees.VFDTLeafWindowADWIN -W 25000)",
-                #r"-l (trees.VFDTLeafWindowADWIN -W 50000)",
-                #r"-l (trees.VFDTLeafWindowADWIN -W 75000)",
-                #r"-l (trees.VFDTLeafWindowADWIN -W 100000)",
-                #r"-l (trees.VFDTLeafWindowADWIN -W 125000)",
-                #r"-l (trees.VFDTLeafWindowADWIN -W 999999)",
-
-                #r"-l (trees.VFDTDecay -D 0.999999)",
-                #r"-l (trees.VFDTDecay -D 0.999995)",
-                #r"-l (trees.VFDTDecay -D 0.99999)",
-                #r"-l (trees.VFDTDecay -D 0.9999)",
-                #r"-l (trees.VFDTDecay -D 0.999)",
-                #r"-l (trees.VFDTDecay -D 0.99)",
-                #r"-l (trees.VFDTDecay -D 0.9)",
-                #r"-l (trees.VFDTDecay -D 0.85)",
-                #r"-l (trees.VFDTDecay -D 0.8)",
-                #r"-l (trees.VFDTDecay -D 0.75)",
-                #r"-l (trees.VFDTDecay -D 0.7)",
-
-                #r"-l (trees.CVFDT -f 10000 -L 200 -W 400000)",
-                #r"-l (trees.CVFDT -f 10000 -L 200 -W 200000)",
-                #r"-l (trees.CVFDT -f 10000 -L 200 -W 100000)",
-                #r"-l (trees.CVFDT -f 10000 -L 200 -W 50000)",
-                #r"-l (trees.CVFDT -f 10000 -L 200 -W 25000)",
-                #r"-l (trees.CVFDT -f 10000 -L 200 -W 10000)",
-                #r"-l (trees.CVFDT -f 10000 -L 200 -W 5000)",
-
-                #r"-l (trees.CVFDT -f 1000 -L 200 -W 400000)",
-                #r"-l (trees.CVFDT -f 1000 -L 200 -W 200000)",
-                #r"-l (trees.CVFDT -f 1000 -L 200 -W 100000)",
-                #r"-l (trees.CVFDT -f 1000 -L 200 -W 50000)",
-                #r"-l (trees.CVFDT -f 1000 -L 200 -W 25000)",
-                #r"-l (trees.CVFDT -f 1000 -L 200 -W 10000)",
-                #r"-l (trees.CVFDT -f 1000 -L 200 -W 5000)",
-
-
-
-		r"-l trees.HATADWIN",
-                r"-l (drift.SingleClassifierDrift -l trees.VFDT -d ADWINMonotoneChangeDetector)",
-          ]
- 
   #learners = report0
-  learners = amnesia
+  learners = listOfLearners.amnesia
   #learners = learners_1
 
   @classmethod
@@ -283,10 +114,10 @@ class CompositeExperimentRunner:
             ]
 
     gen_strings_square_wave = [
-            r"RecurrentConceptDriftStream -x 100000 -y 100000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -z 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.75 -c -n 4 -v 4 -z 4 -r 1 -b 1) -w 50000 -p 150000",
-            r"RecurrentConceptDriftStream -x 100000 -y 100000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -z 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.5 -c -n 4 -v 4 -z 4 -r 1 -b 1) -w 50000 -p 150000",
-            r"RecurrentConceptDriftStream -x 100000 -y 100000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -z 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.25 -c -n 4 -v 4 -z 4 -r 1 -b 1) -w 50000 -p 150000",
-            r"RecurrentConceptDriftStream -x 100000 -y 100000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -z 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.0 -c -n 4 -v 4 -z 4 -r 1 -b 1) -w 50000 -p 150000"
+            r"RecurrentConceptDriftStream -x 100000 -y 100000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -z 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.75 -c -n 4 -v 4 -z 4 -r 1 -b 0) -w 50000 -p 150000",
+            r"RecurrentConceptDriftStream -x 100000 -y 100000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -z 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.5 -c -n 4 -v 4 -z 4 -r 1 -b 0) -w 50000 -p 150000",
+            r"RecurrentConceptDriftStream -x 100000 -y 100000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -z 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.25 -c -n 4 -v 4 -z 4 -r 1 -b 0) -w 50000 -p 150000",
+            r"RecurrentConceptDriftStream -x 100000 -y 100000 -z 99 -s (generators.monash.AbruptDriftGenerator -n 4 -v 4 -z 4 -r 1 -b 9999999) -d (generators.monash.AbruptDriftGenerator -o 0.0 -c -n 4 -v 4 -z 4 -r 1 -b 0) -w 50000 -p 150000"
         ]
 
 
@@ -299,9 +130,9 @@ class CompositeExperimentRunner:
 
     gen_strings_exp_3_3 = [
             r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -z 3 -r 1 -b 999999 -o 0.0",
-            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -z 3 -r 1 -b 100000 -o 0.25",
-            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -z 3 -r 1 -b 100000 -o 0.5",
-            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -z 3 -r 1 -b 100000 -o 0.75"
+            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -z 3 -r 1 -b 150000 -o 0.25",
+            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -z 3 -r 1 -b 150000 -o 0.5",
+            r"generators.monash.AbruptDriftGenerator -c -n 3 -v 3 -z 3 -r 1 -b 150000 -o 0.75"
         ]
 
     gen_strings_exp_4_4 = [
@@ -323,11 +154,11 @@ class CompositeExperimentRunner:
 #EvaluatePrequential -l trees.HATADWIN -s (ConceptDriftStream -s (generators.RandomTreeGenerator -r 2 -i 2 -u 0) -d (generators.RandomTreeGenerator -r 3 -i 3 -u 0) -p 200000 -w 10 -r 20) -i 400000 -f 1000
     #gen_strings = gen_strings_abrupt_conditional
     #gen_strings = gen_strings_exp_1_4
-    gen_strings = gen_strings_square_wave
+    #gen_strings = gen_strings_square_wave
     #gen_strings = gen_strings_MOA_TREE
     #gen_strings = gen_strings_exp_2_2 #Use for showing VFDT bug in paper_amnesia
     #gen_strings = gen_strings_exp_2_2
-    #gen_strings = gen_strings_exp_3_3
+    gen_strings = gen_strings_exp_3_3
     #gen_strings = gen_strings_gradual
 
     seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
@@ -512,7 +343,7 @@ class CompositeExperimentBuilder:
   # Change this to add a list of experiments.
   @staticmethod
   def seededExpBuilder(num_streams, output_folder, file_prefix, processes, evaluator, learner, gen_strings):
-    skip_rows = 3
+    skip_rows = 2
     exp_list = []
     output_files = {}
 
