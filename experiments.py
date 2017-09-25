@@ -287,7 +287,7 @@ class CompositeExperimentRunner:
     split_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Split.csv")
 
     # Plot.plot_df(all_stream_mean_df)
-    Plot.plot_df(error_df, exp.getCmd(), mcv.FIG_DIR+"/"+str(figNo), split_df)
+    Plot.plot_df(error_df, exp.getCmd(), mcv.FIG_DIR+"/"+str(figNo).zfill(3), split_df)
 
 # A single MOA command creating a single MOA process
 class Experiment:
