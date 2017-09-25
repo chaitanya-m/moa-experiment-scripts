@@ -37,24 +37,24 @@ class Plot:
     #font = {'family' : 'normal', 'weight' : 'bold', 'size'   : 24}
     #font = {'size'   : 24}
     #matplotlib.rc('font', **font)
-    #plt.rcParams.update({'font.size': 20})
+    #plt.rcParams.update({'font.size': 22})
     ax = data_frame.plot(figsize=(18,6))
-    ax.set_ylabel('Error rate', fontsize=20)
-    ax.set_xlabel('Instances', fontsize=20)
-    ax.xaxis.label.set_size(20)
+    ax.set_ylabel('Error rate', fontsize=27)
+    ax.set_xlabel('Instances', fontsize=27)
+    ax.xaxis.label.set_size(27)
     ax.set_ylim([0.0, 1.0])
     ax.set_facecolor((1.0, 1.0, 1.0))
-    ax.tick_params(labelsize=20)
-    legend = ax.legend(loc=1, fancybox=True, prop={'size': 20}) #loc = upper right
+    ax.tick_params(labelsize=27)
+    legend = ax.legend(loc=1, fancybox=True, prop={'size': 27}) #loc = upper right
     legend.get_frame().set_alpha(0.1)
     #ax2 = ax
     if df_aux is not None:
       ax2 = ax.twinx()
-      ax2 = df_aux.plot(kind='area', ax=ax2, alpha=0.25, secondary_y=False)
-      ax2.set_ylabel('Splits', fontsize=20)
-      ax2.tick_params(labelsize=20)
+      ax2 = df_aux.plot(kind='area', ax=ax2, alpha=0.27, secondary_y=False)
+      ax2.set_ylabel('Splits', fontsize=27)
+      ax2.tick_params(labelsize=27)
       ax2.set_yticks(np.arange(0,max(3, df_aux['splits'].max()+1),1))
-      legend2 = ax2.legend(loc=2, fancybox=True, prop={'size': 20}) #loc = upper right
+      legend2 = ax2.legend(loc=2, fancybox=True, prop={'size': 27}) #loc = upper right
       legend2.get_frame().set_alpha(0.1)
     #ax.set_facecolor((0.94, 0.999, 0.999))
 
@@ -81,7 +81,7 @@ class Plot:
 class CompositeExperimentSuiteRunner:
 
   #learners = report0
-  learners = listOfLearners.vfdt_decay
+  learners = listOfLearners.amnesia
   #learners = learners_1
 
   @classmethod
