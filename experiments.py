@@ -4,9 +4,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
 import pylab
+import numpy as np
 
 import re
 import utilities
+import math
 import generators as gen
 import learners as lrn
 import evaluators as evl
@@ -22,46 +24,64 @@ class Plot:
   #def __init__(self):
 
   @staticmethod
-  def plot_df(data_frame, cmd, figPath):
-    matplotlib.style.use('ggplot')
+  def plot_df(data_frame, cmd, figPath, df_aux = None):
+
+   # matplotlib.rcParams.update({'font.size': 24})
+    # theres a whole bunch of available styles
+    matplotlib.style.use('seaborn-paper')
+#   styles = ['seaborn-darkgrid', 'seaborn-white', 'fivethirtyeight', 'seaborn-bright', 'seaborn-pastel', 'ggplot', 'classic', 'seaborn-notebook', '_classic_test', 'seaborn-ticks', 'seaborn-poster', 'dark_background', 'seaborn-paper', 'seaborn-colorblind', 'seaborn-talk', 'grayscale', 'seaborn-dark-palette', 'seaborn-dark', 'bmh', 'seaborn-deep', 'seaborn', 'seaborn-whitegrid', 'seaborn-muted']
+
     #plt.figure() 
     #data_frame.plot(x='learning evaluation instances')
 
-    font = {'family' : 'normal',
-                'weight' : 'bold',
-                        'size'   : 24}
-
-    matplotlib.rc('font', **font)
-
-    ax = data_frame.plot(figsize=(18,10))
-    ax.set_ylabel('Error rate')
-    ax.set_xlabel('Instances')
+    #font = {'family' : 'normal', 'weight' : 'bold', 'size'   : 24}
+    #font = {'size'   : 24}
+    #matplotlib.rc('font', **font)
+    #plt.rcParams.update({'font.size': 20})
+    ax = data_frame.plot(figsize=(18,6))
+    ax.set_ylabel('Error rate', fontsize=20)
+    ax.set_xlabel('Instances', fontsize=20)
+    ax.xaxis.label.set_size(20)
     ax.set_ylim([0.0, 1.0])
-    ax.set_facecolor((0.94, 0.999, 0.999))
+    ax.set_facecolor((1.0, 1.0, 1.0))
+    ax.tick_params(labelsize=20)
+    legend = ax.legend(loc=1, fancybox=True, prop={'size': 20}) #loc = upper right
+    legend.get_frame().set_alpha(0.1)
+    #ax2 = ax
+    if df_aux is not None:
+      ax2 = ax.twinx()
+      ax2 = df_aux.plot(kind='area', ax=ax2, alpha=0.25, secondary_y=False)
+      ax2.set_ylabel('Splits', fontsize=20)
+      ax2.tick_params(labelsize=20)
+      ax2.set_yticks(np.arange(0,df_aux['splits'].max()+1,1))
+      legend2 = ax2.legend(loc=2, fancybox=True, prop={'size': 20}) #loc = upper right
+      legend2.get_frame().set_alpha(0.1)
+    #ax.set_facecolor((0.94, 0.999, 0.999))
 
-        
+   # Print the last of the commands used     
     #ax.set_xlim([0.0, evl.num_instances])
     wrapped_cmd = '\n'.join(wrap(cmd, 100))
     #ax.text(0.0, 1.025, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.2), transform=ax.transAxes, zorder=100)
     #ax.text(0.93, 0.98, r'Drift Magnitude', bbox=dict(facecolor='blue', alpha=0.2), transform=ax.transAxes, zorder=100)
     #ax.text(-0.03, -0.1, r'|Error Curves|', bbox=dict(facecolor='white', alpha=0.3), transform=ax.transAxes, zorder=100)
     #ax.text(left, top, wrapped_cmd, bbox=dict(facecolor='green', alpha=0.3), transform=ax.transAxes, zorder=100)
-    figure = ax.get_figure()
 
-    legend = plt.legend(loc=1, fancybox=True, prop={'size': 24}) #loc = upper right
-    legend.get_frame().set_alpha(0.1)
+    #figure = plt.figure()
+    figure = ax2.get_figure()
+
 
     #plt.annotate(fontsize=1)
 
     figure.savefig(figPath+'.png', bbox_inches='tight')
-    #plt.show()
+    plt.show()
+
 
 
 
 class CompositeExperimentSuiteRunner:
 
   #learners = report0
-  learners = listOfLearners.amnesia
+  learners = listOfLearners.vfdt_decay
   #learners = learners_1
 
   @classmethod
@@ -188,6 +208,8 @@ class CompositeExperimentRunner:
     mean_dataframes = []
     # Dataframe that contains all the mean error columns for the experiments
     error_df = pd.DataFrame([])
+    # Dataframe that contains all the mean split columns for the experiments
+    split_df = pd.DataFrame([])
 
     # Load the outputs into dataframes to prepare for averaging
     # output_files is a 2D list. It has a folder-file structure.
@@ -218,12 +240,38 @@ class CompositeExperimentRunner:
 
       all_stream_mean_df['error'] = (100.0 - all_stream_mean_df['classifications correct (percent)'])/100.0
 
+      # Only mark actual splits as 1 and discard the rest of the split counts
+      splitArray = all_stream_mean_df['splits']
+      i = 0
+      while i < splitArray.size-1:
+        print(str(i+1) + " " + str(splitArray[i+1]) + "\n")
+        diff = math.floor(splitArray[i+1]) - math.floor(splitArray[i])
+        if(diff > 0):
+          splitArray[i+1] = (-1)*diff
+          i = i+2
+        else:
+          i=i+1
+      for i in range(splitArray.size):
+        if(splitArray[i] > 0):
+          splitArray[i] = 0
+        else:
+          splitArray[i] = (-1) * splitArray[i] 
+
+      #splitArray should just be a name bound to the object that was changed, the column of the data_frame
+      # There should be no reason to assign back
+      all_stream_mean_df['splits'] = splitArray
+      # these should both be already bound to the same object...
+
+      #all_stream_mean_df["splits"] = all_stream_mean_df['splits']/all_stream_mean_df['splits'].iloc[int_evl_num_rows-1]
+      # each split count is divided by the end-of-learning split count in order to normalize to 1
+
       # Add this folder's mean error column to the error_df 
       #error_df[str(folder)] = all_stream_mean_df['error'] 
       average_error = all_stream_mean_df['error'].sum()/int_evl_num_rows
       cpu_time = all_stream_mean_df['evaluation time (cpu seconds)'].iloc[int_evl_num_rows-1] # yes this is avg cpu_time
       #print("+++++++++++" + str(jkl))
       error_df[" M: "+ str(folder)+ " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
+      split_df["splits"] = all_stream_mean_df['splits']
       #error_df[str(folder)+" "+"5"] = all_stream_mean_df['error']
 
       mean_dataframes.append(all_stream_mean_df)
@@ -234,8 +282,12 @@ class CompositeExperimentRunner:
     error_df = error_df.set_index(mcv.INDEX_COL)
     error_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Error.csv")
 
+    split_df[mcv.INDEX_COL] = mean_dataframes[0][mcv.INDEX_COL]
+    split_df = split_df.set_index(mcv.INDEX_COL)
+    split_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Split.csv")
+
     # Plot.plot_df(all_stream_mean_df)
-    Plot.plot_df(error_df, exp.getCmd(), mcv.FIG_DIR+"/"+str(figNo))
+    Plot.plot_df(error_df, exp.getCmd(), mcv.FIG_DIR+"/"+str(figNo), split_df)
 
 # A single MOA command creating a single MOA process
 class Experiment:
@@ -329,7 +381,7 @@ class CompositeExperimentBuilder:
       #generator = gen.GeneratorBuilder.CategoricalAbruptDriftGenBuilder(nAttributes=3, nValuesPerAttribute=5, burnIn=100000, driftMagConditional=drift_mag, driftConditional=True)
 
       for i in range(0, num_streams):
-        generator = gen.GeneratorBuilder.MonashAbruptDriftGenBuilder(nAttributes=4, nValuesPerAttribute=4, burnIn=100000, driftMagConditional=drift_mag, driftConditional=True, randomSeed=i+1)
+        generator = gen.GeneratorBuilder.MonashAbruptDriftGenBuilder(nAttributes=4, nValuesPerAttribute=4, burnIn=100000, driftMagConditional=drift_mag, driftConditional=True, randomSeed=i+5)
         output_file = folder_file_prefix + str(i) + '.csv'
         this_folder_output_files.append(output_file)
         exp_list.append(ExperimentBuilder.ConditionalDriftMagBuilder(output_file, processes, evaluator, learner, generator))
