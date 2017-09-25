@@ -53,7 +53,7 @@ class Plot:
       ax2 = df_aux.plot(kind='area', ax=ax2, alpha=0.25, secondary_y=False)
       ax2.set_ylabel('Splits', fontsize=20)
       ax2.tick_params(labelsize=20)
-      ax2.set_yticks(np.arange(0,df_aux['splits'].max()+1,1))
+      ax2.set_yticks(np.arange(0,max(3, df_aux['splits'].max()+1),1))
       legend2 = ax2.legend(loc=2, fancybox=True, prop={'size': 20}) #loc = upper right
       legend2.get_frame().set_alpha(0.1)
     #ax.set_facecolor((0.94, 0.999, 0.999))
@@ -73,7 +73,7 @@ class Plot:
     #plt.annotate(fontsize=1)
 
     figure.savefig(figPath+'.png', bbox_inches='tight')
-    plt.show()
+    #plt.show()
 
 
 
@@ -244,7 +244,7 @@ class CompositeExperimentRunner:
       splitArray = all_stream_mean_df['splits']
       i = 0
       while i < splitArray.size-1:
-        print(str(i+1) + " " + str(splitArray[i+1]) + "\n")
+        #print(str(i+1) + " " + str(splitArray[i+1]) + "\n")
         diff = math.floor(splitArray[i+1]) - math.floor(splitArray[i])
         if(diff > 0):
           splitArray[i+1] = (-1)*diff
