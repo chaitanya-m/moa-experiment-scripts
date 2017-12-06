@@ -20,6 +20,7 @@ learners_1 = [
               r"-l trees.HoeffdingTree",
               r"-l (trees.HoeffdingTree -g 100 -c 0.01)",
           ]
+
 learners_2 = [
               r"-l trees.HoeffdingTree",
               r"-l (drift.SingleClassifierDrift -l trees.HoeffdingTree)",
@@ -191,7 +192,12 @@ amnesia = [
               #r"-l (trees.CVFDT -f 1000 -L 200 -W 10000)",
               #r"-l (trees.CVFDT -f 1000 -L 200 -W 5000)",
 
-		r"-l trees.HATADWIN",
+	      r"-l trees.HATADWIN",
               r"-l (drift.SingleClassifierDrift -l trees.VFDT -d ADWINMonotoneChangeDetector)",
         ]
  
+learners_efdt = [
+              r"-l trees.VFDT",
+              r"-l trees.EFDT",
+          ]
+

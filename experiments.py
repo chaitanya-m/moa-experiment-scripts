@@ -81,7 +81,7 @@ class Plot:
 class CompositeExperimentSuiteRunner:
 
   #learners = report0
-  learners = listOfLearners.vfdt_decay
+  learners = listOfLearners.learners_efdt
   #learners = learners_1
 
   @classmethod
@@ -171,6 +171,28 @@ class CompositeExperimentRunner:
             r"ConceptDriftStream -s (generators.monash.AbruptDriftGenerator -o 0.0 -c -n 2 -v 2 -z 2 -r 1 -b 999999) -d (generators.monash.AbruptDriftGenerator -o 0.0 -c -n 2 -v 2 -z 2 -r 1 -b 1) -p 150000 -w 20000 -r 1",
         ]
 
+    gen_strings_moa_tree = [
+
+            # show that increasing the number of classes favors EFDT
+            r"generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15",
+            r"generators.RandomTreeGenerator -r 1 -i 1 -c 3 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15",
+            r"generators.RandomTreeGenerator -r 1 -i 1 -c 4 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15",
+            r"generators.RandomTreeGenerator -r 1 -i 1 -c 5 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15",
+#
+#            # what happens when you increase the number of attributes?
+#            r"generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 6 -u 0 -v 5 -d 5 -l 3 -f 0.15",
+#            r"generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 6 -u 0 -v 5 -d 5 -l 3 -f 0.15",
+#            r"generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 6 -u 0 -v 5 -d 5 -l 3 -f 0.15",
+#            r"generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 6 -u 0 -v 5 -d 5 -l 3 -f 0.15",
+#
+#            # what happens when you increase the max tree depth?
+#            r"generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 10 -u 0 -v 5 -d 2 -l 3 -f 0.15",
+#            r"generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 10 -u 0 -v 5 -d 3 -l 3 -f 0.15",
+#            r"generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 10 -u 0 -v 5 -d 4 -l 3 -f 0.15",
+#            r"generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 10 -u 0 -v 5 -d 5 -l 3 -f 0.15",
+#
+        ]
+
 #EvaluatePrequential -l trees.HATADWIN -s (ConceptDriftStream -s (generators.RandomTreeGenerator -r 2 -i 2 -u 0) -d (generators.RandomTreeGenerator -r 3 -i 3 -u 0) -p 200000 -w 10 -r 20) -i 400000 -f 1000
     #gen_strings = gen_strings_abrupt_conditional
     #gen_strings = gen_strings_exp_1_4
@@ -178,11 +200,12 @@ class CompositeExperimentRunner:
     #gen_strings = gen_strings_MOA_TREE
     #gen_strings = gen_strings_exp_2_2 #Use for showing VFDT bug in paper_amnesia
     #gen_strings = gen_strings_exp_2_2
-    gen_strings = gen_strings_exp_3_3
+    #gen_strings = gen_strings_exp_3_3
     #gen_strings = gen_strings_gradual
+    gen_strings = gen_strings_moa_tree
 
-    seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
-    #seeded_exp = CompositeExperimentBuilder.seededExpBuilderMOATREE(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
+    #seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
+    seeded_exp = CompositeExperimentBuilder.seededExpBuilderMOATREE(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
     #prior_drift_mag_exp = CompositeExperimentBuilder.varyPriorDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
     #conditional_drift_mag_exp = CompositeExperimentBuilder.varyConditionalDriftMagBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner)
 
@@ -270,7 +293,8 @@ class CompositeExperimentRunner:
       average_error = all_stream_mean_df['error'].sum()/int_evl_num_rows
       cpu_time = all_stream_mean_df['evaluation time (cpu seconds)'].iloc[int_evl_num_rows-1] # yes this is avg cpu_time
       #print("+++++++++++" + str(jkl))
-      error_df[" M: "+ str(folder)+ " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
+      #error_df[" M: "+ str(folder)+ " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
+      error_df[" Classes: "+ str(folder)+ " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
       split_df["splits"] = all_stream_mean_df['splits']
       #error_df[str(folder)+" "+"5"] = all_stream_mean_df['error']
 
@@ -424,11 +448,11 @@ class CompositeExperimentBuilder:
 
   @staticmethod
   def seededExpBuilderMOATREE(num_streams, output_folder, file_prefix, processes, evaluator, learner, gen_strings):
-    skip_rows = 2
+    skip_rows = 0
     exp_list = []
     output_files = {}
 
-    exp_no = 0
+    exp_no = 1
     for gen_string in gen_strings:
       exp_no+=1
       this_output_folder = output_folder + '/' + str(exp_no)
@@ -437,7 +461,7 @@ class CompositeExperimentBuilder:
       utilities.make_folder(this_output_folder)
       this_folder_output_files = []
 
-      for i in range(0, num_streams):
+      for i in range(2, num_streams+2):
         generator = gen.GeneratorBuilder.SimpleSeededGenBuilderMOATREE(gen_string, randomSeed=i+2)
         # give as input a generator seeded with 0. We then increment the seed. This works for our purposes.
         output_file =  folder_file_prefix +  str(i) + '.csv'
