@@ -171,13 +171,30 @@ class CompositeExperimentRunner:
             r"ConceptDriftStream -s (generators.monash.AbruptDriftGenerator -o 0.0 -c -n 2 -v 2 -z 2 -r 1 -b 999999) -d (generators.monash.AbruptDriftGenerator -o 0.0 -c -n 2 -v 2 -z 2 -r 1 -b 1) -p 150000 -w 20000 -r 1",
         ]
 
-    gen_strings_moa_tree = [
+
+    gen_strings_moa_tree_10_2 = [
+
+            # start with a relatively realistic scenario
+            r"generators.RandomTreeGenerator -r 1 -i 1 -c 5 -o 10 -u 0 -v 2 -d 10 -l 3 -f 0.15",
+            r"generators.RandomTreeGenerator -r 1 -i 1 -c 10 -o 10 -u 0 -v 2 -d 10 -l 3 -f 0.15",
+            r"generators.RandomTreeGenerator -r 1 -i 1 -c 15 -o 10 -u 0 -v 2 -d 10 -l 3 -f 0.15",
+            r"generators.RandomTreeGenerator -r 1 -i 1 -c 20 -o 10 -u 0 -v 2 -d 10 -l 3 -f 0.15",
+	]
+    gen_strings_moa_tree_10_2_redo = [
+	    # show how efdt may need to redo splits
+            r"generators.RandomTreeGenerator -r 5 -i 5 -c 10 -o 10 -u 0 -v 2 -d 10 -l 3 -f 0.15",
+	]
+
+
+
+    gen_strings_moa_tree_5_5 = [
 
             # show that increasing the number of classes favors EFDT
             r"generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15",
             r"generators.RandomTreeGenerator -r 1 -i 1 -c 3 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15",
             r"generators.RandomTreeGenerator -r 1 -i 1 -c 4 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15",
             r"generators.RandomTreeGenerator -r 1 -i 1 -c 5 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15",
+
 #
 #            # what happens when you increase the number of attributes?
 #            r"generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 6 -u 0 -v 5 -d 5 -l 3 -f 0.15",
@@ -193,6 +210,16 @@ class CompositeExperimentRunner:
 #
         ]
 
+    gen_strings_poker = [
+
+	]
+    gen_strings_airlines = [
+
+	]
+    gen_strings_forest_cover = [
+
+	]
+
 #EvaluatePrequential -l trees.HATADWIN -s (ConceptDriftStream -s (generators.RandomTreeGenerator -r 2 -i 2 -u 0) -d (generators.RandomTreeGenerator -r 3 -i 3 -u 0) -p 200000 -w 10 -r 20) -i 400000 -f 1000
     #gen_strings = gen_strings_abrupt_conditional
     #gen_strings = gen_strings_exp_1_4
@@ -202,7 +229,9 @@ class CompositeExperimentRunner:
     #gen_strings = gen_strings_exp_2_2
     #gen_strings = gen_strings_exp_3_3
     #gen_strings = gen_strings_gradual
-    gen_strings = gen_strings_moa_tree
+    #gen_strings = gen_strings_moa_tree_10_2
+    #gen_strings = gen_strings_moa_tree_10_2_redo
+    gen_strings = gen_strings_moa_tree_5_5
 
     #seeded_exp = CompositeExperimentBuilder.seededExpBuilder(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
     seeded_exp = CompositeExperimentBuilder.seededExpBuilderMOATREE(mcv.NUM_STREAMS, mcv.OUTPUT_DIR, mcv.OUTPUT_PREFIX, this.processes, evaluator, learner, gen_strings)
@@ -295,6 +324,7 @@ class CompositeExperimentRunner:
       #print("+++++++++++" + str(jkl))
       #error_df[" M: "+ str(folder)+ " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
       error_df[" Classes: "+ str(folder)+ " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
+      #error_df[" | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
       split_df["splits"] = all_stream_mean_df['splits']
       #error_df[str(folder)+" "+"5"] = all_stream_mean_df['error']
 
@@ -452,23 +482,23 @@ class CompositeExperimentBuilder:
     exp_list = []
     output_files = {}
 
-    exp_no = 1
+    exp_code = 1
     for gen_string in gen_strings:
-      exp_no+=1
-      this_output_folder = output_folder + '/' + str(exp_no)
+      exp_code+=1
+      this_output_folder = output_folder + '/' + str(exp_code)
       folder_file_prefix = this_output_folder + '/' + file_prefix
       utilities.remove_folder(this_output_folder)
       utilities.make_folder(this_output_folder)
       this_folder_output_files = []
 
-      for i in range(2, num_streams+2):
+      for i in range(3, num_streams+3):
         generator = gen.GeneratorBuilder.SimpleSeededGenBuilderMOATREE(gen_string, randomSeed=i+2)
         # give as input a generator seeded with 0. We then increment the seed. This works for our purposes.
         output_file =  folder_file_prefix +  str(i) + '.csv'
         this_folder_output_files.append(output_file)
         exp_list.append(ExperimentBuilder.buildExp(output_file, processes, evaluator, learner, generator))
 
-      output_files[exp_no] = this_folder_output_files
+      output_files[exp_code] = this_folder_output_files
 
     return CompositeExperiment(exp_list, output_files, skip_rows)
 
