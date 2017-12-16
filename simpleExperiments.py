@@ -110,20 +110,30 @@ class CompositeExperiment:
       counter+=1
 
     return processes
-  
+
+
+
+
+class Utils: 
+
   @staticmethod
   def file_to_dataframe(some_file):
     return pd.read_csv(some_file, index_col=False, header=0, skiprows=0)
+
+  @staticmethod
+  def dataframe_to_file(some_dataframe, output_csv):
+    return some_dataframe.to_csv(some_file, output_csv)
 
   @staticmethod
   def wait_for_processes(processes):
     exit_codes = [p.wait() for p in processes] #waits for all processes to terminate
 
 
+
 def test():
     experiments = CompositeExperiment.make_experiments(mcv.MOA_STUMP, evaluators, learners, generators)
     processes = CompositeExperiment.make_running_processes(experiments, mcv.OUTPUT_DIR)
-    CompositeExperiment.wait_for_processes(processes)
+    Utils.wait_for_processes(processes)
 
 
     # without the main sentinel below code will always get run, even when imported as a module!
