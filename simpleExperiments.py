@@ -15,6 +15,9 @@ from collections import OrderedDict
 
 import listOfLearners
 
+# Most operations are built around directories of csv files
+# files are named with simple numbers and this is important for sorting
+
 class Plot:
   # Assumption: Received data contains a correctly computed error column 
 
@@ -38,6 +41,7 @@ class Plot:
     legend = ax.legend(loc=1, fancybox=True, prop={'size': 27}) #loc = upper right
     legend.get_frame().set_alpha(0.1)
 
+    ax2 = ax
     if df_aux is not None:
       ax2 = ax.twinx()
       ax2 = df_aux.plot(kind='area', ax=ax2, alpha=0.27, secondary_y=False)
@@ -62,7 +66,7 @@ generators = [
   r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 4 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
   r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 5 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
   ]
-evaluators = [ r"EvaluatePrequential -i 70000 -f 1000 -q 1000"]
+evaluators = [ r"EvaluatePrequential -i 10000 -f 1000 -q 1000"]
 
 
 class Experiment:
@@ -112,8 +116,6 @@ class CompositeExperiment:
     return processes
 
 
-
-
 class Utils: 
 
   @staticmethod
@@ -128,14 +130,24 @@ class Utils:
   def wait_for_processes(processes):
     exit_codes = [p.wait() for p in processes] #waits for all processes to terminate
 
+  @staticmethod
+  def error_df_from_folder(folder):
+    error_df = pd.DataFrame([])  
+    files = sorted(os.listdir(folder))
+    for filename in files:
+      file_df = Utils.file_to_dataframe(folder+'/'+filename)
+      error_df[str(filename)] = (100.0 - file_df['classifications correct (percent)']) / 100.0
 
+    return error_df
 
 def test():
+    output_dir = mcv.OUTPUT_DIR
     experiments = CompositeExperiment.make_experiments(mcv.MOA_STUMP, evaluators, learners, generators)
-    processes = CompositeExperiment.make_running_processes(experiments, mcv.OUTPUT_DIR)
+    processes = CompositeExperiment.make_running_processes(experiments, output_dir)
     Utils.wait_for_processes(processes)
+    error_df = Utils.error_df_from_folder(output_dir)
 
-
+    Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(1).zfill(3))
     # without the main sentinel below code will always get run, even when imported as a module!
 
 
