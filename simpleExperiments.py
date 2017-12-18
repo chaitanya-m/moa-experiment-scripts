@@ -33,7 +33,7 @@ class Plot:
 
     ax = data_frame.plot(figsize=(18,6))
     ax.set_ylabel('Error rate', fontsize=27)
-    ax.set_xlabel('Instances', fontsize=27)
+    ax.set_xlabel('Instances (x 1,000)', fontsize=27)
     ax.xaxis.label.set_size(27)
     ax.set_ylim([0.0, 1.0])
     ax.set_facecolor((1.0, 1.0, 1.0))
@@ -61,12 +61,13 @@ class Plot:
 learners = [ r"-l trees.VFDT", r"-l trees.EFDT"]
 generators = [
         # show that increasing the number of classes favors EFDT
-  r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
-  r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 3 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
-  r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 4 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
-  r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 5 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
+  r"-s (ArffFileStream -f /home/mchait/Downloads/hepmass.arff -c 1)"
+  #r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
+  #r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 3 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
+  #r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 4 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
+  #r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 5 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
   ]
-evaluators = [ r"EvaluatePrequential -i 10000 -f 1000 -q 1000"]
+evaluators = [ r"EvaluatePrequential -i 70000 -f 1000 -q 1000"]
 
 
 class Experiment:
@@ -140,17 +141,36 @@ class Utils:
 
     return error_df
 
+  @staticmethod
+  def runtime_dict_from_folder(folder):
+    runtimes = {}
+    files = sorted(os.listdir(folder))
+    for filename in files:
+      file_df = Utils.file_to_dataframe(folder+'/'+filename)
+      runtimes[filename] = file_df['evaluation time (cpu seconds)'].iloc[-1]
+
+    return runtimes
+
+
 def test():
     output_dir = mcv.OUTPUT_DIR
     experiments = CompositeExperiment.make_experiments(mcv.MOA_STUMP, evaluators, learners, generators)
     processes = CompositeExperiment.make_running_processes(experiments, output_dir)
     Utils.wait_for_processes(processes)
+
     error_df = Utils.error_df_from_folder(output_dir)
+    runtime_dict = Utils.runtime_dict_from_folder(output_dir)
+
+    new_col_names = ["VFDT", "EFDT"]
+    for col in error_df.columns:
+        new_col_names[int(col)] = (str(col)+ ": "+ new_col_names[int(col)] + " | T:" + ("%.2f s"%runtime_dict[col]) + " | E: " + ("%.6f"%error_df[col].mean()))
+    error_df.columns = new_col_names
 
     Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(1).zfill(3))
+
+
+
     # without the main sentinel below code will always get run, even when imported as a module!
-
-
 if __name__=="__main__": 
     test()
 
