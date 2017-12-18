@@ -28,7 +28,7 @@ class Plot:
 
    # matplotlib.rcParams.update({'font.size': 24})
     # theres a whole bunch of available styles
-    matplotlib.style.use('seaborn-paper')
+    matplotlib.style.use('seaborn-ticks')
 #   styles = ['seaborn-darkgrid', 'seaborn-white', 'fivethirtyeight', 'seaborn-bright', 'seaborn-pastel', 'ggplot', 'classic', 'seaborn-notebook', '_classic_test', 'seaborn-ticks', 'seaborn-poster', 'dark_background', 'seaborn-paper', 'seaborn-colorblind', 'seaborn-talk', 'grayscale', 'seaborn-dark-palette', 'seaborn-dark', 'bmh', 'seaborn-deep', 'seaborn', 'seaborn-whitegrid', 'seaborn-muted']
 
     ax = data_frame.plot(figsize=(18,6))
@@ -44,10 +44,10 @@ class Plot:
     ax2 = ax
     if df_aux is not None:
       ax2 = ax.twinx()
-      ax2 = df_aux.plot(kind='area', ax=ax2, alpha=0.27, secondary_y=False)
+      ax2 = df_aux.plot(style=['-',':'], kind='line', ax=ax2, alpha = 0.3, secondary_y=False)
       ax2.set_ylabel('Splits', fontsize=27)
       ax2.tick_params(labelsize=27)
-      ax2.set_yticks(np.arange(0,max(3, df_aux['splits'].max()+1),1))
+      ax2.set_yticks(np.arange(0,max(3, df_aux['1'].max()+1),1))
       legend2 = ax2.legend(loc=2, fancybox=True, prop={'size': 27}) #loc = upper right
       legend2.get_frame().set_alpha(0.1)
 
@@ -58,16 +58,6 @@ class Plot:
 
     figure.savefig(figPath+'.png', bbox_inches='tight')
 
-learners = [ r"-l trees.VFDT", r"-l trees.EFDT"]
-generators = [
-        # show that increasing the number of classes favors EFDT
-  r"-s (ArffFileStream -f /home/mchait/Downloads/hepmass.arff -c 1)"
-  #r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
-  #r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 3 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
-  #r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 4 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
-  #r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 5 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
-  ]
-evaluators = [ r"EvaluatePrequential -i 70000 -f 1000 -q 1000"]
 
 
 class Experiment:
@@ -151,8 +141,43 @@ class Utils:
 
     return runtimes
 
+  @staticmethod
+  def split_df_from_folder(folder):
+    split_df = pd.DataFrame([])  
+    files = sorted(os.listdir(folder))
+    for filename in files:
+      file_df = Utils.file_to_dataframe(folder+'/'+filename)
+
+      # Only mark actual splits as 1 and discard the rest of the split counts
+      splitArray = file_df['splits']
+      i = 0
+      while i < splitArray.size-1:
+        print(str(i+1) + " " + str(splitArray[i+1]) + "\n")
+        diff = math.floor(splitArray[i+1]) - math.floor(splitArray[i])
+        if(diff > 0):
+          splitArray[i+1] = (-1)*diff
+          i = i+2
+        else:
+          i=i+1
+      for i in range(splitArray.size):
+        if(splitArray[i] > 0):
+          splitArray[i] = 0
+        else:
+          splitArray[i] = (-1) * splitArray[i]
+      split_df[str(filename)] = splitArray
+
+    return split_df
 
 def test():
+
+
+learners = [ r"-l trees.VFDT", r"-l trees.EFDT"]
+generators = [
+  r"-s (ArffFileStream -f /home/mchait/Downloads/hepmass.arff -c 1)"
+  ]
+evaluators = [ r"EvaluatePrequential -i 7000000 -f 1000 -q 1000"]
+
+
     output_dir = mcv.OUTPUT_DIR
     experiments = CompositeExperiment.make_experiments(mcv.MOA_STUMP, evaluators, learners, generators)
     processes = CompositeExperiment.make_running_processes(experiments, output_dir)
@@ -160,15 +185,14 @@ def test():
 
     error_df = Utils.error_df_from_folder(output_dir)
     runtime_dict = Utils.runtime_dict_from_folder(output_dir)
+    split_df = Utils.split_df_from_folder(output_dir)
 
     new_col_names = ["VFDT", "EFDT"]
     for col in error_df.columns:
         new_col_names[int(col)] = (str(col)+ ": "+ new_col_names[int(col)] + " | T:" + ("%.2f s"%runtime_dict[col]) + " | E: " + ("%.6f"%error_df[col].mean()))
     error_df.columns = new_col_names
 
-    Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(1).zfill(3))
-
-
+    Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(1).zfill(3), split_df)
 
     # without the main sentinel below code will always get run, even when imported as a module!
 if __name__=="__main__": 
