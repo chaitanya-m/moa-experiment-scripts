@@ -168,33 +168,3 @@ class Utils:
 
     return split_df
 
-def test():
-
-
-learners = [ r"-l trees.VFDT", r"-l trees.EFDT"]
-generators = [
-  r"-s (ArffFileStream -f /home/mchait/Downloads/hepmass.arff -c 1)"
-  ]
-evaluators = [ r"EvaluatePrequential -i 7000000 -f 1000 -q 1000"]
-
-
-    output_dir = mcv.OUTPUT_DIR
-    experiments = CompositeExperiment.make_experiments(mcv.MOA_STUMP, evaluators, learners, generators)
-    processes = CompositeExperiment.make_running_processes(experiments, output_dir)
-    Utils.wait_for_processes(processes)
-
-    error_df = Utils.error_df_from_folder(output_dir)
-    runtime_dict = Utils.runtime_dict_from_folder(output_dir)
-    split_df = Utils.split_df_from_folder(output_dir)
-
-    new_col_names = ["VFDT", "EFDT"]
-    for col in error_df.columns:
-        new_col_names[int(col)] = (str(col)+ ": "+ new_col_names[int(col)] + " | T:" + ("%.2f s"%runtime_dict[col]) + " | E: " + ("%.6f"%error_df[col].mean()))
-    error_df.columns = new_col_names
-
-    Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(1).zfill(3), split_df)
-
-    # without the main sentinel below code will always get run, even when imported as a module!
-if __name__=="__main__": 
-    test()
-
