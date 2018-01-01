@@ -149,17 +149,17 @@ class Utils:
       file_df = Utils.file_to_dataframe(folder+'/'+filename)
 
       # Only mark actual splits as 1 and discard the rest of the split counts
-      splitArray = file_df['splits']
+      splitArray = file_df.loc[:,'splits'].values.tolist()
       i = 0
-      while i < splitArray.size-1:
-        print(str(i+1) + " " + str(splitArray[i+1]) + "\n")
+      while i < len(splitArray)-1:
+        #print(str(i+1) + " " + str(splitArray[i+1]) + "\n")
         diff = math.floor(splitArray[i+1]) - math.floor(splitArray[i])
         if(diff > 0):
           splitArray[i+1] = (-1)*diff
           i = i+2
         else:
           i=i+1
-      for i in range(splitArray.size):
+      for i in range(len(splitArray)):
         if(splitArray[i] > 0):
           splitArray[i] = 0
         else:
