@@ -26,7 +26,7 @@ def chart1():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/hepmass.arff -c 1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
 
     runexp1(learners, generators, evaluators, 1)
 
@@ -36,7 +36,7 @@ def chart2():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/wisdmshuf.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 2)
 
 def chart3():
@@ -45,7 +45,7 @@ def chart3():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/susy.arff -c 1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 3)
 
 def chart4():
@@ -54,7 +54,7 @@ def chart4():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/airlines.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 4)
 
 def chart5():
@@ -63,7 +63,7 @@ def chart5():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/kddshuf.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 5)
 
 def chart6():
@@ -72,7 +72,7 @@ def chart6():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/higgsOrig.arff -c 33)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 6)
 
 def chart7():
@@ -81,7 +81,7 @@ def chart7():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/poker-lsn.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 7)
 
 def chart8():
@@ -90,7 +90,7 @@ def chart8():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/pokershuf.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 8)
 
 def chart9():
@@ -99,7 +99,7 @@ def chart9():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/CovPokElec.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 9)
 
 def chart10():
@@ -108,7 +108,7 @@ def chart10():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/cpeshuf.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 10)
 
 def chart11():
@@ -117,7 +117,7 @@ def chart11():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/covtypeNorm.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 11)
 
 def chart12():
@@ -126,7 +126,7 @@ def chart12():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/covtypeshuf.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 12)
 
 
@@ -136,7 +136,7 @@ def chart13():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/airlineshuf.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 13)
 
 def chart14():
@@ -145,7 +145,7 @@ def chart14():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/3covtype.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 14)
 
 def chart15():
@@ -154,7 +154,7 @@ def chart15():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/3airlines.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 15)
 
 def chart16():
@@ -163,7 +163,7 @@ def chart16():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/3wisdm.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 16)
 
 def chart17():
@@ -172,7 +172,7 @@ def chart17():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/3kdd.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 17)
 
 def chart18():
@@ -181,7 +181,7 @@ def chart18():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/skinshuf.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 18)
 
 
@@ -191,7 +191,7 @@ def chart19():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/pamap2_9subjectsshuf.arff -c 2)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 19)
 
 def chart20():
@@ -200,7 +200,7 @@ def chart20():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/fontshuf.arff -c 1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 20)
 
 def chart21():
@@ -209,7 +209,7 @@ def chart21():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/chessshuf.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 21)
 
 def chart22():
@@ -218,8 +218,9 @@ def chart22():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/chessshufdiscrete.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp1(learners, generators, evaluators, 22)
+
 
 
     # without the main sentinel below code will always get run, even when imported as a module!
@@ -234,11 +235,11 @@ if __name__=="__main__":
     #processes[6] = Process(target=chart6)
     #processes[7] = Process(target=chart7)
     #processes[8] = Process(target=chart8)
-    processes[9] = Process(target=chart9)
-    processes[10] = Process(target=chart10)
-    processes[11] = Process(target=chart11)
-    processes[12] = Process(target=chart12)
-    processes[13] = Process(target=chart13)
+    #processes[9] = Process(target=chart9)
+    #processes[10] = Process(target=chart10)
+    #processes[11] = Process(target=chart11)
+    #processes[12] = Process(target=chart12)
+    #processes[13] = Process(target=chart13)
 
     #processes[14] = Process(target=chart14)
     #processes[15] = Process(target=chart15)
@@ -250,6 +251,7 @@ if __name__=="__main__":
     #processes[20] = Process(target=chart20)
     #processes[21] = Process(target=chart21)
     #processes[22] = Process(target=chart22)
+
 
 
     for key in processes:
