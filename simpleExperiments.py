@@ -47,7 +47,7 @@ class Plot:
       ax2 = df_aux.plot(style=['-',':'], kind='line', ax=ax2, alpha = 0.3, secondary_y=False)
       ax2.set_ylabel('Splits', fontsize=27)
       ax2.tick_params(labelsize=27)
-      ax2.set_yticks(np.arange(0,max(3, df_aux['1'].max()+1),1))
+      ax2.set_yticks(np.arange(0,max(3, df_aux.values.max()+1),1))
       legend2 = ax2.legend(loc=2, fancybox=True, prop={'size': 27}) #loc = upper right
       legend2.get_frame().set_alpha(0.1)
 
