@@ -1,5 +1,10 @@
 
+import os
 import sys
+import utilities
+import re
+import math
+import pandas as pd
 import simpleExperiments as se
 import moa_command_vars as mcv
 from multiprocessing import Process, Queue
@@ -241,7 +246,7 @@ def chart22():
 
 def chart23():
 
-    learners = [ r"-l trees.VFDT"]#, r"-l trees.EFDT"]
+    learners = [ r"-l trees.VFDT" ]#, r"-l trees.EFDT"]
     generators = [
             r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
             r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 3 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
@@ -249,8 +254,199 @@ def chart23():
             r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 5 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
 
     ]
-    evaluators = [ r"EvaluatePrequential -i 400000 -f 1000 -q 1000"]
-    runexp23(learners, generators, evaluators, 23)
+    evaluators = [ r"EvaluatePrequential -i 400000 -f 1000 -q 1000" ]
+    num_rows = int(400000/1000)
+
+
+    all_processes = []
+    # get 10 stream average for each generator
+    gen_no = 1
+    exp_dir = mcv.OUTPUT_DIR + "/" + str(23) 
+    output_dirs = []
+    for gen_string in generators:
+      seeded_generators = []
+      gen_no += 1
+      output_dir = exp_dir + "/" + str(gen_no) 
+      output_dirs.append(output_dir)
+
+      for randomSeed in range(0, 10): #random seed for tree; generate 10 random streams  for this generator
+        gen_cmd = re.sub("-r [0-9]+", "-r "+ str(randomSeed)+ " ", str(gen_string))
+	#print(gen_cmd)
+        seeded_generators.append(gen_cmd)
+
+      seeded_experiments = se.CompositeExperiment.make_experiments(mcv.MOA_STUMP, evaluators, learners, seeded_generators)
+      processes = se.CompositeExperiment.make_running_processes(seeded_experiments, output_dir)
+      all_processes.extend(processes)
+
+    exit_codes = [p.wait() for p in all_processes]
+ 
+    # List of mean_dataframes
+    mean_dataframes = []
+    # Dataframe that contains all the mean error columns for the experiments
+    error_df = pd.DataFrame([])
+    # Dataframe that contains all the mean split columns for the experiments
+    split_df = pd.DataFrame([])
+
+    # average the streams, then plot
+    for folder in output_dirs:
+      files = [os.path.join(folder, f) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+      dataframes = []
+      for this_file in files:
+        dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=0))
+
+      all_stream_learning_data = pd.concat(dataframes)
+      all_stream_mean = {}
+      for i in range(num_rows):
+        all_stream_mean[i] = all_stream_learning_data[i::num_rows].mean()
+      all_stream_mean_df = pd.DataFrame(all_stream_mean).transpose()
+    #runexp23(learners, generators, evaluators, 23)
+      all_stream_mean_df['error'] = (100.0 - all_stream_mean_df['classifications correct (percent)'])/100.0
+
+      # Only mark actual splits as 1 and discard the rest of the split counts
+      splitArray = all_stream_mean_df['splits']
+      i = 0
+      while i < splitArray.size-1:
+        #print(str(i+1) + " " + str(splitArray[i+1]) + "\n")
+        diff = math.floor(splitArray[i+1]) - math.floor(splitArray[i])
+        if(diff > 0):
+          splitArray[i+1] = (-1)*diff
+          i = i+2
+        else:
+          i=i+1
+      for i in range(splitArray.size):
+        if(splitArray[i] > 0):
+          splitArray[i] = 0
+        else:
+          splitArray[i] = (-1) * splitArray[i]
+
+      # Add this folder's mean error column to the error_df 
+      #error_df[str(folder)] = all_stream_mean_df['error'] 
+      average_error = all_stream_mean_df['error'].sum()/num_rows
+      cpu_time = all_stream_mean_df['evaluation time (cpu seconds)'].iloc[num_rows-1] # yes this is avg cpu_time
+      #print("+++++++++++" + str(jkl))
+      #error_df[" M: "+ str(folder)+ " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
+      error_df[" Classes: "+ os.path.basename(os.path.normpath(folder))+ " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
+      #error_df[" | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
+      split_df["splits" + os.path.basename(os.path.normpath(folder))] = all_stream_mean_df['splits']
+      #error_df[str(folder)+" "+"5"] = all_stream_mean_df['error']
+
+      mean_dataframes.append(all_stream_mean_df)
+
+    # Set the index column
+    # error_df[mcv.INDEX_COL]
+    error_df[mcv.INDEX_COL] = mean_dataframes[0][mcv.INDEX_COL]
+    error_df = error_df.set_index(mcv.INDEX_COL)
+    #error_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Error.csv")
+
+    split_df[mcv.INDEX_COL] = mean_dataframes[0][mcv.INDEX_COL]
+    split_df = split_df.set_index(mcv.INDEX_COL)
+    #split_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Split.csv")
+
+    #se.Plot.plot_df(error_df, " ", mcv.FIG_DIR+"/"+str(figNo).zfill(3), split_df)
+    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(23).zfill(3), split_df)
+
+
+def chart24():
+
+    learners = [ r"-l (trees.EFDT -c 0.2 -t 0.5)"]
+    generators = [
+            #r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
+            #r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 3 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
+            #r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 4 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
+            r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 5 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
+
+    ]
+    evaluators = [ r"EvaluatePrequential -i 400000 -f 1000 -q 1000" ]
+    num_rows = int(400000/1000)
+
+
+    all_processes = []
+    # get 10 stream average for each generator
+    gen_no = 4
+    exp_dir = mcv.OUTPUT_DIR + "/" + str(24) 
+    output_dirs = []
+    for gen_string in generators:
+      seeded_generators = []
+      gen_no += 1
+      output_dir = exp_dir + "/" + str(gen_no) 
+      output_dirs.append(output_dir)
+
+      for randomSeed in range(0, 10): #random seed for tree; generate 10 random streams  for this generator
+        gen_cmd = re.sub("-r [0-9]+", "-r "+ str(randomSeed)+ " ", str(gen_string))
+	#print(gen_cmd)
+        seeded_generators.append(gen_cmd)
+
+      seeded_experiments = se.CompositeExperiment.make_experiments(mcv.MOA_STUMP, evaluators, learners, seeded_generators)
+      processes = se.CompositeExperiment.make_running_processes(seeded_experiments, output_dir)
+      all_processes.extend(processes)
+
+    exit_codes = [p.wait() for p in all_processes]
+ 
+    # List of mean_dataframes
+    mean_dataframes = []
+    # Dataframe that contains all the mean error columns for the experiments
+    error_df = pd.DataFrame([])
+    # Dataframe that contains all the mean split columns for the experiments
+    split_df = pd.DataFrame([])
+
+    # average the streams, then plot
+    for folder in output_dirs:
+      files = [os.path.join(folder, f) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+      dataframes = []
+      for this_file in files:
+        dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=0))
+
+      all_stream_learning_data = pd.concat(dataframes)
+      all_stream_mean = {}
+      for i in range(num_rows):
+        all_stream_mean[i] = all_stream_learning_data[i::num_rows].mean()
+      all_stream_mean_df = pd.DataFrame(all_stream_mean).transpose()
+    #runexp24(learners, generators, evaluators, 24)
+      all_stream_mean_df['error'] = (100.0 - all_stream_mean_df['classifications correct (percent)'])/100.0
+
+      # Only mark actual splits as 1 and discard the rest of the split counts
+      splitArray = all_stream_mean_df['splits']
+      i = 0
+      while i < splitArray.size-1:
+        #print(str(i+1) + " " + str(splitArray[i+1]) + "\n")
+        diff = math.floor(splitArray[i+1]) - math.floor(splitArray[i])
+        if(diff > 0):
+          splitArray[i+1] = (-1)*diff
+          i = i+2
+        else:
+          i=i+1
+      for i in range(splitArray.size):
+        if(splitArray[i] > 0):
+          splitArray[i] = 0
+        else:
+          splitArray[i] = (-1) * splitArray[i]
+
+      # Add this folder's mean error column to the error_df 
+      #error_df[str(folder)] = all_stream_mean_df['error'] 
+      average_error = all_stream_mean_df['error'].sum()/num_rows
+      cpu_time = all_stream_mean_df['evaluation time (cpu seconds)'].iloc[num_rows-1] # yes this is avg cpu_time
+      #print("+++++++++++" + str(jkl))
+      #error_df[" M: "+ str(folder)+ " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
+      error_df[" Classes: "+ os.path.basename(os.path.normpath(folder))+ " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
+      #error_df[" | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
+      split_df["splits" + os.path.basename(os.path.normpath(folder))] = all_stream_mean_df['splits']
+      #error_df[str(folder)+" "+"5"] = all_stream_mean_df['error']
+
+      mean_dataframes.append(all_stream_mean_df)
+
+    # Set the index column
+    # error_df[mcv.INDEX_COL]
+    error_df[mcv.INDEX_COL] = mean_dataframes[0][mcv.INDEX_COL]
+    error_df = error_df.set_index(mcv.INDEX_COL)
+    #error_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Error.csv")
+
+    split_df[mcv.INDEX_COL] = mean_dataframes[0][mcv.INDEX_COL]
+    split_df = split_df.set_index(mcv.INDEX_COL)
+    #split_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Split.csv")
+
+    #se.Plot.plot_df(error_df, " ", mcv.FIG_DIR+"/"+str(figNo).zfill(3), split_df)
+    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(24).zfill(3), split_df)
+
 
 
 
@@ -283,7 +479,9 @@ if __name__=="__main__":
     #processes[21] = Process(target=chart21)
     #processes[22] = Process(target=chart22)
 
-    processes[23] = Process(target=chart23)
+
+    #processes[23] = Process(target=chart23)
+    processes[24] = Process(target=chart24)
 
     for key in processes:
       processes[key].start()

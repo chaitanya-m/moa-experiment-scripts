@@ -47,7 +47,11 @@ class Plot:
       ax2 = df_aux.plot(style=['-',':'], kind='line', ax=ax2, alpha = 0.3, secondary_y=False)
       ax2.set_ylabel('Splits', fontsize=27)
       ax2.tick_params(labelsize=27)
-      ax2.set_yticks(np.arange(0,max(3, df_aux.values.max()+1),1))
+      if df_aux.values.max() <= 10:
+        ax2.set_yticks(np.arange(0,max(3, df_aux.values.max()+1),1))
+      else:
+        ax2.set_yticks(np.arange(0,max(3, df_aux.values.max()+1),3))
+	
       legend2 = ax2.legend(loc=2, fancybox=True, prop={'size': 27}) #loc = upper right
       legend2.get_frame().set_alpha(0.1)
 
@@ -92,7 +96,8 @@ class CompositeExperiment:
 
     os.chdir(mcv.MOA_DIR)
     utilities.remove_folder(output_dir)
-    utilities.make_folder(output_dir)
+    if not os.path.exists(output_dir):
+      os.makedirs(output_dir)
 
     processes = []
     output_files = []
@@ -106,6 +111,18 @@ class CompositeExperiment:
 
     return processes
 
+  @staticmethod
+  def SimpleSeededGenBuilder(gen_string, randomSeed=None):
+
+    # if random seed is not none, just substitute any -r options with the correct seed
+    # the -r options must be clearly visible... 
+    # imagine the amount of refactoring needed every time new options are added... that's too
+    # much complexity for a piece of code custom-built to work with MOA.
+
+    #print("====" + str(gen_string))
+    gen_cmd = " -s \"\"\"(" + re.sub("-r [0-9]+", "-r "+ str(randomSeed)+ " ", str(gen_string)) + " )\"\"\""
+
+    return Generator(gen_cmd)
 
 class Utils: 
 
