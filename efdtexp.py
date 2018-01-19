@@ -254,8 +254,8 @@ def chart23():
             r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 5 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
 
     ]
-    evaluators = [ r"EvaluatePrequential -i 400000 -f 1000 -q 1000" ]
-    num_rows = int(400000/1000)
+    evaluators = [ r"EvaluatePrequential -i 4000000 -f 1000 -q 1000" ]
+    num_rows = int(4000000/1000)
 
 
     all_processes = []
@@ -269,7 +269,7 @@ def chart23():
       output_dir = exp_dir + "/" + str(gen_no) 
       output_dirs.append(output_dir)
 
-      for randomSeed in range(0, 10): #random seed for tree; generate 10 random streams  for this generator
+      for randomSeed in range(0, 5): #random seed for tree; generate 10 random streams  for this generator
         gen_cmd = re.sub("-r [0-9]+", "-r "+ str(randomSeed)+ " ", str(gen_string))
 	#print(gen_cmd)
         seeded_generators.append(gen_cmd)
@@ -348,21 +348,21 @@ def chart23():
 
 def chart24():
 
-    learners = [ r"-l (trees.EFDT -c 0.2 -t 0.5)"]
+    learners = [ r"-l (trees.EFDT)"]
     generators = [
-            #r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
-            #r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 3 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
-            #r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 4 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
+            r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 2 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
+            r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 3 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
+            r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 4 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
             r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 5 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
 
     ]
-    evaluators = [ r"EvaluatePrequential -i 400000 -f 1000 -q 1000" ]
-    num_rows = int(400000/1000)
+    evaluators = [ r"EvaluatePrequential -i 4000000 -f 1000 -q 1000" ]
+    num_rows = int(4000000/1000)
 
 
     all_processes = []
     # get 10 stream average for each generator
-    gen_no = 4
+    gen_no = 1
     exp_dir = mcv.OUTPUT_DIR + "/" + str(24) 
     output_dirs = []
     for gen_string in generators:
@@ -371,7 +371,7 @@ def chart24():
       output_dir = exp_dir + "/" + str(gen_no) 
       output_dirs.append(output_dir)
 
-      for randomSeed in range(0, 10): #random seed for tree; generate 10 random streams  for this generator
+      for randomSeed in range(0, 5): #random seed for tree; generate 10 random streams  for this generator
         gen_cmd = re.sub("-r [0-9]+", "-r "+ str(randomSeed)+ " ", str(gen_string))
 	#print(gen_cmd)
         seeded_generators.append(gen_cmd)
@@ -447,41 +447,90 @@ def chart24():
     #se.Plot.plot_df(error_df, " ", mcv.FIG_DIR+"/"+str(figNo).zfill(3), split_df)
     se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(24).zfill(3), split_df)
 
+def chart25():
 
+    learners = [ r"-l trees.VFDT", r"-l trees.EFDT"]
+    generators = [
+      r"-s (ArffFileStream -f /mnt/datasets/skin.arff -c -1)"
+    ]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
+    runexp(learners, generators, evaluators, 25)
+
+
+def chart26():
+
+    learners = [ r"-l trees.VFDT", r"-l (trees.EFDT -R 2000)"]
+    generators = [
+      r"-s (ArffFileStream -f /mnt/datasets/pamap2_9subjects_unshuf.arff -c 2)"
+    ]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
+    runexp(learners, generators, evaluators, 26)
+
+def chart27():
+
+    learners = [ r"-l trees.VFDT", r"-l trees.EFDT"]
+    generators = [
+      r"-s (ArffFileStream -f /mnt/datasets/fonts.arff -c 1)"
+    ]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
+    runexp(learners, generators, evaluators, 27)
+
+def chart28():
+
+    learners = [ r"-l trees.VFDT", r"-l trees.EFDT"]
+    generators = [
+      r"-s (ArffFileStream -f /mnt/datasets/chess.arff -c -1)"
+    ]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
+    runexp(learners, generators, evaluators, 28)
+
+def chart29():
+
+    learners = [ r"-l trees.VFDT", r"-l trees.EFDT"]
+    generators = [
+      r"-s (ArffFileStream -f /mnt/datasets/chessshufdiscrete.arff -c -1)"
+    ]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
+    runexp(learners, generators, evaluators, 29)
 
 
     # without the main sentinel below code will always get run, even when imported as a module!
 if __name__=="__main__": 
 
     processes = {}
-    #processes[1] = Process(target=chart1)
-    #processes[2] = Process(target=chart2)
-    #processes[3] = Process(target=chart3)
-    #processes[4] = Process(target=chart4)
-    #processes[5] = Process(target=chart5)
-    #processes[6] = Process(target=chart6)
-    #processes[7] = Process(target=chart7)
-    #processes[8] = Process(target=chart8)
-    #processes[9] = Process(target=chart9)
-    #processes[10] = Process(target=chart10)
-    #processes[11] = Process(target=chart11)
-    #processes[12] = Process(target=chart12)
-    #processes[13] = Process(target=chart13)
+    #processes[1] = Process(target=chart1)   # hepmass
+    #processes[2] = Process(target=chart2)   # wisdmshuf
+    #processes[3] = Process(target=chart3)   # susy
+    #processes[4] = Process(target=chart4)   # airlines
+    #processes[5] = Process(target=chart5)   # kddshuf
+    #processes[6] = Process(target=chart6)   # higgsorig
+    #processes[7] = Process(target=chart7)   # poker
+    #processes[8] = Process(target=chart8)   # pokershuf
+    #processes[9] = Process(target=chart9)   # cpe
+    #processes[10] = Process(target=chart10) # cpeshuf
+    #processes[11] = Process(target=chart11) # covtypenorm
+    #processes[12] = Process(target=chart12) # covtypeshuf
+    #processes[13] = Process(target=chart13) # airlineshuf
 
-    #processes[14] = Process(target=chart14)
-    #processes[15] = Process(target=chart15)
-    #processes[16] = Process(target=chart16)
-    #processes[17] = Process(target=chart17)
+    #processes[14] = Process(target=chart14) # 3 Covertype
+    #processes[15] = Process(target=chart15) # 3 Airline
+    #processes[16] = Process(target=chart16) # 3 wisdm
+    #processes[17] = Process(target=chart17) # 3 kdd
 
-    #processes[18] = Process(target=chart18)
-    #processes[19] = Process(target=chart19)
-    #processes[20] = Process(target=chart20)
-    #processes[21] = Process(target=chart21)
-    #processes[22] = Process(target=chart22)
+    #processes[18] = Process(target=chart18) # Skin shuffled
+    #processes[19] = Process(target=chart19) # PAMAP2 9 subjects shuffled
+    #processes[20] = Process(target=chart20) # Font shuffled
+    #processes[21] = Process(target=chart21) # Chess shuffled
+    #processes[22] = Process(target=chart22) # Chess shuffled and discretized
 
 
-    #processes[23] = Process(target=chart23)
-    processes[24] = Process(target=chart24)
+    #processes[23] = Process(target=chart23) # Synthetic VFDT nominal
+    #processes[24] = Process(target=chart24) # Synthetic EFDT nominal
+
+    #processes[25] = Process(target=chart25) # Skin
+    processes[26] = Process(target=chart26) # PAMAP2
+    #processes[27] = Process(target=chart27)  # Fonts
+    processes[28] = Process(target=chart28)  # Chess
 
     for key in processes:
       processes[key].start()
