@@ -48,6 +48,125 @@ def runexp23(learners, generators, evaluators, suffix):
 
     se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), split_df)
 
+def shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix):
+
+    subprocesses= []
+    files = []
+    seeded_generators=[]
+
+    # Generate the shuffled tails for the streams
+    for i in range(0, num_streams):
+
+      subprocesses.append(subprocess.Popen(['shuf -o ' + shuf_prefix + str(i) + ' ' + tail_prefix + ' '
+	+ string.replace(random_source_str, 'seed', str(i)) ], shell=True, executable = '/bin/bash'))
+    # Need executable = /bin/bash, Otherwise it will use /bin/sh, which on Ubuntu is dash, a basic shell that doesn't recognize ( symbols
+
+    exit_codes = [p.wait() for p in subprocesses] # Wait- Ensure all shuffled tails have been created    
+    subprocesses = []
+
+    # Generate the final arffs through concatenation with heads, and the respective generators
+    for i in range(0, num_streams):
+      files.append(' ' + shuf_prefix + str(i) + '.arff')
+      seeded_generators.append(re.sub('(\/.*)+\.arff', files[i], generator_template))
+      print(re.sub('(\/.*)+\.arff', files[i], generator_template))
+      subprocesses.append(subprocess.Popen(['cat ' + ' ' + head_prefix + ' ' + 
+	' ' + shuf_prefix + str(i) +'>'+ str(files[i])], shell=True, executable = '/bin/bash'))
+    exit_codes = [p.wait() for p in subprocesses]
+    subprocesses = []
+
+    # Now run experiments for each learner on all the arffs
+    all_processes=[]
+    exp_dir = mcv.OUTPUT_DIR + "/" + str(exp_no) 
+
+    os.chdir(mcv.MOA_DIR)
+    utilities.remove_folder(exp_dir)
+    if not os.path.exists(exp_dir):
+      os.makedirs(exp_dir)
+
+    lrn_ctr = -1
+    output_dirs = []
+    for learner in learners:
+      lrn_ctr += 1
+      singleLearnerList = []
+      singleLearnerList.append(learner)
+      output_dir = exp_dir + "/" + str(lrn_ctr) 
+      output_dirs.append(output_dir)
+
+      seeded_experiments = se.CompositeExperiment.make_experiments(mcv.MOA_STUMP, evaluators, singleLearnerList, seeded_generators)
+      processes = se.CompositeExperiment.make_running_processes(seeded_experiments, output_dir)
+      all_processes.extend(processes)
+
+    exit_codes = [p.wait() for p in all_processes]
+ 
+    # List of mean_dataframes
+    mean_dataframes = []
+    # Dataframe that contains all the mean error columns for the experiments
+    error_df = pd.DataFrame([])
+    # Dataframe that contains all the mean split columns for the experiments
+    split_df = pd.DataFrame([])
+
+    # average the streams, then plot
+    for folder in output_dirs:
+      files = [os.path.join(folder, f) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+      dataframes = []
+      for this_file in files:
+        dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=0))
+
+      all_stream_learning_data = pd.concat(dataframes)
+      all_stream_mean = {}
+      num_rows = dataframes[0].shape[0] 
+      for i in range(num_rows):
+        all_stream_mean[i] = all_stream_learning_data[i::num_rows].mean()
+      all_stream_mean_df = pd.DataFrame(all_stream_mean).transpose()
+    #runexp23(learners, generators, evaluators, 23)
+      all_stream_mean_df['error'] = (100.0 - all_stream_mean_df['classifications correct (percent)'])/100.0
+
+      # Only mark actual splits as 1 and discard the rest of the split counts
+      splitArray = all_stream_mean_df['splits']
+      i = 0
+      while i < splitArray.size-1:
+        #print(str(i+1) + " " + str(splitArray[i+1]) + "\n")
+        diff = math.floor(splitArray[i+1]) - math.floor(splitArray[i])
+        if(diff > 0):
+          splitArray[i+1] = (-1)*diff
+          i = i+2
+        else:
+          i=i+1
+      for i in range(splitArray.size):
+        if(splitArray[i] > 0):
+          splitArray[i] = 0
+        else:
+          splitArray[i] = (-1) * splitArray[i]
+
+      # Add this folder's mean error column to the error_df 
+      #error_df[str(folder)] = all_stream_mean_df['error'] 
+      average_error = all_stream_mean_df['error'].sum()/num_rows
+      cpu_time = all_stream_mean_df['evaluation time (cpu seconds)'].iloc[num_rows-1] # yes this is avg cpu_time
+      #print("+++++++++++" + str(jkl))
+      #error_df[" M: "+ str(folder)+ " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
+      error_df[" Classes: "+ os.path.basename(os.path.normpath(folder))+ " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
+      #error_df[" | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
+      split_df["splits" + os.path.basename(os.path.normpath(folder))] = all_stream_mean_df['splits']
+      #error_df[str(folder)+" "+"5"] = all_stream_mean_df['error']
+
+      mean_dataframes.append(all_stream_mean_df)
+
+    # Set the index column
+    # error_df[mcv.INDEX_COL]
+    error_df[mcv.INDEX_COL] = mean_dataframes[0][mcv.INDEX_COL]
+    error_df = error_df.set_index(mcv.INDEX_COL)
+    #error_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Error.csv")
+
+    split_df[mcv.INDEX_COL] = mean_dataframes[0][mcv.INDEX_COL]
+    split_df = split_df.set_index(mcv.INDEX_COL)
+    #split_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Split.csv")
+
+    #se.Plot.plot_df(error_df, " ", mcv.FIG_DIR+"/"+str(figNo).zfill(3), split_df)
+    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(exp_no).zfill(3), split_df)
+
+
+
+
 
 
 
@@ -63,12 +182,21 @@ def chart1():
 
 def chart2():
 
+    exp_no = 2
+    num_streams = 10
+
     learners = [ r"-l trees.VFDT", r"-l trees.EFDT"]
-    generators = [
-      r"-s (ArffFileStream -f /mnt/datasets/wisdmshuf.arff -c -1)"
-    ]
+    generator_template = r"-s (ArffFileStream -f /mnt/datasets/wisdm/wisdmshuf.arff -c -1)"
     evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
-    runexp(learners, generators, evaluators, 2)
+
+    shuf_prefix = r"/mnt/datasets/wisdm/wisdmshuf"
+    head_prefix = r"/mnt/datasets/wisdm/wisdmhead"
+    tail_prefix = r"/mnt/datasets/wisdm/wisdmtail"
+ 
+    shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
+
+
+
 
 def chart3():
 
@@ -209,10 +337,7 @@ def chart17():
 def chart18():
 
     exp_no = 18
-	
     num_streams = 10
-    subprocesses= []
-    files = []
 
     learners = [ r"-l trees.VFDT", r"-l trees.EFDT"]
     generator_template = r"-s (ArffFileStream -f /mnt/datasets/skin/skin.arff -c -1)"
@@ -221,127 +346,24 @@ def chart18():
     shuf_prefix = r"/mnt/datasets/skin/skinshuf"
     head_prefix = r"/mnt/datasets/skin/skinhead"
     tail_prefix = r"/mnt/datasets/skin/skintail"
-
-    seeded_generators=[]
-
-    # Generate the shuffled tails for the streams
-    for i in range(0, num_streams):
-
-      subprocesses.append(subprocess.Popen(['shuf -o ' + shuf_prefix + str(i) + ' ' + tail_prefix + ' '
-	+ string.replace(random_source_str, 'seed', str(i)) ], shell=True, executable = '/bin/bash'))
-    # Need executable = /bin/bash, Otherwise it will use /bin/sh, which on Ubuntu is dash, a basic shell that doesn't recognize ( symbols
-
-    exit_codes = [p.wait() for p in subprocesses] # Wait- Ensure all shuffled tails have been created    
-    subprocesses = []
-
-    # Generate the final arffs through concatenation with heads, and the respective generators
-    for i in range(0, num_streams):
-      files.append(' ' + shuf_prefix + str(i) + '.arff')
-      seeded_generators.append(re.sub('(\/[A-Za-z]*)+\.arff', files[i], generator_template))
-      subprocesses.append(subprocess.Popen(['cat ' + ' ' + head_prefix + ' ' + 
-	' ' + shuf_prefix + str(i) +'>'+ str(files[i])], shell=True, executable = '/bin/bash'))
-    exit_codes = [p.wait() for p in subprocesses]
-    subprocesses = []
-
-    # Now run experiments for each learner on all the arffs
-    all_processes=[]
-    exp_dir = mcv.OUTPUT_DIR + "/" + str(exp_no) 
-
-    os.chdir(mcv.MOA_DIR)
-    utilities.remove_folder(exp_dir)
-    if not os.path.exists(exp_dir):
-      os.makedirs(exp_dir)
-
-    lrn_ctr = -1
-    output_dirs = []
-    for learner in learners:
-      lrn_ctr += 1
-      singleLearnerList = []
-      singleLearnerList.append(learner)
-      output_dir = exp_dir + "/" + str(lrn_ctr) 
-      output_dirs.append(output_dir)
-
-      seeded_experiments = se.CompositeExperiment.make_experiments(mcv.MOA_STUMP, evaluators, singleLearnerList, seeded_generators)
-      processes = se.CompositeExperiment.make_running_processes(seeded_experiments, output_dir)
-      all_processes.extend(processes)
-
-    exit_codes = [p.wait() for p in all_processes]
- 
-    # List of mean_dataframes
-    mean_dataframes = []
-    # Dataframe that contains all the mean error columns for the experiments
-    error_df = pd.DataFrame([])
-    # Dataframe that contains all the mean split columns for the experiments
-    split_df = pd.DataFrame([])
-
-    # average the streams, then plot
-    for folder in output_dirs:
-      files = [os.path.join(folder, f) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
-      dataframes = []
-      for this_file in files:
-        dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=0))
-
-      all_stream_learning_data = pd.concat(dataframes)
-      all_stream_mean = {}
-      num_rows = dataframes[0].shape[0] 
-      for i in range(num_rows):
-        all_stream_mean[i] = all_stream_learning_data[i::num_rows].mean()
-      all_stream_mean_df = pd.DataFrame(all_stream_mean).transpose()
-    #runexp23(learners, generators, evaluators, 23)
-      all_stream_mean_df['error'] = (100.0 - all_stream_mean_df['classifications correct (percent)'])/100.0
-
-      # Only mark actual splits as 1 and discard the rest of the split counts
-      splitArray = all_stream_mean_df['splits']
-      i = 0
-      while i < splitArray.size-1:
-        #print(str(i+1) + " " + str(splitArray[i+1]) + "\n")
-        diff = math.floor(splitArray[i+1]) - math.floor(splitArray[i])
-        if(diff > 0):
-          splitArray[i+1] = (-1)*diff
-          i = i+2
-        else:
-          i=i+1
-      for i in range(splitArray.size):
-        if(splitArray[i] > 0):
-          splitArray[i] = 0
-        else:
-          splitArray[i] = (-1) * splitArray[i]
-
-      # Add this folder's mean error column to the error_df 
-      #error_df[str(folder)] = all_stream_mean_df['error'] 
-      average_error = all_stream_mean_df['error'].sum()/num_rows
-      cpu_time = all_stream_mean_df['evaluation time (cpu seconds)'].iloc[num_rows-1] # yes this is avg cpu_time
-      #print("+++++++++++" + str(jkl))
-      #error_df[" M: "+ str(folder)+ " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
-      error_df[" Classes: "+ os.path.basename(os.path.normpath(folder))+ " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
-      #error_df[" | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.7f"%average_error) + ' |'] = all_stream_mean_df['error']
-      split_df["splits" + os.path.basename(os.path.normpath(folder))] = all_stream_mean_df['splits']
-      #error_df[str(folder)+" "+"5"] = all_stream_mean_df['error']
-
-      mean_dataframes.append(all_stream_mean_df)
-
-    # Set the index column
-    # error_df[mcv.INDEX_COL]
-    error_df[mcv.INDEX_COL] = mean_dataframes[0][mcv.INDEX_COL]
-    error_df = error_df.set_index(mcv.INDEX_COL)
-    #error_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Error.csv")
-
-    split_df[mcv.INDEX_COL] = mean_dataframes[0][mcv.INDEX_COL]
-    split_df = split_df.set_index(mcv.INDEX_COL)
-    #split_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Split.csv")
-
-    #se.Plot.plot_df(error_df, " ", mcv.FIG_DIR+"/"+str(figNo).zfill(3), split_df)
-    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(exp_no).zfill(3), split_df)
-
+    
+    shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
 
 def chart19():
 
+    exp_no = 19
+    num_streams = 10
+
     learners = [ r"-l trees.VFDT", r"-l (trees.EFDT -R 2000)"]
-    generators = [
-      r"-s (ArffFileStream -f /mnt/datasets/pamap2_9subjectsshuf.arff -c 2)"
-    ]
+    generator_template = r"-s (ArffFileStream -f /mnt/datasets/pamap2_9subjectsshufff.arff -c 2)"
     evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
-    runexp(learners, generators, evaluators, 19)
+
+    shuf_prefix = r"/mnt/datasets/pamap2/pamap2_9subjects_shuf"
+    head_prefix = r"/mnt/datasets/pamap2/pamap2_9subjects_head"
+    tail_prefix = r"/mnt/datasets/pamap2/pamap2_9subjects_tail"
+ 
+    shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
+
 
 def chart20():
 
@@ -577,7 +599,7 @@ def chart25():
 
     learners = [ r"-l trees.VFDT", r"-l trees.EFDT"]
     generators = [
-      r"-s (ArffFileStream -f /mnt/datasets/skin.arff -c -1)"
+      r"-s (ArffFileStream -f /mnt/datasets/skin/skin.arff -c -1)"
     ]
     evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp(learners, generators, evaluators, 25)
@@ -587,7 +609,7 @@ def chart26():
 
     learners = [ r"-l trees.VFDT", r"-l (trees.EFDT -R 2000)"]
     generators = [
-      r"-s (ArffFileStream -f /mnt/datasets/pamap2_9subjects_unshuf.arff -c 2)"
+      r"-s (ArffFileStream -f /mnt/datasets/pamap2/pamap2_9subjects_unshuf.arff -c 2)"
     ]
     evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
     runexp(learners, generators, evaluators, 26)
@@ -625,7 +647,7 @@ if __name__=="__main__":
 
     processes = {}
     #processes[1] = Process(target=chart1)   # hepmass =
-    #processes[2] = Process(target=chart2)   # wisdmshuf =
+    processes[2] = Process(target=chart2)   # wisdmshuf =
     #processes[3] = Process(target=chart3)   # susy =
     #processes[4] = Process(target=chart4)   # airlines
     #processes[5] = Process(target=chart5)   # kddshuf =
@@ -643,7 +665,7 @@ if __name__=="__main__":
     #processes[16] = Process(target=chart16) # 3 wisdm
     #processes[17] = Process(target=chart17) # 3 kdd
 
-    processes[18] = Process(target=chart18) # Skin shuffled =
+    #processes[18] = Process(target=chart18) # Skin shuffled =
     #processes[19] = Process(target=chart19) # PAMAP2 9 subjects shuffled =
     #processes[20] = Process(target=chart20) # Font shuffled =
     #processes[21] = Process(target=chart21) # Chess shuffled
