@@ -217,12 +217,17 @@ def chart18():
     learners = [ r"-l trees.VFDT", r"-l trees.EFDT"]
     generator_template = r"-s (ArffFileStream -f /mnt/datasets/skin/skin.arff -c -1)"
     evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
+
+    shuf_prefix = r"/mnt/datasets/skin/skinshuf"
+    head_prefix = r"/mnt/datasets/skin/skinhead"
+    tail_prefix = r"/mnt/datasets/skin/skintail"
+
     seeded_generators=[]
 
     # Generate the shuffled tails for the streams
     for i in range(0, num_streams):
 
-      subprocesses.append(subprocess.Popen(['shuf -o /mnt/datasets/skin/skintailshuf' + str(i) + ' /mnt/datasets/skin/skintail '
+      subprocesses.append(subprocess.Popen(['shuf -o ' + shuf_prefix + str(i) + ' ' + tail_prefix + ' '
 	+ string.replace(random_source_str, 'seed', str(i)) ], shell=True, executable = '/bin/bash'))
     # Need executable = /bin/bash, Otherwise it will use /bin/sh, which on Ubuntu is dash, a basic shell that doesn't recognize ( symbols
 
@@ -231,10 +236,10 @@ def chart18():
 
     # Generate the final arffs through concatenation with heads, and the respective generators
     for i in range(0, num_streams):
-      files.append(' /mnt/datasets/skin/skinshuf' + str(i) + '.arff')
+      files.append(' ' + shuf_prefix + str(i) + '.arff')
       seeded_generators.append(re.sub('(\/[A-Za-z]*)+\.arff', files[i], generator_template))
-      subprocesses.append(subprocess.Popen(['cat ' + ' /mnt/datasets/skin/skinhead ' + 
-	' /mnt/datasets/skin/skintailshuf' + str(i) +'>'+ str(files[i])], shell=True, executable = '/bin/bash'))
+      subprocesses.append(subprocess.Popen(['cat ' + ' ' + head_prefix + ' ' + 
+	' ' + shuf_prefix + str(i) +'>'+ str(files[i])], shell=True, executable = '/bin/bash'))
     exit_codes = [p.wait() for p in subprocesses]
     subprocesses = []
 
@@ -327,12 +332,6 @@ def chart18():
 
     #se.Plot.plot_df(error_df, " ", mcv.FIG_DIR+"/"+str(figNo).zfill(3), split_df)
     se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(exp_no).zfill(3), split_df)
-
- 
-
-
-
-    #runexp(learners, generators, evaluators, 18)
 
 
 def chart19():
