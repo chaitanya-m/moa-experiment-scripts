@@ -382,20 +382,11 @@ def chart8a():
 
 def chart9():
 
-    learners = [ r"-l trees.VFDT", r"-l trees.EFDT"]
-    generators = [
-      r"-s (ArffFileStream -f /mnt/datasets/CovPokElec.arff -c -1)"
-    ]
-    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
-    runexp(learners, generators, evaluators, 9)
-
-def chart10():
-
-    exp_no = 10
+    exp_no = 9
     num_streams = 10
 
     learners = [ r"-l trees.VFDT", r"-l trees.EFDT"]
-    generator_template = r"-s (ArffFileStream -f /mnt/datasets/cpeshuf.arff -c -1)"
+    generator_template = r"-s (ArffFileStream -f /mnt/datasets/cpe/cpe.arff -c -1)"
     evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
 
     shuf_prefix = r"/mnt/datasets/cpe/cpeshuf"
@@ -403,6 +394,42 @@ def chart10():
     tail_prefix = r"/mnt/datasets/cpe/cpetail"
 
     shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
+
+def chart9a():
+
+    learners = [ r"-l trees.VFDT", r"-l trees.EFDT"]
+    generators = [
+      r"-s (ArffFileStream -f /mnt/datasets/cpe/cpe.arff -c -1)"
+    ]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
+    runexp(learners, generators, evaluators, '9a')
+
+
+def chart10():
+
+    exp_no = 10
+    num_streams = 10
+
+    learners = [ r"-l trees.VFDT", r"-l trees.EFDT"]
+    generator_template = r"-s (ArffFileStream -f /mnt/datasets/sensor/sensor.arff -c -1)"
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
+
+    shuf_prefix = r"/mnt/datasets/sensor/sensorshuf"
+    head_prefix = r"/mnt/datasets/sensor/sensorhead"
+    tail_prefix = r"/mnt/datasets/sensor/sensortail"
+
+    shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
+
+def chart10a():
+
+    learners = [ r"-l trees.VFDT", r"-l trees.EFDT"]
+    generators = [
+      r"-s (ArffFileStream -f /mnt/datasets/sensor/sensor.arff -c -1)"
+    ]
+    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
+    runexp(learners, generators, evaluators, '10a')
+
+
 
 def chart11():
 
@@ -572,8 +599,8 @@ def chart23():
             r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 5 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
 
     ]
-    evaluators = [ r"EvaluatePrequential -i 4000000 -f 1000 -q 1000" ]
-    num_rows = int(4000000/1000)
+    evaluators = [ r"EvaluatePrequential -i 100000000 -f 1000 -q 1000" ]
+    num_rows = int(100000000/1000)
 
 
     all_processes = []
@@ -594,10 +621,10 @@ def chart23():
 
       seeded_experiments = se.CompositeExperiment.make_experiments(mcv.MOA_STUMP, evaluators, learners, seeded_generators)
 #===================Comment these to just generate plots
-      #processes = se.CompositeExperiment.make_running_processes(seeded_experiments, output_dir)
-      #all_processes.extend(processes)
-
-    #exit_codes = [p.wait() for p in all_processes]
+#      processes = se.CompositeExperiment.make_running_processes(seeded_experiments, output_dir)
+#      all_processes.extend(processes)
+#
+#    exit_codes = [p.wait() for p in all_processes]
 #==================== 
     # List of mean_dataframes
     mean_dataframes = []
@@ -661,8 +688,8 @@ def chart23():
     split_df = split_df.set_index(mcv.INDEX_COL)
     #split_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Split.csv")
 
-    #se.Plot.plot_df(error_df, " ", mcv.FIG_DIR+"/"+str(figNo).zfill(3), split_df)
-    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(23).zfill(3), split_df)
+    #se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(23).zfill(3), split_df)
+    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(23).zfill(3), None)
 
 
 def chart24():
@@ -675,8 +702,8 @@ def chart24():
             r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 5 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
 
     ]
-    evaluators = [ r"EvaluatePrequential -i 4000000 -f 1000 -q 1000" ]
-    num_rows = int(4000000/1000) #MAGIC NUMBER
+    evaluators = [ r"EvaluatePrequential -i 100000000 -f 1000 -q 1000" ]
+    num_rows = int(100000000/1000) #MAGIC NUMBER
 
 
     all_processes = []
@@ -699,7 +726,7 @@ def chart24():
 #===================Comment these to just generate plots
 #      processes = se.CompositeExperiment.make_running_processes(seeded_experiments, output_dir)
 #      all_processes.extend(processes)
-
+#
 #    exit_codes = [p.wait() for p in all_processes]
 #=================== 
     # List of mean_dataframes
@@ -764,8 +791,8 @@ def chart24():
     split_df = split_df.set_index(mcv.INDEX_COL)
     #split_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Split.csv")
 
-    #se.Plot.plot_df(error_df, " ", mcv.FIG_DIR+"/"+str(figNo).zfill(3), split_df)
-    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(24).zfill(3), split_df)
+    #se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(24).zfill(3), split_df)
+    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(24).zfill(3), None)
 
 def chart26():
 
@@ -813,7 +840,7 @@ if __name__=="__main__":
 #    processes['11'] = Process(target=chart11) # covtype shuffled = 0.7
 #    processes['11a'] = Process(target=chart11a) # covtype Normalised = 0.7
 #
-#    processes[20] = Process(target=chart20) # Font shuffled = This requires a one-line-change in shuffledRealExpOps- run 10 processes at a time, not 20- takes too much memory. 0.15
+#    processes[20] = Process(target=chart20) # Font shuffled = This requires a one-line-change in shuffledRealExpOps- run 10 processes at a time, not 20- takes too much memory!! 0.15
 #    processes['20a'] = Process(target=chart20a)  # Fonts = 1.0
 
 #    processes[2] = Process(target=chart2)   # wisdmshuf = 0.7
@@ -836,6 +863,16 @@ if __name__=="__main__":
 #    processes[3] = Process(target=chart3)   # susy = 0.7
 #    processes['3a'] = Process(target=chart3a)   # susy = 0.7
 
+#    processes[9] = Process(target=chart9)   # sensor = 0.7
+#    processes['9a'] = Process(target=chart9a)   # sensor = 0.7
+
+
+#    processes[10] = Process(target=chart10)   # sensor = 0.7
+#    processes['10a'] = Process(target=chart10a)   # sensor = 0.7
+
+
+
+
     #processes[4] = Process(target=chart4)   # airlines
     #processes[6] = Process(target=chart6)   # higgsorig =
 
@@ -852,8 +889,8 @@ if __name__=="__main__":
     #processes[22] = Process(target=chart22) # Chess shuffled and discretized
 
 
-    processes[23] = Process(target=chart23) # Synthetic VFDT nominal
-    processes[24] = Process(target=chart24) # Synthetic EFDT nominal
+#    processes[23] = Process(target=chart23) # Synthetic VFDT nominal
+#    processes[24] = Process(target=chart24) # Synthetic EFDT nominal
 
     #processes[28] = Process(target=chart28)  # Chess
 
