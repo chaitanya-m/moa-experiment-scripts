@@ -32,8 +32,8 @@ class Plot:
 #   styles = ['seaborn-darkgrid', 'seaborn-white', 'fivethirtyeight', 'seaborn-bright', 'seaborn-pastel', 'ggplot', 'classic', 'seaborn-notebook', '_classic_test', 'seaborn-ticks', 'seaborn-poster', 'dark_background', 'seaborn-paper', 'seaborn-colorblind', 'seaborn-talk', 'grayscale', 'seaborn-dark-palette', 'seaborn-dark', 'bmh', 'seaborn-deep', 'seaborn', 'seaborn-whitegrid', 'seaborn-muted']
 
     linestyles = [':', '-', '-.', '--']
-    linewidths = [5, 1.5, 0.5, 2]
-    dashes = [[4,3], []]
+    linewidths = [2, 1.5, 0.5, 2]
+    dashes = [[4,1], []]
     alphas = [0.5, 1.0, 0.6, 0.8]
     colors = ['green','black','red','blue']
 
