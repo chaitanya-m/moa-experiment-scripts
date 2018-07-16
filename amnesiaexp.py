@@ -26,12 +26,16 @@ def runexp(learners, generators, evaluators, suffix):
     runtime_dict = se.Utils.runtime_dict_from_folder(output_dir)
     split_df = se.Utils.split_df_from_folder(output_dir)
 
-    new_col_names = ["VFDT", "VFDTUnforgetting"]
+    new_col_names = ["0:VFDT", "1:EideticVFDT"]
     for col in error_df.columns:
         new_col_names[int(col)] = (new_col_names[int(col)] + " | T:" + ("%.2f s"%runtime_dict[col]) + " | E: " + ("%.4f"%error_df[col].mean()))
     error_df.columns = new_col_names
 
-    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), None)
+    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), split_df)
+
+
+def runMultiStreamExp(learners, generators, evaluators, suffix):
+    # Write a multi-stream thing here
 
 
 def shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix):
@@ -173,29 +177,73 @@ def shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evalua
     #split_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Split.csv")
 
     #se.Plot.plot_df(error_df, " ", mcv.FIG_DIR+"/"+str(figNo).zfill(3), split_df)
-    #se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(exp_no).zfill(3), split_df)
-    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(exp_no).zfill(3), None)
+    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(exp_no).zfill(3), split_df)
+    #se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(exp_no).zfill(3), None)
+
 
 def chart0():
 
     learners = [ r"-l trees.VFDT", 
             r"-l trees.VFDTUnforgetting"]
     generators= [
-    r"-s (RecurrentConceptDriftStream -x 10000 -y 10000 -z 75 -s (generators.monash.AbruptDriftGenerator -z 3 -n 3 -v 3 -r 1 -b 99999999) -d (generators.monash.AbruptDriftGenerator -c -z 3 -n 3 -v 3 -r 1 -b 1))"
+    r"-s (RecurrentConceptDriftStream -x 10000 -y 10000 -z 175 -s (generators.monash.AbruptDriftGenerator -z 3 -n 3 -v 3 -r 1 -b 99999999) -d (generators.monash.AbruptDriftGenerator -c -z 3 -n 3 -v 3 -r 1 -b 1))"
+            ]
+    evaluators = [r"EvaluatePrequential -i 4000000 -f 1000 -q 1000"]
+    runexp(learners, generators, evaluators, 0)
+
+ 
+def chart1():
+
+    learners = [ r"-l trees.VFDT", 
+            r"-l trees.VFDTUnforgetting"]
+    generators= [
+    r"-s (RecurrentConceptDriftStream -x 100000 -y 100000 -z 75 -s (generators.monash.AbruptDriftGenerator -z 3 -n 3 -v 3 -r 1 -b 99999999) -d (generators.monash.AbruptDriftGenerator -c -z 3 -n 3 -v 3 -r 1 -b 1))"
             ]
     evaluators = [r"EvaluatePrequential -i 2000000 -f 1000 -q 1000"]
-    runexp(learners, generators, evaluators, 0)
+    runexp(learners, generators, evaluators, 1)
+
+ 
+def chart2():
+
+    learners = [ r"-l trees.VFDT", 
+            r"-l trees.VFDTUnforgetting"]
+    generators= [
+    r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 175 -s (generators.monash.AbruptDriftGenerator -z 3 -n 3 -v 3 -r 1 -b 99999999) -d (generators.monash.AbruptDriftGenerator -c -z 3 -n 3 -v 3 -r 1 -b 1))"
+            ]
+    evaluators = [r"EvaluatePrequential -i 4000000 -f 1000 -q 1000"]
+    runexp(learners, generators, evaluators, 2)
+
+
+def chart3():
+
+    learners = [ r"-l trees.VFDT", 
+            r"-l trees.VFDTUnforgetting"]
+    generators= [
+    r"-s (RecurrentConceptDriftStream -x 100000 -y 100000 -z 175 -s (generators.monash.AbruptDriftGenerator -z 3 -n 3 -v 3 -r 1 -b 50000) -d (generators.monash.AbruptDriftGenerator -c -z 3 -n 3 -v 3 -r 2 -b 50000))"
+            ]
+    evaluators = [r"EvaluatePrequential -i 2000000 -f 1000 -q 1000"]
+    runexp(learners, generators, evaluators, 3)
+
+
+
+
 
     # without the main sentinel below code will always get run, even when imported as a module!
 if __name__=="__main__": 
 
     processes = {}
 
-    processes[0] = Process(target=chart0) # Recurrent Drift
+    #processes[0] = Process(target=chart0) # Recurrent Drift
+    #processes[1] = Process(target=chart1) # Recurrent Drift
+    processes[2] = Process(target=chart2) # Recurrent Drift
+    #processes[3] = Process(target=chart3) # Recurrent Drift
 #    processes[24] = Process(target=chart24) # Synthetic EFDT nominal
 
     #processes[28] = Process(target=chart28)  # Chess
 
     for key in processes:
       processes[key].start()
-   
+  
+
+
+#EvaluatePrequential -l trees.VFDTUnforgetting -s (RecurrentConceptDriftStream -x 100000 -y 100000 -z 100 -s (generators.monash.AbruptDriftGenerator -z 3 -n 3 -v 3 -r 1 -b 99999999) -d (generators.monash.AbruptDriftGenerator -c -z 3 -n 3 -v 3 -r 1 -b 1)) -i 1000000 -f 1000 -q 1000

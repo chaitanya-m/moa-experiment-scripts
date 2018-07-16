@@ -34,7 +34,7 @@ class Plot:
     linestyles = [':', '-', '-.', '--']
     linewidths = [2, 1.5, 0.5, 2]
     dashes = [[4,1], []]
-    alphas = [0.5, 1.0, 0.6, 0.8]
+    alphas = [0.2, 0.3, 0.6, 0.8]
     colors = ['green','black','red','blue']
 
     ax = data_frame.plot(style=linestyles,figsize=(18,6))
@@ -56,7 +56,7 @@ class Plot:
     ax2 = ax
     if df_aux is not None:
       ax2 = ax.twinx()
-      ax2 = df_aux.plot(style=['-',':'], kind='line', ax=ax2, alpha = 0.3, secondary_y=False)
+      ax2 = df_aux.plot(style=['-',':'], kind='line', ax=ax2, alpha = 0.8, secondary_y=False)
       ax2.set_ylabel('Splits', fontsize=27)
       ax2.tick_params(labelsize=27)
       if df_aux.values.max() <= 10:
@@ -129,10 +129,32 @@ class CompositeExperiment:
     # imagine the amount of refactoring needed every time new options are added... that's too
     # much complexity for a piece of code custom-built to work with MOA.
 
-    #print("====" + str(gen_string))
     gen_cmd = " -s \"\"\"(" + re.sub("-r [0-9]+", "-r "+ str(randomSeed)+ " ", str(gen_string)) + " )\"\"\""
 
     return Generator(gen_cmd)
+
+  @staticmethod
+  def MultiSeededGenBuilder(gen_string, randomSeed=None):
+    # ASSUMPTION: NO MORE THAN 100,000 STREAMS
+
+    max_streams = 100000
+    rand_opt = "-r [0-9]+"
+
+    #find locations of -r option occurrences
+    occurence_locs = [m.start() for m in re.finditer(rand_opt, gen_string)]
+
+    for i in occurence_locs:
+      # split before and after the i'th rand_opt occurrence  
+      before = gen_string[:i]
+      after = gen_string[i:]
+      after.replace(rand_opt, "-r "+ str(randomSeed+i*max_streams), 1)
+      # update string and move on to next rand_opt
+      gen_string = before + after
+
+
+    gen_cmd = " -s \"\"\"(" + str(gen_string) + " )\"\"\""
+    return Generator(gen_cmd)
+
 
 class Utils: 
 
