@@ -18,6 +18,13 @@ import listOfLearners
 # Most operations are built around directories of csv files
 # files are named with simple numbers and this is important for sorting
 
+class Generator:
+
+    def __init__(self, command):
+        self.command = command
+    def cmd(self):
+        return self.command
+
 class Plot:
   # Assumption: Received data contains a correctly computed error column 
 
@@ -134,7 +141,7 @@ class CompositeExperiment:
     return Generator(gen_cmd)
 
   @staticmethod
-  def MultiSeededGenBuilder(gen_string, randomSeed=None):
+  def multiSeededGenBuilder(gen_string, randomSeed=None):
     # ASSUMPTION: NO MORE THAN 100,000 STREAMS
 
     max_streams = 100000
@@ -143,17 +150,19 @@ class CompositeExperiment:
     #find locations of -r option occurrences
     occurence_locs = [m.start() for m in re.finditer(rand_opt, gen_string)]
 
+    occ = 0
     for i in occurence_locs:
+      occ += 1  
       # split before and after the i'th rand_opt occurrence  
       before = gen_string[:i]
       after = gen_string[i:]
-      after.replace(rand_opt, "-r "+ str(randomSeed+i*max_streams), 1)
+      after = re.sub("-r [0-9]+", "-r "+ str(int(randomSeed)+int(occ)*max_streams), after, 1)
+      
       # update string and move on to next rand_opt
       gen_string = before + after
 
-
-    gen_cmd = " -s \"\"\"(" + str(gen_string) + " )\"\"\""
-    return Generator(gen_cmd)
+    gen_cmd = str(gen_string)
+    return gen_cmd
 
 
 class Utils: 
