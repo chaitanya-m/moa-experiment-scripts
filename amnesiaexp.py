@@ -34,7 +34,7 @@ def runexp(learners, generators, evaluators, suffix):
     se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), split_df)
 
 
-def runMultiStreamExpML(learners, generators, evaluators, suffix, num_streams=1):
+def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_streams=1):
     # This one does Multiple Learners and a Single Generator on one plot
 
     new_col_names = ["VFDT", "EideticVFDT"]
@@ -136,7 +136,7 @@ def runMultiStreamExpML(learners, generators, evaluators, suffix, num_streams=1)
     #split_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Split.csv")
 
     #se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(23).zfill(3), split_df)
-    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), split_df)
+    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), split_df)
 
 
 
@@ -429,7 +429,7 @@ def chart11():
             ]
     evaluators = [r"EvaluatePrequential -i 400000 -f 1000 -q 1000"]
     #runexp(learners, generators, evaluators, 3)
-    runMultiStreamExpML(learners, generators, evaluators, str(11))
+    runMultiStreamExpML("VFDT vs Eidetic VFDT: Abrupt Drift", learners, generators, evaluators, str(11))
 
 
 
