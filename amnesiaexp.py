@@ -409,19 +409,31 @@ def chart9():
     learners = [ r"-l trees.VFDT", 
             r"-l trees.HATADWIN"]
     generators= [
-    r"-s (generators.monash.AbruptDriftGenerator -c  -o 0.7 -z 5 -n 5 -v 5 -r 2 -b 150000)"
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 0.7 -z 5 -n 5 -v 5 -r 2 -b 150000)"
             ]
     evaluators = [r"EvaluatePrequential -i 400000 -f 1000 -q 1000"]
     #runexp(learners, generators, evaluators, 3)
     runMultiStreamExpML(learners, generators, evaluators, str(9))
 
 
-
-
-
-
-
 #########################################
+
+
+
+def chart11():
+
+    learners = [ r"-l trees.VFDT", 
+            r"-l trees.VFDTUnforgetting"]
+    generators= [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 0.7 -z 5 -n 5 -v 5 -r 2 -b 150000)"
+            ]
+    evaluators = [r"EvaluatePrequential -i 400000 -f 1000 -q 1000"]
+    #runexp(learners, generators, evaluators, 3)
+    runMultiStreamExpML(learners, generators, evaluators, str(11))
+
+
+
+
 
 
 
@@ -430,18 +442,19 @@ def chart9():
 if __name__=="__main__": 
 
     processes = {}
-
-    processes[0] = Process(target=chart0)  Recurrent Drift
-    processes[1] = Process(target=chart1)  Recurrent Drift
-    processes[2] = Process(target=chart2)  Recurrent Drift
-    processes[3] = Process(target=chart3)  Recurrent Drift
-    processes[4] = Process(target=chart4)  Recurrent Drift
-    processes[5] = Process(target=chart5)  Recurrent Drift
-    processes[6] = Process(target=chart6)  Recurrent Drift
-#    processes[7] = Process(target=chart7)  Recurrent Drift
+#
+#    processes[0] = Process(target=chart0)  #Recurrent Drift
+#    processes[1] = Process(target=chart1)  #Recurrent Drift
+#    processes[2] = Process(target=chart2)  #Recurrent Drift
+#    processes[3] = Process(target=chart3)  #Recurrent Drift
+#    processes[4] = Process(target=chart4)  #Recurrent Drift
+#    processes[5] = Process(target=chart5)  #Recurrent Drift
+#    processes[6] = Process(target=chart6)  #Recurrent Drift
+##    processes[7] = Process(target=chart7)  #Recurrent Drift
 #    processes[8] = Process(target=chart8) # Recurrent Drift
 #    processes[9] = Process(target=chart9) # Recurrent Drift
 ##    processes[24] = Process(target=chart24) # Synthetic EFDT nominal
+    processes[11] = Process(target=chart11) 
 
     #processes[28] = Process(target=chart28)  # Chess
 
