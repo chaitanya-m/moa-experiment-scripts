@@ -24,7 +24,7 @@ class Plot:
   #def __init__(self):
 
   @staticmethod
-  def plot_df(data_frame, cmd, figPath, df_aux = None):
+  def plot_df(caption,data_frame, cmd, figPath, df_aux = None):
 
    # matplotlib.rcParams.update({'font.size': 24})
     # theres a whole bunch of available styles
@@ -32,26 +32,29 @@ class Plot:
 #   styles = ['seaborn-darkgrid', 'seaborn-white', 'fivethirtyeight', 'seaborn-bright', 'seaborn-pastel', 'ggplot', 'classic', 'seaborn-notebook', '_classic_test', 'seaborn-ticks', 'seaborn-poster', 'dark_background', 'seaborn-paper', 'seaborn-colorblind', 'seaborn-talk', 'grayscale', 'seaborn-dark-palette', 'seaborn-dark', 'bmh', 'seaborn-deep', 'seaborn', 'seaborn-whitegrid', 'seaborn-muted']
 
     linestyles = [':', '-', '-.', '--']
-    linewidths = [2, 1.5, 0.5, 2]
-    dashes = [[4,1], []]
-    alphas = [0.2, 0.3, 0.6, 0.8]
+    linewidths = [5, 1.5, 1.0, 2]
+    dashes = [[4,3], [], [4,1,1,1], [1, 1]]
+    alphas = [0.5, 1.0, 0.6, 0.8]
     colors = ['green','black','red','blue']
 
     ax = data_frame.plot(style=linestyles,figsize=(18,6))
+#   use this as necessary
     for i, l in enumerate(ax.lines):
       plt.setp(l, linewidth=linewidths[i])
       l.set_dashes(dashes[i]) #override linestyles
       l.set_alpha(alphas[i])
       l.set_color(colors[i])
 
+    #ax.set_yscale("log")
     ax.set_ylabel('Error rate', fontsize=27)
     ax.set_xlabel('Instances (x 1,000)', fontsize=27)
     ax.xaxis.label.set_size(27)
     ax.set_ylim([0.0, 0.7])
     ax.set_facecolor((1.0, 1.0, 1.0))
     ax.tick_params(labelsize=27)
-    legend = ax.legend(loc=1, fancybox=True, prop={'size': 27}) #loc = upper right
-    legend.get_frame().set_alpha(0.1)
+    legend = ax.legend(loc=1, fancybox=True, prop={'size': 27}, frameon=True) #loc = upper right
+    legend.get_frame().set_color((1.0,1.0,1.0))
+    legend.get_frame().set_alpha(0.7)
 
     ax2 = ax
     if df_aux is not None:
@@ -71,6 +74,7 @@ class Plot:
     wrapped_cmd = '\n'.join(wrap(cmd, 100))
 
     figure = ax2.get_figure()
+    figure.text(0.5, 0.95, caption, ha='center', fontsize=27)
 
     figure.savefig(figPath+'.png', bbox_inches='tight')
 

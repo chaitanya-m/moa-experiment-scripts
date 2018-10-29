@@ -14,7 +14,7 @@ from multiprocessing import Process, Queue
 
 random_source_str = r'--random-source=<( openssl enc -aes-256-ctr -pass pass:seed -nosalt </dev/zero 2>/dev/null)'
 
-def runexp(learners, generators, evaluators, suffix):
+def runexp(title,learners, generators, evaluators, suffix):
     output_dir = mcv.OUTPUT_DIR + "/" + str(suffix)
     experiments = se.CompositeExperiment.make_experiments(mcv.MOA_STUMP, evaluators, learners, generators)
 #---------- Comment these lines out to get just charts
@@ -31,7 +31,7 @@ def runexp(learners, generators, evaluators, suffix):
         new_col_names[int(col)] = (new_col_names[int(col)] + " | T:" + ("%.2f s"%runtime_dict[col]) + " | E: " + ("%.4f"%error_df[col].mean()))
     error_df.columns = new_col_names
 
-    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), None)
+    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), None)
 
 def runexp23(learners, generators, evaluators, suffix):
     output_dir = mcv.OUTPUT_DIR + "/" + str(suffix)
@@ -50,7 +50,7 @@ def runexp23(learners, generators, evaluators, suffix):
 
     se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), split_df)
 
-def shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix):
+def shuffledRealExpOps(title, exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix):
 
     subprocesses= []
     files = []
@@ -190,7 +190,7 @@ def shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evalua
 
     #se.Plot.plot_df(error_df, " ", mcv.FIG_DIR+"/"+str(figNo).zfill(3), split_df)
     #se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(exp_no).zfill(3), split_df)
-    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(exp_no).zfill(3), None)
+    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(exp_no).zfill(3), None)
 
 def chart1():
 
@@ -206,9 +206,7 @@ def chart1():
     head_prefix = r"/mnt/datasets/hepmass/hepmasshead"
     tail_prefix = r"/mnt/datasets/hepmass/hepmasstail"
  
-    shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
-
-
+    shuffledRealExpOps('Hepmass, shuffled', exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
 
 def chart1a():
 
@@ -218,7 +216,7 @@ def chart1a():
     ]
     evaluators = [ r"EvaluatePrequential -i 1234567890 -f 1000 -q 1000"]
 
-    runexp(learners, generators, evaluators, '1a')
+    runexp('Hepmass',learners, generators, evaluators, '1a')
 
 def chart2():
 
@@ -233,7 +231,7 @@ def chart2():
     head_prefix = r"/mnt/datasets/wisdm/wisdmhead"
     tail_prefix = r"/mnt/datasets/wisdm/wisdmtail"
  
-    shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
+    shuffledRealExpOps('WISDM, shuffled', exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
 
 def chart2a():
 
@@ -242,7 +240,7 @@ def chart2a():
       r"-s (ArffFileStream -f /mnt/datasets/wisdm/wisdm.arff -c -1)"
     ]
     evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
-    runexp(learners, generators, evaluators, '2a')
+    runexp('WISDM',learners, generators, evaluators, '2a')
 
 
 def chart3():
@@ -258,7 +256,7 @@ def chart3():
     head_prefix = r"/mnt/datasets/susy/susyhead"
     tail_prefix = r"/mnt/datasets/susy/susytail"
  
-    shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
+    shuffledRealExpOps('SUSY, shuffled',exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
 
 
 def chart3a():
@@ -268,7 +266,7 @@ def chart3a():
       r"-s (ArffFileStream -f /mnt/datasets/susy/susy.arff -c 1)"
     ]
     evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
-    runexp(learners, generators, evaluators, '3a')
+    runexp('SUSY', learners, generators, evaluators, '3a')
 
 def chart4():
 
@@ -292,7 +290,7 @@ def chart5():
     head_prefix = r"/mnt/datasets/kdd/kddhead"
     tail_prefix = r"/mnt/datasets/kdd/kddtail"
 
-    shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
+    shuffledRealExpOps('KDD99 Intrusion Detection, shuffled',exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
 
 def chart5a():
 
@@ -301,7 +299,7 @@ def chart5a():
       r"-s (ArffFileStream -f /mnt/datasets/kdd/KDDCup99_full.arff -c -1)"
     ]
     evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
-    runexp(learners, generators, evaluators, '5a')
+    runexp('KDD99 Intrusion Detection', learners, generators, evaluators, '5a')
 
 
 def chart6():
@@ -317,7 +315,7 @@ def chart6():
     head_prefix = r"/mnt/datasets/higgsc/higgschead"
     tail_prefix = r"/mnt/datasets/higgsc/higgsctail"
 
-    shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
+    shuffledRealExpOps('Higgs, shuffled',exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
 
 
 def chart6a():
@@ -328,7 +326,7 @@ def chart6a():
       r"-s (ArffFileStream -f /mnt/datasets/higgsc/higgsc.arff -c 1)"
     ]
     evaluators = [ r"EvaluatePrequential -i 1234567890 -f 1000 -q 1000"]
-    runexp(learners, generators, evaluators, '6a')
+    runexp('Higgs',learners, generators, evaluators, '6a')
 
 def chart7():
 
@@ -343,7 +341,7 @@ def chart7():
     head_prefix = r"/mnt/datasets/harpagwag/harpagwaghead"
     tail_prefix = r"/mnt/datasets/harpagwag/harpagwagtail"
 
-    shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
+    shuffledRealExpOps('Human Activity Recognition, shuffled',exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
 
 
 def chart7a():
@@ -353,7 +351,7 @@ def chart7a():
       r"-s (ArffFileStream -f /mnt/datasets/harpagwag/harpagwag.arff -c -1)"
     ]
     evaluators = [ r"EvaluatePrequential -i 1234567890 -f 1000 -q 1000"]
-    runexp(learners, generators, evaluators, '7a')
+    runexp('Human Activity Recognition',learners, generators, evaluators, '7a')
 
 
 def chart8():
@@ -369,7 +367,7 @@ def chart8():
     head_prefix = r"/mnt/datasets/poker/pokerhead"
     tail_prefix = r"/mnt/datasets/poker/pokertail"
 
-    shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
+    shuffledRealExpOps('Poker hands, shuffled',exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
 
 def chart8a():
 
@@ -378,7 +376,7 @@ def chart8a():
       r"-s (ArffFileStream -f /mnt/datasets/poker/poker-lsn.arff -c -1)"
     ]
     evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
-    runexp(learners, generators, evaluators, '8a')
+    runexp('Poker hands',learners, generators, evaluators, '8a')
 
 def chart9():
 
@@ -418,7 +416,7 @@ def chart10():
     head_prefix = r"/mnt/datasets/sensor/sensorhead"
     tail_prefix = r"/mnt/datasets/sensor/sensortail"
 
-    shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
+    shuffledRealExpOps('Gas sensors (home), shuffled',exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
 
 def chart10a():
 
@@ -427,7 +425,7 @@ def chart10a():
       r"-s (ArffFileStream -f /mnt/datasets/sensor/sensor.arff -c -1)"
     ]
     evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
-    runexp(learners, generators, evaluators, '10a')
+    runexp('Gas sensors (home)',learners, generators, evaluators, '10a')
 
 
 
@@ -444,7 +442,7 @@ def chart11():
     head_prefix = r"/mnt/datasets/covtype/covtypehead"
     tail_prefix = r"/mnt/datasets/covtype/covtypetail"
 
-    shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
+    shuffledRealExpOps('Forest covertype, shuffled', exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
 
 def chart11a():
 
@@ -453,7 +451,7 @@ def chart11a():
       r"-s (ArffFileStream -f /mnt/datasets/covtype/covtypeNorm.arff -c -1)"
     ]
     evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
-    runexp(learners, generators, evaluators, '11a')
+    runexp('Forest covertype',learners, generators, evaluators, '11a')
 
 
 def chart13():
@@ -504,7 +502,7 @@ def chart18():
     head_prefix = r"/mnt/datasets/skin/skinhead"
     tail_prefix = r"/mnt/datasets/skin/skintail"
     
-    shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
+    shuffledRealExpOps('Skin dataset, shuffled',exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
 
 def chart18a():
 
@@ -513,7 +511,7 @@ def chart18a():
       r"-s (ArffFileStream -f /mnt/datasets/skin/skin.arff -c -1)"
     ]
     evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
-    runexp(learners, generators, evaluators, '18a')
+    runexp('Skin dataset', learners, generators, evaluators, '18a')
 
 
 def chart19():
@@ -529,7 +527,7 @@ def chart19():
     head_prefix = r"/mnt/datasets/pamap2/pamap2_9subjects_head"
     tail_prefix = r"/mnt/datasets/pamap2/pamap2_9subjects_tail"
  
-    shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
+    shuffledRealExpOps('PAMAP2 Activity Tracking, 9 subjects, shuffled', exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
 
 
 def chart19a():
@@ -539,7 +537,7 @@ def chart19a():
       r"-s (ArffFileStream -f /mnt/datasets/pamap2/pamap2_9subjects_unshuf.arff -c 2)"
     ]
     evaluators = [ r"EvaluatePrequential -i 200000000 -f 1000 -q 1000"]
-    runexp(learners, generators, evaluators, '19a')
+    runexp('PAMAP2 Activity Tracking, 9 subjects', learners, generators, evaluators, '19a')
 
 
 def chart20():
@@ -555,8 +553,7 @@ def chart20():
     head_prefix = r"/mnt/datasets/fonts/fontshead"
     tail_prefix = r"/mnt/datasets/fonts/fontstail"
  
-    shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
-
+    shuffledRealExpOps('Fonts shuffled',exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix)
 
 def chart20a():
 
@@ -565,11 +562,7 @@ def chart20a():
       r"-s (ArffFileStream -f /mnt/datasets/fonts/fonts.arff -c 1)"
     ]
     evaluators = [ r"EvaluatePrequential -i 200000000 -f 1000 -q 1000"]
-    runexp(learners, generators, evaluators, '20a')
-
-
-
-
+    runexp('Fonts',learners, generators, evaluators, '20a')
 
 def chart21():
 
@@ -621,10 +614,10 @@ def chart23():
 
       seeded_experiments = se.CompositeExperiment.make_experiments(mcv.MOA_STUMP, evaluators, learners, seeded_generators)
 #===================Comment these to just generate plots
-#      processes = se.CompositeExperiment.make_running_processes(seeded_experiments, output_dir)
-#      all_processes.extend(processes)
-#
-#    exit_codes = [p.wait() for p in all_processes]
+      processes = se.CompositeExperiment.make_running_processes(seeded_experiments, output_dir)
+      all_processes.extend(processes)
+
+    exit_codes = [p.wait() for p in all_processes]
 #==================== 
     # List of mean_dataframes
     mean_dataframes = []
@@ -724,10 +717,10 @@ def chart24():
 
       seeded_experiments = se.CompositeExperiment.make_experiments(mcv.MOA_STUMP, evaluators, learners, seeded_generators)
 #===================Comment these to just generate plots
-#      processes = se.CompositeExperiment.make_running_processes(seeded_experiments, output_dir)
-#      all_processes.extend(processes)
-#
-#    exit_codes = [p.wait() for p in all_processes]
+      processes = se.CompositeExperiment.make_running_processes(seeded_experiments, output_dir)
+      all_processes.extend(processes)
+
+    exit_codes = [p.wait() for p in all_processes]
 #=================== 
     # List of mean_dataframes
     mean_dataframes = []
@@ -844,7 +837,7 @@ if __name__=="__main__":
 #    processes['20a'] = Process(target=chart20a)  # Fonts = 1.0
 
 #    processes[2] = Process(target=chart2)   # wisdmshuf = 0.7
-#    processes['2a'] = Process(target=chart2a)   # wisdm = 0.7
+    processes['2a'] = Process(target=chart2a)   # wisdm = 0.7
 
 #    processes[19] = Process(target=chart19) # PAMAP2 9 subjects shuffled = 0.7
 #    processes['19a'] = Process(target=chart19a) # PAMAP2 = 1.0
@@ -854,41 +847,20 @@ if __name__=="__main__":
 
 #    processes[6] = Process(target=chart6) # Higgs shuffled = 0.7
 #    processes['6a'] = Process(target=chart6a) # Higgs = 0.7
-###This is so, so big that it breaks python. Make sure suffling and file creation works manually.
-
-
+####This is so, so big that it breaks python. Make sure suffling and file creation works manually.
+#
 #    processes[1] = Process(target=chart1)   # hepmass shuffled = 0.7
 #    processes['1a'] = Process(target=chart1a)   # hepmass = 0.7
-
+#
 #    processes[3] = Process(target=chart3)   # susy = 0.7
 #    processes['3a'] = Process(target=chart3a)   # susy = 0.7
-
-#    processes[9] = Process(target=chart9)   # sensor = 0.7
-#    processes['9a'] = Process(target=chart9a)   # sensor = 0.7
-
-
+#
+#    #processes[9] = Process(target=chart9)   # CovPokElec = 0.7
+#    #processes['9a'] = Process(target=chart9a)   # CovPokElec = 0.7
+#
 #    processes[10] = Process(target=chart10)   # sensor = 0.7
 #    processes['10a'] = Process(target=chart10a)   # sensor = 0.7
-
-
-
-
-    #processes[4] = Process(target=chart4)   # airlines
-    #processes[6] = Process(target=chart6)   # higgsorig =
-
-
-    #processes[9] = Process(target=chart9)   # cpe =
-    #processes[10] = Process(target=chart10) # cpeshuf =
-    #processes[13] = Process(target=chart13) # airlineshuf
-
-    #processes[14] = Process(target=chart14) # 3 Covertype
-    #processes[15] = Process(target=chart15) # 3 Airline
-    #processes[16] = Process(target=chart16) # 3 wisdm
-
-    #processes[21] = Process(target=chart21) # Chess shuffled
-    #processes[22] = Process(target=chart22) # Chess shuffled and discretized
-
-
+#
 #    processes[23] = Process(target=chart23) # Synthetic VFDT nominal
 #    processes[24] = Process(target=chart24) # Synthetic EFDT nominal
 
