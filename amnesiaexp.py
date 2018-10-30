@@ -432,6 +432,130 @@ def chart11():
     runMultiStreamExpML("VFDT vs Eidetic VFDT: Abrupt Drift", learners, generators, evaluators, str(11))
 
 
+def chart12():
+
+    learners = [ r"-l trees.VFDT", 
+            r"-l trees.VFDTUnforgetting"]
+    generators= [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 0.7 -z 5 -n 5 -v 5 -r 2 -b 99990000)"
+            ]
+    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    #runexp(learners, generators, evaluators, 3)
+    runMultiStreamExpML("VFDT vs Eidetic VFDT: No Drift", learners, generators, evaluators, str(12))
+
+
+def chart13():
+
+    learners = [ r"-l trees.VFDT", 
+            r"-l trees.VFDTUnforgetting"]
+    generators= [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 0.7 -z 4 -n 4 -v 4 -r 2 -b 99990000)"
+            ]
+    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    #runexp(learners, generators, evaluators, 3)
+    runMultiStreamExpML("VFDT vs Eidetic VFDT: No Drift", learners, generators, evaluators, str(13))
+
+
+def chart14():
+
+    learners = [ r"-l trees.VFDT", 
+            r"-l trees.VFDTUnforgetting"]
+    generators= [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 0.7 -z 3 -n 3 -v 3 -r 2 -b 99990000)"
+            ]
+    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    #runexp(learners, generators, evaluators, 3)
+    runMultiStreamExpML("VFDT vs Eidetic VFDT: No Drift", learners, generators, evaluators, str(14))
+
+
+def chart15():
+
+    learners = [ r"-l trees.VFDT", 
+            r"-l trees.VFDTUnforgetting"]
+    generators= [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 0.7 -z 2 -n 2 -v 2 -r 2 -b 99990000)"
+            ]
+    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    #runexp(learners, generators, evaluators, 3)
+    runMultiStreamExpML("VFDT vs Eidetic VFDT: No Drift", learners, generators, evaluators, str(15))
+
+
+
+#########################################
+
+def chart16():
+
+    learners = [ r"-l trees.VFDT", 
+            r"-l trees.VFDTUnforgetting"]
+    generators= [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 0.7 -z 2 -n 4 -v 4 -r 2 -b 99990000)"
+            ]
+    evaluators = [r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    #runexp(learners, generators, evaluators, 3)
+    runMultiStreamExpML("VFDT vs Eidetic VFDT: No Drift", learners, generators, evaluators, str(16))
+
+
+def chart17():
+
+    learners = [ r"-l trees.VFDT", 
+            r"-l trees.VFDTUnforgetting"]
+    generators= [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 0.7 -z 3 -n 4 -v 4 -r 2 -b 99990000)"
+            ]
+    evaluators = [r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    #runexp(learners, generators, evaluators, 3)
+    runMultiStreamExpML("VFDT vs Eidetic VFDT: No Drift", learners, generators, evaluators, str(17))
+
+
+def chart18():
+
+    learners = [ r"-l trees.VFDT", 
+            r"-l trees.VFDTUnforgetting"]
+    generators= [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 0.7 -z 4 -n 4 -v 4 -r 2 -b 99990000)"
+            ]
+    evaluators = [r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    #runexp(learners, generators, evaluators, 3)
+    runMultiStreamExpML("VFDT vs Eidetic VFDT: No Drift", learners, generators, evaluators, str(18))
+
+#########################################
+
+def chart19():
+
+    learners = [ r"-l trees.VFDT", 
+            r"-l trees.VFDTUnforgetting"]
+    generators= [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 0.7 -z 2 -n 3 -v 3 -r 2 -b 99990000)"
+            ]
+    evaluators = [r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    #runexp(learners, generators, evaluators, 3)
+    runMultiStreamExpML("VFDT vs Eidetic VFDT: No Drift", learners, generators, evaluators, str(19))
+
+
+def chart20():
+
+    learners = [ r"-l trees.VFDT", 
+            r"-l trees.VFDTUnforgetting"]
+    generators= [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 0.7 -z 3 -n 3 -v 3 -r 2 -b 99990000)"
+            ]
+    evaluators = [r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    #runexp(learners, generators, evaluators, 3)
+    runMultiStreamExpML("VFDT vs Eidetic VFDT: No Drift", learners, generators, evaluators, str(20))
+
+
+def chart21():
+
+    learners = [ r"-l trees.VFDT", 
+            r"-l trees.VFDTUnforgetting"]
+    generators= [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 0.7 -z 4 -n 3 -v 3 -r 2 -b 99990000)"
+            ]
+    evaluators = [r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    #runexp(learners, generators, evaluators, 3)
+    runMultiStreamExpML("VFDT vs Eidetic VFDT: No Drift", learners, generators, evaluators, str(21))
+
+
 
 
 
@@ -454,7 +578,17 @@ if __name__=="__main__":
 #    processes[8] = Process(target=chart8) # Recurrent Drift
 #    processes[9] = Process(target=chart9) # Recurrent Drift
 ##    processes[24] = Process(target=chart24) # Synthetic EFDT nominal
-    processes[11] = Process(target=chart11) 
+#    processes[11] = Process(target=chart11)
+#    processes[12] = Process(target=chart12)
+#    processes[13] = Process(target=chart13)
+#    processes[14] = Process(target=chart14)
+#    processes[15] = Process(target=chart15)
+#    processes[16] = Process(target=chart16)
+#    processes[17] = Process(target=chart17)
+#    processes[18] = Process(target=chart18)
+    processes[19] = Process(target=chart19)
+    processes[20] = Process(target=chart20)
+    processes[21] = Process(target=chart21)
 
     #processes[28] = Process(target=chart28)  # Chess
 
