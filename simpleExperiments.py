@@ -53,13 +53,13 @@ class Plot:
       l.set_color(colors[i])
 
     #ax.set_yscale("log")
-    ax.set_ylabel('Error rate', fontsize=27)
-    ax.set_xlabel('Instances (x 1,000)', fontsize=27)
-    ax.xaxis.label.set_size(27)
-    ax.set_ylim([0.0, 0.7])
+    ax.set_ylabel('Error rate', fontsize=22)
+    ax.set_xlabel('Instances (x 1,000)', fontsize=22)
+    ax.xaxis.label.set_size(22)
+    ax.set_ylim([0.0, 1.0])
     ax.set_facecolor((1.0, 1.0, 1.0))
-    ax.tick_params(labelsize=27)
-    legend = ax.legend(loc=1, fancybox=True, prop={'size': 27}, frameon=True) #loc = upper right
+    ax.tick_params(labelsize=22)
+    legend = ax.legend(loc=1, fancybox=True, prop={'size': 22}, frameon=True) #loc = upper right
     legend.get_frame().set_color((1.0,1.0,1.0))
     legend.get_frame().set_alpha(0.7)
 
@@ -67,21 +67,21 @@ class Plot:
     if df_aux is not None:
       ax2 = ax.twinx()
       ax2 = df_aux.plot(style=['-',':'], kind='line', ax=ax2, alpha = 0.8, secondary_y=False)
-      ax2.set_ylabel('Splits', fontsize=27)
-      ax2.tick_params(labelsize=27)
+      ax2.set_ylabel('Splits', fontsize=22)
+      ax2.tick_params(labelsize=22)
       if df_aux.values.max() <= 10:
         ax2.set_yticks(np.arange(0,max(3, df_aux.values.max()+1),1))
       else:
         ax2.set_yticks(np.arange(0,max(3, df_aux.values.max()+1),3))
 	
-      legend2 = ax2.legend(loc=2, fancybox=True, prop={'size': 27}) #loc = upper right
+      legend2 = ax2.legend(loc=2, fancybox=True, prop={'size': 22}) #loc = upper right
       legend2.get_frame().set_alpha(0.1)
 
    # Print the last of the commands used     
     wrapped_cmd = '\n'.join(wrap(cmd, 100))
 
     figure = ax2.get_figure()
-    figure.text(0.5, 0.95, caption, ha='center', fontsize=27)
+    figure.text(0.5, 0.95, caption, ha='center', fontsize=22)
 
     figure.savefig(figPath+'.png', bbox_inches='tight')
 
