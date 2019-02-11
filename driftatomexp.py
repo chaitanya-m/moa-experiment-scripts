@@ -813,10 +813,10 @@ if __name__=="__main__":
 #    processes[28] = Process(target=chart28)
 #    processes[29] = Process(target=chart29)
 
-    processes['30a'] = Process(target=chart30a)
-    processes['30g'] = Process(target=chart30g)
-    processes['30r'] = Process(target=chart30r)
-    processes['30'] = Process(target=chart30)
+#    processes['30a'] = Process(target=chart30a)
+#    processes['30g'] = Process(target=chart30g)
+#    processes['30r'] = Process(target=chart30r)
+#    processes['30'] = Process(target=chart30)
 
 
 
