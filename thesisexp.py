@@ -712,6 +712,54 @@ def chart29():
 #########################################
 
 
+def chart0():
+
+    learners = [ r"-l trees.VFDT", 
+            ]
+    generators= [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 5 -n 5 -v 5 -r 2 -b 150000)"
+            ]
+    evaluators = [r"EvaluatePrequential -i 400000 -f 1000 -q 1000"]
+    #runexp(learners, generators, evaluators, 3)
+    runMultiStreamExpML("VFDT: Abrupt Drift", learners, generators, evaluators, str('0'))
+
+
+def chart1():
+
+    learners = [ r"-l trees.VFDT", 
+            r"-l trees.VFDTUnforgetting"
+            ]
+    generators= [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 5 -n 5 -v 5 -r 2 -b 150000)"
+            ]
+    evaluators = [r"EvaluatePrequential -i 400000 -f 1000 -q 1000"]
+    #runexp(learners, generators, evaluators, 3)
+    runMultiStreamExpML("VFDT: Abrupt Drift", learners, generators, evaluators, str('1'))
+
+def chart2():
+
+    learners = [ r"-l trees.VFDT", 
+            r"-l trees.VFDTUnforgetting"
+            ]
+    generators= [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 3 -n 3 -v 3 -r 2 -b 200000 -d Recurrent)"
+            ]
+    evaluators = [r"EvaluatePrequential -i 2000000 -f 1000 -q 1000"]
+    #runexp(learners, generators, evaluators, 3)
+    runMultiStreamExpML("VFDT: Abrupt Drift", learners, generators, evaluators, str('2'))
+
+
+def chart3():
+
+    learners = [ r"-l trees.VFDT", 
+            r"-l trees.VFDTUnforgetting"]
+    generators= [
+    r"-s (RecurrentConceptDriftStream -x 150000 -y 150000 -z 175 -s (generators.monash.AbruptDriftGenerator -c -o 0.7 -z 5 -n 5 -v 5 -r 2 -b 99999999) -d (generators.monash.AbruptDriftGenerator -c -o 0.7 -z 5 -n 5 -v 5 -r 2 -b 1))"
+            ]
+    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    #runexp(learners, generators, evaluators, 3)
+    runMultiStreamExpML("VFDT vs Eidetic VFDT: Recurrent Drift", learners, generators, evaluators, str('3'))
+
 
 
     # without the main sentinel below code will always get run, even when imported as a module!
@@ -719,10 +767,10 @@ if __name__=="__main__":
 
     processes = {}
 #
-#    processes[0] = Process(target=chart0)  #Recurrent Drift
-#    processes[1] = Process(target=chart1)  #Recurrent Drift
-#    processes[2] = Process(target=chart2)  #Recurrent Drift
-#    processes[3] = Process(target=chart3)  #Recurrent Drift
+#    processes[0] = Process(target=chart0)  # Just VFDT
+#    processes[1] = Process(target=chart1)  # VFDT and EideticVFDT
+    processes[2] = Process(target=chart2)  # Recurrent Drift
+#    processes[3] = Process(target=chart3)  # Recurrent, Exponential decay in second concept
 #    processes[4] = Process(target=chart4)  #Recurrent Drift
 #    processes[5] = Process(target=chart5)  #Recurrent Drift
 #    processes[6] = Process(target=chart6)  #Recurrent Drift

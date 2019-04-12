@@ -57,16 +57,16 @@ def shuffledRealExpOps(title, exp_no, num_streams, learners, generator_template,
     seeded_generators=[]
 
 #================== Run without this in order to not have to redo all the shuffling
-    # Generate the shuffled tails for the streams
-    for i in range(0, num_streams):
-
-      subprocesses.append(subprocess.Popen(['shuf -o ' + shuf_prefix + str(i) + ' ' + tail_prefix + ' '
-	+ string.replace(random_source_str, 'seed', str(i)) ], shell=True, executable = '/bin/bash'))
-    # Need executable = /bin/bash, Otherwise it will use /bin/sh, which on Ubuntu is dash, a basic shell that doesn't recognize ( symbols
-
-    exit_codes = [p.wait() for p in subprocesses] # Wait- Ensure all shuffled tails have been created    
-    subprocesses = []
-
+#    # Generate the shuffled tails for the streams
+#    for i in range(0, num_streams):
+#
+#      subprocesses.append(subprocess.Popen(['shuf -o ' + shuf_prefix + str(i) + ' ' + tail_prefix + ' '
+#	+ string.replace(random_source_str, 'seed', str(i)) ], shell=True, executable = '/bin/bash'))
+#    # Need executable = /bin/bash, Otherwise it will use /bin/sh, which on Ubuntu is dash, a basic shell that doesn't recognize ( symbols
+#
+#    exit_codes = [p.wait() for p in subprocesses] # Wait- Ensure all shuffled tails have been created    
+#    subprocesses = []
+#
 #==================
 
     # Generate the final arffs through concatenation with heads, and the respective generators
@@ -76,11 +76,11 @@ def shuffledRealExpOps(title, exp_no, num_streams, learners, generator_template,
 
 
 #================== Run without this in order to not have to redo all the shuffling
-      print(re.sub('(\/.*)+\.arff', files[i], generator_template))
-      subprocesses.append(subprocess.Popen(['cat ' + ' ' + head_prefix + ' ' + 
-	' ' + shuf_prefix + str(i) +'>'+ str(files[i])], shell=True, executable = '/bin/bash'))
-    exit_codes = [p.wait() for p in subprocesses]
-    subprocesses = []
+#      print(re.sub('(\/.*)+\.arff', files[i], generator_template))
+#      subprocesses.append(subprocess.Popen(['cat ' + ' ' + head_prefix + ' ' + 
+#	' ' + shuf_prefix + str(i) +'>'+ str(files[i])], shell=True, executable = '/bin/bash'))
+#    exit_codes = [p.wait() for p in subprocesses]
+#    subprocesses = []
 #==================
 
 
@@ -399,8 +399,8 @@ def chart9a():
     generators = [
       r"-s (ArffFileStream -f /mnt/datasets/cpe/cpe.arff -c -1)"
     ]
-    evaluators = [ r"EvaluatePrequential -i 20000000 -f 1000 -q 1000"]
-    runexp(learners, generators, evaluators, '9a')
+    evaluators = [ r"EvaluatePrequential -i 20000 -f 1000 -q 1000"]
+    runexp("CovPokElec", learners, generators, evaluators, '9a')
 
 
 def chart10():
@@ -592,8 +592,8 @@ def chart23():
             r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 5 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
 
     ]
-    evaluators = [ r"EvaluatePrequential -i 100000000 -f 1000 -q 1000" ]
-    num_rows = int(100000000/1000)
+    evaluators = [ r"EvaluatePrequential -i 3000000 -f 1000 -q 1000" ]
+    num_rows = int(3000000/1000)
 
 
     all_processes = []
@@ -682,7 +682,7 @@ def chart23():
     #split_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Split.csv")
 
     #se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(23).zfill(3), split_df)
-    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(23).zfill(3), None)
+    se.Plot.plot_df("(a) VFDT: the current de facto standard for incremental tree learning", error_df, "Error", mcv.FIG_DIR+"/"+str(23).zfill(3), None)
 
 
 def chart24():
@@ -695,8 +695,8 @@ def chart24():
             r"-s (generators.RandomTreeGenerator -r 1 -i 1 -c 5 -o 5 -u 0 -v 5 -d 5 -l 3 -f 0.15)",
 
     ]
-    evaluators = [ r"EvaluatePrequential -i 100000000 -f 1000 -q 1000" ]
-    num_rows = int(100000000/1000) #MAGIC NUMBER
+    evaluators = [ r"EvaluatePrequential -i 3000000 -f 1000 -q 1000" ]
+    num_rows = int(3000000/1000) #MAGIC NUMBER
 
 
     all_processes = []
@@ -785,7 +785,7 @@ def chart24():
     #split_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Split.csv")
 
     #se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(24).zfill(3), split_df)
-    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(24).zfill(3), None)
+    se.Plot.plot_df("(b) EFDT: our more statistically efficient variant", error_df, "Error", mcv.FIG_DIR+"/"+str(24).zfill(3), None)
 
 def chart26():
 
@@ -820,7 +820,7 @@ if __name__=="__main__":
 
     processes = {}
 
-
+#
 #    processes['5'] = Process(target=chart5)   # kddshuf = use rangehigh 0.025 for this
 #    processes['5a'] = Process(target=chart5a) # kdd98 = use 0.7, halve linewidth and increase dash diff size
 #
@@ -837,7 +837,7 @@ if __name__=="__main__":
 #    processes['20a'] = Process(target=chart20a)  # Fonts = 1.0
 
 #    processes[2] = Process(target=chart2)   # wisdmshuf = 0.7
-    processes['2a'] = Process(target=chart2a)   # wisdm = 0.7
+#    processes['2a'] = Process(target=chart2a)   # wisdm = 0.7
 
 #    processes[19] = Process(target=chart19) # PAMAP2 9 subjects shuffled = 0.7
 #    processes['19a'] = Process(target=chart19a) # PAMAP2 = 1.0
@@ -847,16 +847,16 @@ if __name__=="__main__":
 
 #    processes[6] = Process(target=chart6) # Higgs shuffled = 0.7
 #    processes['6a'] = Process(target=chart6a) # Higgs = 0.7
-####This is so, so big that it breaks python. Make sure suffling and file creation works manually.
-#
+###This is so, so big that it breaks python. Make sure suffling and file creation works manually.
+
 #    processes[1] = Process(target=chart1)   # hepmass shuffled = 0.7
 #    processes['1a'] = Process(target=chart1a)   # hepmass = 0.7
-#
+
 #    processes[3] = Process(target=chart3)   # susy = 0.7
 #    processes['3a'] = Process(target=chart3a)   # susy = 0.7
-#
-#    #processes[9] = Process(target=chart9)   # CovPokElec = 0.7
-#    #processes['9a'] = Process(target=chart9a)   # CovPokElec = 0.7
+
+#     processes[9] = Process(target=chart9)   # CovPokElec = 0.7
+    processes['9a'] = Process(target=chart9a)   # CovPokElec = 0.7
 #
 #    processes[10] = Process(target=chart10)   # sensor = 0.7
 #    processes['10a'] = Process(target=chart10a)   # sensor = 0.7

@@ -11,7 +11,7 @@ FIG_DIR = '{home_dir}/exp_dir/figures'.format(home_dir = HOME_DIR)
 OUTPUT_PREFIX = 'out'
 
 #MOA_STUMP = "java -cp commons-math3-3.6.1.jar:guava-22.0.jar:moa.jar:cdgen3.jar -javaagent:sizeofag-1.0.0.jar"
-MOA_STUMP = "java -cp commons-math3-3.6.1.jar:guava-22.0.jar:moa.jar:cdgen3.jar"
+MOA_STUMP = "java -cp commons-math3-3.6.1.jar:guava-22.0.jar:moa.jar:cdgen3.jar -ea -Xmx2g"
 
 NUM_STREAMS = 10
 INDEX_COL = 'learning evaluation instances'
