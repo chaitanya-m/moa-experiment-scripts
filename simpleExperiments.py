@@ -18,6 +18,8 @@ import listOfLearners
 # Most operations are built around directories of csv files
 # files are named with simple numbers and this is important for sorting
 
+fieldStr = """learning evaluation instances,evaluation time (cpu seconds),model cost (RAM-Hours),classified instances,classifications correct (percent),Kappa Statistic (percent),Kappa Temporal Statistic (percent),Kappa M Statistic (percent),model training instances,model serialized size (bytes),tree size (nodes),tree size (leaves),active learning leaves,tree depth,active leaf byte size estimate,inactive leaf byte size estimate,byte size estimate overhead,splits"""
+
 class Generator:
 
     def __init__(self, command):
@@ -203,6 +205,23 @@ class Utils:
 
     return runtimes
 
+
+  @staticmethod
+  def end_stats_from_folder(folder):
+
+    fieldTokens = fieldStr.split(',')
+    dict_of_dicts = {}
+    for field in fieldTokens:
+        dict_of_dicts[field] = dict()
+    files = sorted(os.listdir(folder))
+    for filename in files:
+      file_df = Utils.file_to_dataframe(folder+'/'+filename)
+      for field in dict_of_dicts.keys():
+      dict_of_dicts[field][filename] = file_df[field].iloc[-1]
+
+    return dict_of_dicts
+
+
   @staticmethod
   def split_df_from_folder(folder):
     split_df = pd.DataFrame([])  
@@ -229,4 +248,8 @@ class Utils:
       split_df[str(filename)] = splitArray
 
     return split_df
+
+"""
+learning evaluation instances,evaluation time (cpu seconds),model cost (RAM-Hours),classified instances,classifications correct (percent),Kappa Statistic (percent),Kappa Temporal Statistic (percent),Kappa M Statistic (percent),model training instances,model serialized size (bytes),tree size (nodes),tree size (leaves),active learning leaves,tree depth,active leaf byte size estimate,inactive leaf byte size estimate,byte size estimate overhead,splits
+"""
 
