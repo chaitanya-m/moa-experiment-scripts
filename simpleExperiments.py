@@ -18,7 +18,6 @@ import listOfLearners
 # Most operations are built around directories of csv files
 # files are named with simple numbers and this is important for sorting
 
-fieldStr = """learning evaluation instances,evaluation time (cpu seconds),model cost (RAM-Hours),classified instances,classifications correct (percent),Kappa Statistic (percent),Kappa Temporal Statistic (percent),Kappa M Statistic (percent),model training instances,model serialized size (bytes),tree size (nodes),tree size (leaves),active learning leaves,tree depth,active leaf byte size estimate,inactive leaf byte size estimate,byte size estimate overhead,splits"""
 
 class Generator:
 
@@ -33,7 +32,7 @@ class Plot:
   #def __init__(self):
 
   @staticmethod
-  def plot_df(caption,data_frame, cmd, figPath, df_aux = None):
+  def plot_df(caption,data_frame, cmd, figPath, df_aux = None, df_end = None):
 
    # matplotlib.rcParams.update({'font.size': 24})
     # theres a whole bunch of available styles
@@ -86,6 +85,17 @@ class Plot:
     figure.text(0.5, 0.95, caption, ha='center', fontsize=22)
 
     figure.savefig(figPath+'.png', bbox_inches='tight')
+
+    print df_end
+
+    #ax = plt.subplot(111, frame_on=False) # no visible frame
+    #ax.xaxis.set_visible(False)  # hide the x axis
+    #ax.yaxis.set_visible(False)  # hide the y axis
+
+    #table(ax, df_end)  # where df is your data frame
+
+    #plt.savefig(figPath+'table.png', bbox_inches='tight')
+
 
 class Experiment:
 
@@ -209,7 +219,7 @@ class Utils:
   @staticmethod
   def end_stats_from_folder(folder):
 
-    fieldTokens = fieldStr.split(',')
+    fieldTokens = mcv.FIELDS.split(',')
     dict_of_dicts = {}
     for field in fieldTokens:
         dict_of_dicts[field] = dict()
@@ -217,7 +227,7 @@ class Utils:
     for filename in files:
       file_df = Utils.file_to_dataframe(folder+'/'+filename)
       for field in dict_of_dicts.keys():
-      dict_of_dicts[field][filename] = file_df[field].iloc[-1]
+        dict_of_dicts[field][filename] = file_df[field].iloc[-1]
 
     return dict_of_dicts
 

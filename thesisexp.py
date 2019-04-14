@@ -26,36 +26,38 @@ def runexp(learners, generators, evaluators, suffix):
     error_df = se.Utils.error_df_from_folder(output_dir)
     runtime_dict = se.Utils.runtime_dict_from_folder(output_dir)
     split_df = se.Utils.split_df_from_folder(output_dir)
+    end_stats_from_folder_dict = se.Utils.end_stats_from_folder(output_dir)
 
-    new_col_names = ["0:VFDT", "1:EideticVFDT"]
+    new_col_names = learners #["0:VFDT", "1:EideticVFDT"]
     for col in error_df.columns:
         new_col_names[int(col)] = (new_col_names[int(col)] + " | T:" + ("%.2f s"%runtime_dict[col]) + " | E: " + ("%.4f"%error_df[col].mean()))
     error_df.columns = new_col_names
 
-    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), split_df)
+    se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), split_df, end_stats_from_folder_dict)
 
 
 def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_streams=num_streams_to_average):
     # This one does Multiple Learners and a Single Generator on one plot
 
-    new_col_names = ["VFDT", "EideticVFDT"]
+    new_col_names = [learners[i]+" "+ generators[j] 
+            for i in range(len(learners)) for j in range(len(generators))] #["VFDT", "EideticVFDT"]
     #new_col_names = ["HAT", "Eidetic HAT"]
     all_processes=[]
     # get 10 stream average for each learner
-    gen_no = 0
     lrn_no = 0
 
     exp_dir = mcv.OUTPUT_DIR + "/" + str(suffix) # folder for this experiment
     output_dirs = []
     
     for learner in learners:
+        gen_no = 0
         lrn_no += 1
-        lrn_dir = exp_dir + '/' + str(lrn_no)
+        lrn_dir = exp_dir + '/' + str(lrn_no) + '.' +learner
 
         for gen_string in generators:
             gen_no += 1
             seeded_generators = []
-            output_dir = lrn_dir+ "/" + str(gen_no)
+            output_dir = lrn_dir+ "/" + str(gen_no) + '.' + gen_string
             output_dirs.append(output_dir)
     
             # num_streams streams per generator
@@ -82,7 +84,14 @@ def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_str
         # Dataframe that contains all the mean split columns for the experiments
     split_df = pd.DataFrame([])
     
+        # create dictionaries for other variables
+    fieldTokens = mcv.FIELDS.split(',')
+    dict_of_dicts = {}
+    for field in fieldTokens:
+        dict_of_dicts[field] = dict()
+
         # average the streams, then plot
+
     for folder in output_dirs:
         files = [os.path.join(folder, f) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
         dataframes = []
@@ -122,10 +131,17 @@ def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_str
         average_error = all_stream_mean_df['error'].sum()/num_rows
         cpu_time = all_stream_mean_df['evaluation time (cpu seconds)'].iloc[num_rows-1] # yes this is avg cpu_time
 
-        error_df["Learner: " + new_col_names[int(os.path.basename(os.path.normpath(folder)))-1] + " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.4f"%average_error) + ' |'] = all_stream_mean_df['error']
-        split_df["Splits: " + new_col_names[int(os.path.basename(os.path.normpath(folder)))-1] + " "] = all_stream_mean_df['splits']
+        error_df["Learner: " + folder.replace(exp_dir,'')
+                #new_col_names[int(os.path.basename(os.path.normpath(folder)))-1] 
+                + " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.4f"%average_error) + ' |'] = all_stream_mean_df['error']
+        split_df["Splits: " + folder.replace(exp_dir,'')
+                #new_col_names[int(os.path.basename(os.path.normpath(folder)))-1] 
+                + " "] = all_stream_mean_df['splits']
 
         mean_dataframes.append(all_stream_mean_df)
+
+        for field in dict_of_dicts.keys():
+            dict_of_dicts[field][folder.replace(exp_dir,'')] = all_stream_mean_df[field].iloc[-1]
 
     # Set the index column
     # error_df[mcv.INDEX_COL]
@@ -139,7 +155,10 @@ def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_str
 
     #se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(23).zfill(3), split_df)
 #    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), split_df)
-    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), None)
+
+    #df_end = pd.concat({k: pd.DataFrame.from_dict(v, 'index') for k, v in dict_of_dicts.items()}, axis=0)
+    df_end = pd.DataFrame(dict_of_dicts).T
+    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), None, df_end)
 
 
 def shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix):
@@ -744,7 +763,7 @@ def chart2():
     generators= [
         r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 3 -n 3 -v 3 -r 2 -b 200000 -d Recurrent)"
             ]
-    evaluators = [r"EvaluatePrequential -i 2000000 -f 1000 -q 1000"]
+    evaluators = [r"EvaluatePrequential -i 20000 -f 1000 -q 1000"]
     #runexp(learners, generators, evaluators, 3)
     runMultiStreamExpML("VFDT: Abrupt Drift", learners, generators, evaluators, str('2'))
 
