@@ -52,12 +52,12 @@ def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_str
     for learner in learners:
         gen_no = 0
         lrn_no += 1
-        lrn_dir = exp_dir + '/' + str(lrn_no) + '.' +learner
+        lrn_dir = exp_dir + '/' + str(lrn_no) + ':' +learner
 
         for gen_string in generators:
             gen_no += 1
             seeded_generators = []
-            output_dir = lrn_dir+ "/" + str(gen_no) + '.' + gen_string
+            output_dir = lrn_dir+ "/" + str(gen_no) + ':' + gen_string
             output_dirs.append(output_dir)
     
             # num_streams streams per generator
@@ -86,9 +86,13 @@ def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_str
     
         # create dictionaries for other variables
     fieldTokens = mcv.FIELDS.split(',')
+    fieldTokensAvg = mcv.FIELDS_AVG.split(',')
     dict_of_dicts = {}
+    dict_of_dicts_avg = {}
     for field in fieldTokens:
         dict_of_dicts[field] = dict()
+    for field in fieldTokensAvg:
+        dict_of_dicts_avg[field] = dict()
 
         # average the streams, then plot
 
@@ -130,7 +134,6 @@ def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_str
       #error_df[str(folder)] = all_stream_mean_df['error'] 
         average_error = all_stream_mean_df['error'].sum()/num_rows
         cpu_time = all_stream_mean_df['evaluation time (cpu seconds)'].iloc[num_rows-1] # yes this is avg cpu_time
-
         error_df["Learner: " + folder.replace(exp_dir,'')
                 #new_col_names[int(os.path.basename(os.path.normpath(folder)))-1] 
                 + " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.4f"%average_error) + ' |'] = all_stream_mean_df['error']
@@ -140,9 +143,11 @@ def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_str
 
         mean_dataframes.append(all_stream_mean_df)
 
+
         for field in dict_of_dicts.keys():
             dict_of_dicts[field][folder.replace(exp_dir,'')] = all_stream_mean_df[field].iloc[-1]
-
+        for field in dict_of_dicts_avg.keys():
+            dict_of_dicts_avg[field][folder.replace(exp_dir,'')] = all_stream_mean_df[field].sum()/num_rows
     # Set the index column
     # error_df[mcv.INDEX_COL]
     error_df[mcv.INDEX_COL] = mean_dataframes[0][mcv.INDEX_COL]/1000 #MAGIC
@@ -158,7 +163,8 @@ def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_str
 
     #df_end = pd.concat({k: pd.DataFrame.from_dict(v, 'index') for k, v in dict_of_dicts.items()}, axis=0)
     df_end = pd.DataFrame(dict_of_dicts).T # get dataframe with final values
-    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), None, df_end)
+    df_avg = pd.DataFrame(dict_of_dicts_avg).T # get dataframe with final values
+    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), None, df_end, df_avg)
 
 
 def shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix):
