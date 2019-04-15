@@ -36,11 +36,11 @@ def runexp(learners, generators, evaluators, suffix):
     se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), split_df, end_stats_from_folder_dict)
 
 
-def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_streams=num_streams_to_average):
+def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_streams=num_streams_to_average, new_col_names=None):
     # This one does Multiple Learners and a Single Generator on one plot
 
-    new_col_names = [learners[i]+" "+ generators[j] 
-            for i in range(len(learners)) for j in range(len(generators))] #["VFDT", "EideticVFDT"]
+    #new_col_names = [learners[i]+" "+ generators[j] 
+            #for i in range(len(learners)) for j in range(len(generators))] #["VFDT", "EideticVFDT"]
     #new_col_names = ["HAT", "Eidetic HAT"]
     all_processes=[]
     # get 10 stream average for each learner
@@ -48,6 +48,8 @@ def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_str
 
     exp_dir = mcv.OUTPUT_DIR + "/" + str(suffix) # folder for this experiment
     output_dirs = []
+
+    new_col_names_counter = 0
     
     for learner in learners:
         gen_no = 0
@@ -134,11 +136,13 @@ def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_str
       #error_df[str(folder)] = all_stream_mean_df['error'] 
         average_error = all_stream_mean_df['error'].sum()/num_rows
         cpu_time = all_stream_mean_df['evaluation time (cpu seconds)'].iloc[num_rows-1] # yes this is avg cpu_time
-        error_df["Learner: " + folder.replace(exp_dir,'')
-                #new_col_names[int(os.path.basename(os.path.normpath(folder)))-1] 
+        error_df[folder.replace(exp_dir,'')
+                #new_col_names[int(os.path.basename(os.path.normpath(folder)))-1]
+                #new_col_names[col_name_counter] # Use for papers, pass new_col_names
                 + " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.4f"%average_error) + ' |'] = all_stream_mean_df['error']
         split_df["Splits: " + folder.replace(exp_dir,'')
                 #new_col_names[int(os.path.basename(os.path.normpath(folder)))-1] 
+                #new_col_names[col_name_counter] # Use for papers, pass new_col_names
                 + " "] = all_stream_mean_df['splits']
 
         mean_dataframes.append(all_stream_mean_df)
@@ -148,6 +152,8 @@ def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_str
             dict_of_dicts[field][folder.replace(exp_dir,'')] = all_stream_mean_df[field].iloc[-1]
         for field in dict_of_dicts_avg.keys():
             dict_of_dicts_avg[field][folder.replace(exp_dir,'')] = all_stream_mean_df[field].sum()/num_rows
+
+        new_col_names_counter += 1
     # Set the index column
     # error_df[mcv.INDEX_COL]
     error_df[mcv.INDEX_COL] = mean_dataframes[0][mcv.INDEX_COL]/1000 #MAGIC
