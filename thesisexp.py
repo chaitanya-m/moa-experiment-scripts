@@ -157,7 +157,7 @@ def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_str
 #    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), split_df)
 
     #df_end = pd.concat({k: pd.DataFrame.from_dict(v, 'index') for k, v in dict_of_dicts.items()}, axis=0)
-    df_end = pd.DataFrame(dict_of_dicts).T
+    df_end = pd.DataFrame(dict_of_dicts).T # get dataframe with final values
     se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), None, df_end)
 
 

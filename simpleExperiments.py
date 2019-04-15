@@ -3,6 +3,7 @@ import os, subprocess, shlex, shutil
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
+import matplotlib.gridspec as gridspec
 import pylab
 import numpy as np
 
@@ -45,7 +46,10 @@ class Plot:
     alphas = [0.5, 1.0, 0.9, 0.8, 0.8]
     colors = ['green','black','red','blue', 'magenta']
 
-    ax = data_frame.plot(style=linestyles,figsize=(18,6))
+    gs = gridspec.GridSpec(2, 1)
+
+    ax = plt.subplot(gs[0])
+    data_frame.plot(style=linestyles,figsize=(18,6), ax = ax)
 #   use this as necessary
     for i, l in enumerate(ax.lines):
       plt.setp(l, linewidth=linewidths[i])
@@ -86,16 +90,31 @@ class Plot:
 
     figure.savefig(figPath+'.png', bbox_inches='tight')
 
-    print df_end
+   
+    df_end.columns = df_end.columns.str.wrap(50)
+    #print df_end
 
-    #ax = plt.subplot(111, frame_on=False) # no visible frame
-    #ax.xaxis.set_visible(False)  # hide the x axis
-    #ax.yaxis.set_visible(False)  # hide the y axis
 
-    #table(ax, df_end)  # where df is your data frame
+    ax3 = plt.subplot(gs[1])
+    #ax3 = plt.subplot(111, frame_on=False) # no visible frame
+    #ax3 = df_end.plot() # no visible frame
 
-    #plt.savefig(figPath+'table.png', bbox_inches='tight')
+    endTable = pd.plotting.table(ax3, df_end, colWidths = [0.25 for x in df_end.columns], loc = "upper center")  # where df is your data frame
+    ax3.xaxis.set_visible(False)  # hide the x axis
+    ax3.yaxis.set_visible(False)  # hide the y axis
+    plt.axis('off')
 
+    cellDict = endTable.get_celld()
+    for i in range(0,len(df_end.columns)):
+        cellDict[(0,i)].set_height(.3)
+    #for j in range(1,len(tab)+1):
+    #    cellDict[(j,i)].set_height(.2)
+    figure2 = ax3.get_figure()
+    #figure2.text( "End of run measurements", ha='center', fontsize=22)
+    figure2.tight_layout()
+
+    figure2.savefig(figPath+'table.png', bbox_inches='tight')
+    plt.show()
 
 class Experiment:
 
