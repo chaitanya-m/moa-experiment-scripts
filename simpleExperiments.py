@@ -45,11 +45,17 @@ class Plot:
     dashes = [[4,1], [], [4,1,1,1], [1, 1], []]
     alphas = [0.5, 1.0, 0.9, 0.8, 0.8]
     colors = ['green','black','red','blue', 'magenta']
+    cellHeight = 0.057
+    headerHeight = 0.2
 
-    fig = plt.figure(figsize=(18, 6))
-    gs = gridspec.GridSpec(nrows=1, ncols=1, height_ratios=[1])
+    fig = plt.figure(figsize=(24, 36))
+    fig.text(0.5,0.9, caption, ha='center', fontsize=30)
+    gs = gridspec.GridSpec(nrows=3, ncols=1, height_ratios=[1.3,1,1.1])
+    gs.update(hspace=0.25)
 
     ax = fig.add_subplot(gs[0])
+    ax3 = fig.add_subplot(gs[1])
+    ax4 = fig.add_subplot(gs[2])
     data_frame.plot(style=linestyles, ax = ax)
 #   use this as necessary
     for i, l in enumerate(ax.lines):
@@ -69,11 +75,11 @@ class Plot:
     #legend = ax.legend(loc=1, fancybox=True, prop={'size': 22}, frameon=True) #loc = upper right
     # use above for papers
 
-    legend = ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),
-            fancybox=True, shadow=True, ncol=1, prop = {'size': 16}) # this one for thesis
+    labels = [ '\n'.join(wrap(l, 50)) for l in data_frame.columns]
+    legend = ax.legend(labels, loc='upper right', #bbox_to_anchor=(0.5, 1.15),
+            fancybox=True, shadow=True, ncol=1, prop = {'size': 18}) # this one for thesis
     legend.get_frame().set_color((1.0,1.0,1.0))
     legend.get_frame().set_alpha(0.7)
-
 
     ax2 = ax
     if df_aux is not None:
@@ -92,12 +98,56 @@ class Plot:
    # Print the last of the commands used     
     wrapped_cmd = '\n'.join(wrap(cmd, 100))
 
-    figure = ax2.get_figure()
-    figure.text(0.5, 0.95, caption, ha='center', fontsize=22)
+    ax4.xaxis.set_visible(False) 
+    ax4.yaxis.set_visible(False)
+    ax4.axis("off")
+    ax4.set_title("Endpoint Averages\n", fontsize=26)
+    table_end = ax4.table(cellText=df_end.values,
+            colLabels=["\n".join(wrap(x)) for x in df_end.columns], 
+            rowLabels=list(df_end.index),loc='center')
+    table_end.auto_set_font_size(False)
+    table_end.set_fontsize(18)
 
-    figure.savefig(figPath+'.png', bbox_inches='tight')
+# the row labels column is... -1 !! But col labels row is 0.
+# This really really messes up indexing
+    cellDict = table_end.get_celld()
+    for i in range(1, len(df_end)+1):
+        for j in range(0,len(df_end.columns)):
+            cellDict[(i,j)].set_height(cellHeight)
+    for i in range(1,len(df_end)+1):
+        cellDict[(i,-1)].set_height(cellHeight)
+    for j in range(0,len(df_end.columns)):
+        cellDict[(0,j)].set_height(headerHeight)
 
-    print df_end
+    #df_end.plot(table=True, ax = ax4)
+    
+    ax3.xaxis.set_visible(False) 
+    ax3.yaxis.set_visible(False)
+    ax3.axis("off")
+    ax3.set_title("Averages of Averages", fontsize=26)
+    table_avg = ax3.table(cellText=df_avg.values,
+            colLabels=["\n".join(wrap(x)) for x in df_avg.columns], 
+            rowLabels=list(df_avg.index),loc='center')
+    table_avg.auto_set_font_size(False)
+    table_avg.set_fontsize(18)
+
+    cellDict = table_avg.get_celld()
+    for i in range(1, len(df_avg)+1):
+        for j in range(0,len(df_avg.columns)):
+            cellDict[(i,j)].set_height(cellHeight)
+    for i in range(1,len(df_avg)+1):
+        cellDict[(i,-1)].set_height(cellHeight)
+    for j in range(0,len(df_avg.columns)):
+        cellDict[(0,j)].set_height(headerHeight)
+
+    #figure = ax2.get_figure()
+
+    #gs.tight_layout(fig, w_pad=0.1)
+    #plt.tight_layout()
+
+    fig.savefig(figPath+'.png', bbox_inches='tight')
+
+    #print df_end
 
     #ax = plt.subplot(111, frame_on=False) # no visible frame
     #ax.xaxis.set_visible(False)  # hide the x axis
