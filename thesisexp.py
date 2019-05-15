@@ -116,22 +116,23 @@ def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_str
 
 
       # Only mark actual splits as 1 and discard the rest of the split counts
-        splitArray = all_stream_mean_df['splits']
-        i = 0
-        while i < splitArray.size-1:
-      #print(str(i+1) + " " + str(splitArray[i+1]) + "\n")
-            diff = math.floor(splitArray[i+1]) - math.floor(splitArray[i])
-            if(diff > 0):
-                splitArray[i+1] = (-1)*diff
-                i = i+2
-            else:
-                i=i+1
-        for i in range(splitArray.size):
-            if(splitArray[i] > 0):
-                splitArray[i] = 0
-            else:
-                splitArray[i] = (-1) * splitArray[i]
-
+# splits are only available for some learners.
+#        splitArray = all_stream_mean_df['splits']
+#        i = 0
+#        while i < splitArray.size-1:
+#      #print(str(i+1) + " " + str(splitArray[i+1]) + "\n")
+#            diff = math.floor(splitArray[i+1]) - math.floor(splitArray[i])
+#            if(diff > 0):
+#                splitArray[i+1] = (-1)*diff
+#                i = i+2
+#            else:
+#                i=i+1
+#        for i in range(splitArray.size):
+#            if(splitArray[i] > 0):
+#                splitArray[i] = 0
+#            else:
+#                splitArray[i] = (-1) * splitArray[i]
+#
       # Add this folder's mean error column to the error_df 
       #error_df[str(folder)] = all_stream_mean_df['error'] 
         average_error = all_stream_mean_df['error'].sum()/num_rows
@@ -140,11 +141,13 @@ def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_str
                 #new_col_names[int(os.path.basename(os.path.normpath(folder)))-1]
                 #new_col_names[col_name_counter] # Use for papers, pass new_col_names
                 + " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.4f"%average_error) + ' |'] = all_stream_mean_df['error']
-        split_df["Splits: " + folder.replace(exp_dir,'')
-                #new_col_names[int(os.path.basename(os.path.normpath(folder)))-1] 
-                #new_col_names[col_name_counter] # Use for papers, pass new_col_names
-                + " "] = all_stream_mean_df['splits']
 
+# splits are only available for some learners        
+#        split_df["Splits: " + folder.replace(exp_dir,'')
+#                #new_col_names[int(os.path.basename(os.path.normpath(folder)))-1] 
+#                #new_col_names[col_name_counter] # Use for papers, pass new_col_names
+#                + " "] = all_stream_mean_df['splits']
+#
         mean_dataframes.append(all_stream_mean_df)
 
 
@@ -160,17 +163,20 @@ def runMultiStreamExpML(title, learners, generators, evaluators, suffix, num_str
     error_df = error_df.set_index(mcv.INDEX_COL)
     #error_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Error.csv")
 
-    split_df[mcv.INDEX_COL] = mean_dataframes[0][mcv.INDEX_COL]/1000 #MAGIC
-    split_df = split_df.set_index(mcv.INDEX_COL)
+# splits are only available for some learners        
+#    split_df[mcv.INDEX_COL] = mean_dataframes[0][mcv.INDEX_COL]/1000 #MAGIC
+#    split_df = split_df.set_index(mcv.INDEX_COL)
     #split_df.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Split.csv")
 
     #se.Plot.plot_df(error_df, "Error", mcv.FIG_DIR+"/"+str(23).zfill(3), split_df)
-#    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), split_df)
+    #se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), split_df)
 
     #df_end = pd.concat({k: pd.DataFrame.from_dict(v, 'index') for k, v in dict_of_dicts.items()}, axis=0)
     df_end = pd.DataFrame(dict_of_dicts).T # get dataframe with final values
     df_avg = pd.DataFrame(dict_of_dicts_avg).T # get dataframe with final values
-    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), None, df_end, df_avg)
+    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), None, df_end, df_avg) # no splits
+#    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(suffix).zfill(3), split_df, df_end, df_avg)
+
 
 
 def shuffledRealExpOps(exp_no, num_streams, learners, generator_template, evaluators, shuf_prefix, head_prefix, tail_prefix):
@@ -775,14 +781,16 @@ def chart2():
     generators= [
         r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 3 -n 3 -v 3 -r 2 -b 200000 -d Recurrent)"
             ]
-    evaluators = [r"EvaluatePrequential -i 20000 -f 1000 -q 1000"]
+    evaluators = [r"EvaluatePrequential -i 2000000 -f 1000 -q 1000"]
     #runexp(learners, generators, evaluators, 3)
     runMultiStreamExpML("VFDT: Abrupt Drift", learners, generators, evaluators, str('2'))
 
 
 def chart3():
 
-    learners = [ r"-l trees.VFDT", 
+    learners = [ 
+            
+            r"-l trees.VFDT", 
             r"-l trees.VFDTUnforgetting"]
     generators= [
     r"-s (RecurrentConceptDriftStream -x 150000 -y 150000 -z 175 -s (generators.monash.AbruptDriftGenerator -c -o 0.7 -z 5 -n 5 -v 5 -r 2 -b 99999999) -d (generators.monash.AbruptDriftGenerator -c -o 0.7 -z 5 -n 5 -v 5 -r 2 -b 1))"
@@ -790,6 +798,22 @@ def chart3():
     evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
     #runexp(learners, generators, evaluators, 3)
     runMultiStreamExpML("VFDT vs Eidetic VFDT: Recurrent Drift", learners, generators, evaluators, str('3'))
+
+
+def chart4():
+
+    learners = [ 
+            r"-l (meta.LeveragingBag -l trees.VFDT)",
+            r"-l (meta.LeveragingBag -l trees.EFDT)"
+            ] 
+
+    generators= [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 3 -n 3 -v 3 -r 2 -b 200000 -d Recurrent)"
+            ]
+    evaluators = [r"EvaluatePrequential -i 10000 -f 1000 -q 1000"]
+    #runexp(learners, generators, evaluators, 3)
+    runMultiStreamExpML("VFDT vs Eidetic VFDT: Recurrent Drift", learners, generators, evaluators, str('4'))
+
 
 
 
@@ -800,9 +824,17 @@ if __name__=="__main__":
 #
 #    processes[0] = Process(target=chart0)  # Just VFDT
 #    processes[1] = Process(target=chart1)  # VFDT and EideticVFDT
-    processes[2] = Process(target=chart2)  # Recurrent Drift
+#    processes[2] = Process(target=chart2)  # Recurrent Drift
 #    processes[3] = Process(target=chart3)  # Recurrent, Exponential decay in second concept
-#    processes[4] = Process(target=chart4)  #Recurrent Drift
+
+
+
+
+# Leveraging Bagging
+    processes[4] = Process(target=chart4)  #Recurrent Drift
+
+
+
 #    processes[5] = Process(target=chart5)  #Recurrent Drift
 #    processes[6] = Process(target=chart6)  #Recurrent Drift
 ##    processes[7] = Process(target=chart7)  #Recurrent Drift
