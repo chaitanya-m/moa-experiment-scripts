@@ -35,16 +35,26 @@ class Plot:
   @staticmethod
   def plot_df(caption,data_frame, cmd, figPath, df_aux = None, df_end = None, df_avg = None):
 
+    data_frame = data_frame.round(4)
+
+    if df_aux is not None:
+        df_aux = df_aux.round(4)
+    if df_end is not None:
+        df_end = df_end.round(4)
+    if df_avg is not None:
+        df_avg = df_avg.round(4)
+
+
    # matplotlib.rcParams.update({'font.size': 24})
     # theres a whole bunch of available styles
     matplotlib.style.use('seaborn-ticks')
 #   styles = ['seaborn-darkgrid', 'seaborn-white', 'fivethirtyeight', 'seaborn-bright', 'seaborn-pastel', 'ggplot', 'classic', 'seaborn-notebook', '_classic_test', 'seaborn-ticks', 'seaborn-poster', 'dark_background', 'seaborn-paper', 'seaborn-colorblind', 'seaborn-talk', 'grayscale', 'seaborn-dark-palette', 'seaborn-dark', 'bmh', 'seaborn-deep', 'seaborn', 'seaborn-whitegrid', 'seaborn-muted']
 
-    linestyles = [':', '-', '-.', '--', ':']
-    linewidths = [2, 1.5, 1, 2, 1.5]
-    dashes = [[4,1], [], [4,1,1,1], [1, 1], []]
-    alphas = [0.5, 1.0, 0.9, 0.8, 0.8]
-    colors = ['green','black','red','blue', 'magenta']
+    linestyles = [':', '-', '-.', '--', ':', ':', '-', '-.', '--', ':']
+    linewidths = [2, 1, 1, 2, 1.5, 2, 1, 1, 2, 1.5]
+    dashes = [[4,1], [], [4,1,1,1], [1, 1], [], [3,1], [2,1,2,1], [], [4,1,2,1], [3,1]]
+    alphas = [0.5, 1.0, 0.9, 0.8, 0.8, 1.0, 1.0, 1.0, 0.9, 0.8]
+    colors = ['green','black','red','blue', 'magenta', 'cyan','lime','gray','maroon','fuchsia']
     cellHeight = 0.057
     headerHeight = 0.2
 
@@ -103,7 +113,8 @@ class Plot:
     ax4.axis("off")
     ax4.set_title("Endpoint Averages\n", fontsize=26)
     table_end = ax4.table(cellText=df_end.values,
-            colLabels=["\n".join(wrap(x)) for x in df_end.columns], 
+            colLabels=[x[:3] for x in df_end.columns], 
+            #colLabels=[str(x+1) for x in range(len(df_end.columns))], 
             rowLabels=list(df_end.index),loc='center')
     table_end.auto_set_font_size(False)
     table_end.set_fontsize(18)
@@ -126,7 +137,9 @@ class Plot:
     ax3.axis("off")
     ax3.set_title("Averages of Averages", fontsize=26)
     table_avg = ax3.table(cellText=df_avg.values,
-            colLabels=["\n".join(wrap(x)) for x in df_avg.columns], 
+            colLabels=[x[:3] for x in df_avg.columns], 
+            #colLabels=["\n".join(wrap(x)) for x in df_avg.columns], 
+            #colLabels=[str(x+1) for x in range(len(df_avg.columns))], 
             rowLabels=list(df_avg.index),loc='center')
     table_avg.auto_set_font_size(False)
     table_avg.set_fontsize(18)
