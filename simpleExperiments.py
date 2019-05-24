@@ -235,11 +235,10 @@ class CompositeExperiment:
     # ASSUMPTION: NO MORE THAN 100,000 STREAMS
 
     max_streams = 100000
-    rand_opt = "-r [0-9]+"
 
+    rand_opt = "-r [0-9]+"
     #find locations of -r option occurrences
     occurence_locs = [m.start() for m in re.finditer(rand_opt, gen_string)]
-
     occ = 0
     for i in occurence_locs:
       occ += 1  
@@ -247,6 +246,20 @@ class CompositeExperiment:
       before = gen_string[:i]
       after = gen_string[i:]
       after = re.sub("-r [0-9]+", "-r "+ str(int(randomSeed)+int(occ)*max_streams), after, 1)
+      # update string and move on to next rand_opt
+      gen_string = before + after
+
+
+    rand_opt = "-i [0-9]+"
+    #find locations of -r option occurrences
+    occurence_locs = [m.start() for m in re.finditer(rand_opt, gen_string)]
+    occ = 0
+    for i in occurence_locs:
+      occ += 1  
+      # split before and after the i'th rand_opt occurrence  
+      before = gen_string[:i]
+      after = gen_string[i:]
+      after = re.sub("-i [0-9]+", "-i "+ str(int(randomSeed)+int(occ)*max_streams), after, 1)
       
       # update string and move on to next rand_opt
       gen_string = before + after

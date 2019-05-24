@@ -42,7 +42,7 @@ def getOutputDir(exp_dir, learner, generator):
     output_dir = lrn_dir + '/' + generator
     return output_dir
 
-def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average, numparallel=20):
+def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average, numparallel=100):
     # This one does Multiple Learners and Generators
 
     running_processes = []
@@ -801,25 +801,25 @@ def chart24():
 
 
     gHyperplane = [
-        r"-s (generators.HyperplaneGenerator -k 20 -t 0.01)",
-        r"-s (generators.HyperplaneGenerator -k 20 -t 0.001)",
-        r"-s (generators.HyperplaneGenerator -k 20 -t 0.0001)",
-        r"-s (generators.HyperplaneGenerator -k 5 -t 0.01)",
-        r"-s (generators.HyperplaneGenerator -k 5 -t 0.001)",
-        r"-s (generators.HyperplaneGenerator -k 5 -t 0.0001)",
+        r"-s (generators.HyperplaneGenerator -k 10 -t 0.01 -i 2)",
+        r"-s (generators.HyperplaneGenerator -k 10 -t 0.001 -i 2)",
+        r"-s (generators.HyperplaneGenerator -k 10 -t 0.0001 -i 2)",
+        r"-s (generators.HyperplaneGenerator -k 5 -t 0.01 -i 2)",
+        r"-s (generators.HyperplaneGenerator -k 5 -t 0.001 -i 2)",
+        r"-s (generators.HyperplaneGenerator -k 5 -t 0.0001 -i 2)",
         ]
     gSEA = [
-        r"-s (generators.SEAGenerator -n 50)",
-        r"-s (generators.SEAGenerator -n 50000)",
-        r"-s (generators.SEAGenerator -n 100000)",
-        r"-s (generators.SEAGenerator -n 200000)",
+        r"-s (generators.SEAGenerator -n 50 -i 2)",
+        r"-s (generators.SEAGenerator -n 50000 -i 2)",
+        r"-s (generators.SEAGenerator -n 100000 -i 2)",
+        r"-s (generators.SEAGenerator -n 200000 -i 2)",
         ]
 
     gRBF = [
-        r"-s (generators.RandomRBFGeneratorDrift -s 0.001 -k 50)",
-        r"-s (generators.RandomRBFGeneratorDrift -s 0.001 -k 10)",
-        r"-s (generators.RandomRBFGeneratorDrift -s 0.0001 -k 50)",
-        r"-s (generators.RandomRBFGeneratorDrift -s 0.0001 -k 10)",
+        r"-s (generators.RandomRBFGeneratorDrift -s 0.001 -k 50 -i 2 -r 2)",
+        r"-s (generators.RandomRBFGeneratorDrift -s 0.001 -k 10 -i 2 -r 2)",
+        r"-s (generators.RandomRBFGeneratorDrift -s 0.0001 -k 50 -i 2 -r 2)",
+        r"-s (generators.RandomRBFGeneratorDrift -s 0.0001 -k 10 -i 2 -r 2)",
            ]
  
     gReal= [
@@ -835,25 +835,23 @@ def chart24():
         r"-s (ArffFileStream -f /mnt/datasets/kdd/KDDCup99_full.arff -c -1)",
         r"-s (ArffFileStream -f /mnt/datasets/harpagwag/harpagwag.arff -c -1)",
         r"-s (ArffFileStream -f /mnt/datasets/poker/poker-lsn.arff -c -1)",
-
           ]
 
-    learners = lmetaDecisionStump 
-        + lmetaVFDT 
-        + lmetaEFDT 
-        + ltrees
-
-    generators = gsyntheticNoiseFree
-        + gHyperplane
-        + gSEA
-        + gRBF
-        + gReal
-
+    learners = lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees
     evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
-    #runexp(learners, generators, evaluators, 3)
+    generators = gsyntheticNoiseFree + gHyperplane + gSEA + gRBF
+
     runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10)
-    #time.sleep(10)
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10)
+
+    evaluators = [r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    generators = gReal
+
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1)
+    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1)
+
+    #runexp(learners, generators, evaluators, 3)
+    #time.sleep(10)
 
 
 
