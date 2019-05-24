@@ -10,6 +10,7 @@ import string
 import pandas as pd
 import simpleExperiments as se
 import moa_command_vars as mcv
+import time
 from multiprocessing import Process, Queue
 
 num_streams_to_average = 10
@@ -41,7 +42,7 @@ def getOutputDir(exp_dir, learner, generator):
     output_dir = lrn_dir + '/' + generator
     return output_dir
 
-def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average, numparallel=25):
+def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average, numparallel=20):
     # This one does Multiple Learners and Generators
 
     running_processes = []
@@ -731,25 +732,128 @@ def chart23():
 
 def chart24():
 
-    learners = [ 
+    lmetaDecisionStump = [ 
             r"-l (meta.OzaBag -l trees.DecisionStumpBugfixed)",
-            #r"-l (meta.OzaBagAdwin -l trees.DecisionStumpBugfixed)",
-            #r"-l (meta.LeveragingBag -l trees.DecisionStumpBugfixed)",
-            #r"-l (meta.OzaBoostAdwin -l trees.DecisionStumpBugfixed)",
-            #r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.DecisionStumpBugfixed)",
-            #r"-l (meta.BOLE -l trees.DecisionStumpBugfixed)",
-            #r"-l (meta.OnlineSmoothBoost -l trees.DecisionStumpBugfixed)",
-            #r"-l (meta.OzaBagASHT -l trees.DecisionStump)",
-            #r"-l (meta.OnlineAccuracyUpdatedEnsemble -l trees.DecisionStump)",
+            r"-l (meta.OzaBagAdwin -l trees.DecisionStumpBugfixed)",
+            r"-l (meta.LeveragingBag -l trees.DecisionStumpBugfixed)",
+            r"-l (meta.OzaBoostAdwin -l trees.DecisionStumpBugfixed)",
+            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.DecisionStumpBugfixed)",
+            r"-l (meta.BOLE -l trees.DecisionStumpBugfixed)",
+            r"-l (meta.OnlineSmoothBoost -l trees.DecisionStumpBugfixed)",
+            ]
+    lmetaEFDT = [ 
+            r"-l (meta.OzaBag -l trees.EFDT)",
+            r"-l (meta.OzaBagAdwin -l trees.EFDT)",
+            r"-l (meta.LeveragingBag -l trees.EFDT)",
+            r"-l (meta.OzaBoostAdwin -l trees.EFDT)",
+            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.EFDT)",
+            r"-l (meta.BOLE -l trees.EFDT)",
+            r"-l (meta.OnlineSmoothBoost -l trees.EFDT)",
+            r"-l (meta.ARF -l ARFEFDT)",
+            ] 
+    lmetaVFDT = [ 
+            r"-l (meta.OzaBag -l trees.VFDT)",
+            r"-l (meta.OzaBagAdwin -l trees.VFDT)",
+            r"-l (meta.LeveragingBag -l trees.VFDT)",
+            r"-l (meta.OzaBoostAdwin -l trees.VFDT)",
+            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.VFDT)",
+            r"-l (meta.BOLE -l trees.VFDT)",
+            r"-l (meta.OnlineSmoothBoost -l trees.VFDT)",
+            r"-l (meta.ARF -l ARFVFDT)",
+            ] 
+    ltrees = [ 
+            r"-l trees.VFDT",
+            r"-l trees.RandomVFDT",
+            r"-l (trees.VFDTDecay -D 0.1)",
+            r"-l (trees.VFDTDecay -D 0.5)",
+            r"-l (trees.VFDTDecay -D 0.9)",
+            r"-l (trees.EFDTDecay -D 0.1)",
+            r"-l (trees.EFDTDecay -D 0.5)",
+            r"-l (trees.EFDTDecay -D 0.9)",
+            r"-l trees.EFDT",
+            r"-l trees.EFDTBoost",
+            r"-l trees.HATADWIN",
+            r"-l trees.HATErrorRedist",
+            r"-l trees.CVFDT",
+            r"-l trees.ECVFDT",
+            r"-l trees.DecisionStumpBugfixed",
             ] 
 
-    generators= [
+
+
+
+
+    gsyntheticNoiseFree = [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 2 -n 2 -v 2 -r 2 -b 200000 -d Recurrent)",
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 3 -n 2 -v 2 -r 2 -b 200000 -d Recurrent)",
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 4 -n 2 -v 2 -r 2 -b 200000 -d Recurrent)",
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 5 -n 2 -v 2 -r 2 -b 200000 -d Recurrent)",
+
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 3 -n 3 -v 2 -r 2 -b 200000 -d Recurrent)",
         r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 3 -n 3 -v 3 -r 2 -b 200000 -d Recurrent)",
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 3 -n 3 -v 4 -r 2 -b 200000 -d Recurrent)",
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 3 -n 3 -v 5 -r 2 -b 200000 -d Recurrent)",
+
+
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 4 -n 4 -v 4 -r 2 -b 200000 -d Recurrent)",
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 5 -n 5 -v 5 -r 2 -b 200000 -d Recurrent)",
           ]
-    evaluators = [r"EvaluatePrequential -i 2000 -f 1000 -q 1000"]
+
+
+    gHyperplane = [
+        r"-s (generators.HyperplaneGenerator -k 20 -t 0.01)",
+        r"-s (generators.HyperplaneGenerator -k 20 -t 0.001)",
+        r"-s (generators.HyperplaneGenerator -k 20 -t 0.0001)",
+        r"-s (generators.HyperplaneGenerator -k 5 -t 0.01)",
+        r"-s (generators.HyperplaneGenerator -k 5 -t 0.001)",
+        r"-s (generators.HyperplaneGenerator -k 5 -t 0.0001)",
+        ]
+    gSEA = [
+        r"-s (generators.SEAGenerator -n 50)",
+        r"-s (generators.SEAGenerator -n 50000)",
+        r"-s (generators.SEAGenerator -n 100000)",
+        r"-s (generators.SEAGenerator -n 200000)",
+        ]
+
+    gRBF = [
+        r"-s (generators.RandomRBFGeneratorDrift -s 0.001 -k 50)",
+        r"-s (generators.RandomRBFGeneratorDrift -s 0.001 -k 10)",
+        r"-s (generators.RandomRBFGeneratorDrift -s 0.0001 -k 50)",
+        r"-s (generators.RandomRBFGeneratorDrift -s 0.0001 -k 10)",
+           ]
+ 
+    gReal= [
+        r"-s (ArffFileStream -f /mnt/datasets/covtype/covtypeNorm.arff)",
+        r"-s (ArffFileStream -f /mnt/datasets/cpe/cpe.arff -c -1)",
+        r"-s (ArffFileStream -f /mnt/datasets/sensor/sensor.arff -c -1)",
+        r"-s (ArffFileStream -f /mnt/datasets/airlineshuf.arff -c -1)",
+        r"-s (ArffFileStream -f /mnt/datasets/skin/skin.arff -c -1)",
+        r"-s (ArffFileStream -f /mnt/datasets/pamap2/pamap2_9subjects_unshuf.arff -c 2)",
+        r"-s (ArffFileStream -f /mnt/datasets/fonts/fonts.arff -c 1)",
+        r"-s (ArffFileStream -f /mnt/datasets/chess.arff -c -1)",
+        r"-s (ArffFileStream -f /mnt/datasets/wisdm/wisdm.arff -c -1)",
+        r"-s (ArffFileStream -f /mnt/datasets/kdd/KDDCup99_full.arff -c -1)",
+        r"-s (ArffFileStream -f /mnt/datasets/harpagwag/harpagwag.arff -c -1)",
+        r"-s (ArffFileStream -f /mnt/datasets/poker/poker-lsn.arff -c -1)",
+
+          ]
+
+    learners = lmetaDecisionStump 
+        + lmetaVFDT 
+        + lmetaEFDT 
+        + ltrees
+
+    generators = gsyntheticNoiseFree
+        + gHyperplane
+        + gSEA
+        + gRBF
+        + gReal
+
+    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
     #runexp(learners, generators, evaluators, 3)
-    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10)
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10)
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10)
+    #time.sleep(10)
+    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10)
 
 
 
