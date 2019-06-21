@@ -71,8 +71,11 @@ def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num
             while(sum(x is None for x in polls) > numparallel/2):
                 # poll once a minute to check if process count is down before continuing
                 # None if running and 0 if terminated
-                time.sleep(60) 
-                polls = [p.poll() for p in started_processes]
+                print(polls)
+                print(sum(x is None for x in polls))
+                print("======================================================================\n")
+                time.sleep(5) 
+                polls = [p.poll() for p in running_processes]
    
 def makeChart(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average):
 
