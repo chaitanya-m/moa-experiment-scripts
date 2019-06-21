@@ -42,7 +42,7 @@ def getOutputDir(exp_dir, learner, generator):
     output_dir = lrn_dir + '/' + generator
     return output_dir
 
-def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average, numparallel=100):
+def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average, numparallel=50):
     # This one does Multiple Learners and Generators
 
     running_processes = []
@@ -67,10 +67,13 @@ def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num
             processes = se.CompositeExperiment.make_running_processes(seeded_experiments, output_dir)
             running_processes.extend(processes)
 
-            if len(running_processes) > numparallel:
-                exit_codes = [p.wait() for p in running_processes]
-                running_processes = []
-    
+            polls = [p.poll() for p in running_processes]
+            while(sum(x is None for x in polls) > numparallel/2):
+                # poll once a minute to check if process count is down before continuing
+                # None if running and 0 if terminated
+                time.sleep(60) 
+                polls = [p.poll() for p in started_processes]
+   
 def makeChart(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average):
 
     exp_dir = mcv.OUTPUT_DIR + "/" + str(expDirName) # folder for this experiment
@@ -745,21 +748,26 @@ def chart24():
             r"-l (meta.OzaBag -l trees.EFDT)",
             r"-l (meta.OzaBagAdwin -l trees.EFDT)",
             r"-l (meta.LeveragingBag -l trees.EFDT)",
+            r"-l (meta.OzaBoost -l trees.EFDT)",
             r"-l (meta.OzaBoostAdwin -l trees.EFDT)",
             r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.EFDT)",
             r"-l (meta.BOLE -l trees.EFDT)",
             r"-l (meta.OnlineSmoothBoost -l trees.EFDT)",
             r"-l (meta.ARF -l ARFEFDT)",
+            r"-l (meta.ARF -l (ARFEFDT -g 200 -c 0.0000001) -o (Percentage (M * (m / 100))) -m 80 -q)",
             ] 
     lmetaVFDT = [ 
             r"-l (meta.OzaBag -l trees.VFDT)",
             r"-l (meta.OzaBagAdwin -l trees.VFDT)",
             r"-l (meta.LeveragingBag -l trees.VFDT)",
+            r"-l (meta.OzaBoost -l trees.VFDT)",
             r"-l (meta.OzaBoostAdwin -l trees.VFDT)",
             r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.VFDT)",
             r"-l (meta.BOLE -l trees.VFDT)",
             r"-l (meta.OnlineSmoothBoost -l trees.VFDT)",
             r"-l (meta.ARF -l ARFVFDT)",
+            r"-l (meta.AdaptiveRandomForest)", # original MOA version with buggy HoeffdingTree
+            r"-l (meta.ARF -l (ARFVFDT -g 200 -c 0.0000001) -o (Percentage (M * (m / 100))) -m 80 -q)",
             ] 
     ltrees = [ 
             r"-l trees.VFDT",
@@ -772,7 +780,8 @@ def chart24():
             r"-l (trees.EFDTDecay -D 0.9)",
             r"-l trees.EFDT",
             r"-l trees.EFDTBoost",
-            r"-l trees.HATADWIN",
+            r"-l trees.HAT",
+            r"-l trees.HoeffdingAdaptiveTree",
             r"-l trees.HATErrorRedist",
             r"-l trees.CVFDT",
             r"-l trees.ECVFDT",
@@ -826,7 +835,7 @@ def chart24():
         r"-s (ArffFileStream -f /mnt/datasets/covtype/covtypeNorm.arff)",
         r"-s (ArffFileStream -f /mnt/datasets/cpe/cpe.arff -c -1)",
         r"-s (ArffFileStream -f /mnt/datasets/sensor/sensor.arff -c -1)",
-        r"-s (ArffFileStream -f /mnt/datasets/airlineshuf.arff -c -1)",
+        r"-s (ArffFileStream -f /mnt/datasets/airlines.arff -c -1)",
         r"-s (ArffFileStream -f /mnt/datasets/skin/skin.arff -c -1)",
         r"-s (ArffFileStream -f /mnt/datasets/pamap2/pamap2_9subjects_unshuf.arff -c 2)",
         r"-s (ArffFileStream -f /mnt/datasets/fonts/fonts.arff -c 1)",
@@ -837,18 +846,27 @@ def chart24():
         r"-s (ArffFileStream -f /mnt/datasets/poker/poker-lsn.arff -c -1)",
           ]
 
-    learners = lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees
+    learners =  lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees 
+            #r"-l (meta.ARF -l ARFVFDT)",
+            #r"-l (meta.ARF -l ARFEFDT)",
+            #r"-l (meta.AdaptiveRandomForest)", # original MOA version with buggy HoeffdingTree
+            #r"-l (meta.OzaBoost -l trees.VFDT)",
+            #r"-l (meta.OzaBoost -l trees.EFDT)",
+            #r"-l trees.HATErrorRedist",
+            #]
     evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
     generators = gsyntheticNoiseFree + gHyperplane + gSEA + gRBF
 
-    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10)
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, 75)
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10)
 
-    evaluators = [r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
-    generators = gReal
+    #evaluators = [r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    #generators = gReal
 
-    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1)
-    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1)
+    #generators = [r"-s (ArffFileStream -f /mnt/datasets/wisdm/wisdm.arff -c -1)"]
+    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, 100)
+    #generators = gsyntheticNoiseFree + gHyperplane + gSEA + gRBF + gReal
+    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'))
 
     #runexp(learners, generators, evaluators, 3)
     #time.sleep(10)
