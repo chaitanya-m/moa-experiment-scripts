@@ -849,7 +849,11 @@ def chart24():
         r"-s (ArffFileStream -f /mnt/datasets/poker/poker-lsn.arff -c -1)",
           ]
 
-    learners =  lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees 
+    learners = [
+            r"-l trees.HATEFDT",
+            r"-l trees.HATBoost",
+            ]
+            #lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees 
             #r"-l (meta.ARF -l ARFVFDT)",
             #r"-l (meta.ARF -l ARFEFDT)",
             #r"-l (meta.AdaptiveRandomForest)", # original MOA version with buggy HoeffdingTree
@@ -860,15 +864,13 @@ def chart24():
     evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
     generators = gsyntheticNoiseFree + gHyperplane + gSEA + gRBF
 
-    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, 75)
-    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10)
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, 200)
+    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10)
 
-    #evaluators = [r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
-    #generators = gReal
+    evaluators = [r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    generators = gReal
 
-    #generators = [r"-s (ArffFileStream -f /mnt/datasets/wisdm/wisdm.arff -c -1)"]
-    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, 100)
-    #generators = gsyntheticNoiseFree + gHyperplane + gSEA + gRBF + gReal
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, 100)
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'))
 
     #runexp(learners, generators, evaluators, 3)
