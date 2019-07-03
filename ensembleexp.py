@@ -852,6 +852,15 @@ def chart24():
           ]
 
     learners = [
+            r"-l (trees.EFDTDecay -D 0.1 -V)",
+            r"-l (trees.EFDTDecay -D 0.5 -V)",
+            r"-l (trees.EFDTDecay -D 0.9 -V)",
+            r"-l (trees.EFDTDecay -D 0.1 -A)",
+            r"-l (trees.EFDTDecay -D 0.5 -A)",
+            r"-l (trees.EFDTDecay -D 0.9 -A)",
+            r"-l (trees.EFDTDecay -D 0.1 -V -A)",
+            r"-l (trees.EFDTDecay -D 0.5 -V -A)",
+            r"-l (trees.EFDTDecay -D 0.9 -V -A)",
             ]
             #lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees 
             #r"-l (meta.ARF -l ARFVFDT)",
@@ -870,8 +879,8 @@ def chart24():
     evaluators = [r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
     generators = gReal
 
-    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, 100)
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'))
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, 100)
+    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'))
 
     #runexp(learners, generators, evaluators, 3)
     #time.sleep(10)
