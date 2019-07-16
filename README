@@ -1,0 +1,13 @@
+Instructions for getting EFDT experiments running
+
+1. Get the java repo 
+from git clone https://chaitm@bitbucket.org/chaitm/driftgen.git
+
+2. Get the results repo
+git clone https://chaitm@bitbucket.org/chaitm/exp_dir_results.git
+
+3. Datasets: Rsync push from Nectar remote: sudo rsync -avrzhe ssh datasets/ cman39@monarch-login1.erc.monash.edu:/home/cman39/p2016030006/
+
+4. Experiment scripts:
+
+git clone https://github.com/chaitanya-m/moa-experiment-scripts
