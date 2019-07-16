@@ -1,10 +1,12 @@
 
 #The parameter style in this file is different when the parameters correspond to MOAparameters directly (camel case vs underscores).
 
+PREFIX = "/mnt"
+
 from os.path import expanduser
 HOME_DIR = expanduser("~")
-RESULTS_DIR = "/mnt/exp_dir_results"
-DATA_DIR = "/mnt/datasets"
+RESULTS_DIR = "{prefix}/exp_dir_results".format(prefix = PREFIX)
+DATA_DIR = "{prefix}/datasets".format(prefix = PREFIX)
 
 #HOME_DIR = '/home/chait'
 MOA_DIR = '{home_dir}/javacode/driftgen/dependency_jars'.format(home_dir = HOME_DIR)

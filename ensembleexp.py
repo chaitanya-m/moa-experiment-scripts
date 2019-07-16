@@ -775,12 +775,6 @@ def chart24():
     ltrees = [ 
             r"-l trees.VFDT",
             r"-l trees.RandomVFDT",
-            r"-l (trees.VFDTDecay -D 0.1)",
-            r"-l (trees.VFDTDecay -D 0.5)",
-            r"-l (trees.VFDTDecay -D 0.9)",
-            r"-l (trees.EFDTDecay -D 0.1)",
-            r"-l (trees.EFDTDecay -D 0.5)",
-            r"-l (trees.EFDTDecay -D 0.9)",
             r"-l trees.EFDT",
             r"-l trees.EFDTBoost",
             r"-l trees.HAT",
@@ -790,6 +784,19 @@ def chart24():
             r"-l trees.ECVFDT",
             r"-l trees.DecisionStumpBugfixed",
             r"-l trees.HATEFDT",
+            r"-l trees.HATBoost",
+            r"-l (trees.EFDTDecay -D 0.1 -V)",
+            r"-l (trees.EFDTDecay -D 0.5 -V)",
+            r"-l (trees.EFDTDecay -D 0.9 -V)",
+            r"-l (trees.EFDTDecay -D 0.1 -A)",
+            r"-l (trees.EFDTDecay -D 0.5 -A)",
+            r"-l (trees.EFDTDecay -D 0.9 -A)",
+            r"-l (trees.EFDTDecay -D 0.1 -V -A)",
+            r"-l (trees.EFDTDecay -D 0.5 -V -A)",
+            r"-l (trees.EFDTDecay -D 0.9 -V -A)",
+            r"-l (trees.EFDTDecay -D 0.1 -E -V -A)",
+            r"-l (trees.EFDTDecay -D 0.5 -E -V -A)",
+            r"-l (trees.EFDTDecay -D 0.9 -E -V -A)",
             ] 
 
 
@@ -848,24 +855,17 @@ def chart24():
         r"-s (ArffFileStream -f {dataDir}/kdd/KDDCup99_full.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/harpagwag/harpagwag.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/poker/poker-lsn.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+
+        r"-s (ArffFileStream -f {dataDir}/nbaiot/nbaiot.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/aws/aws_discrete.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/sensortemp2019/gassensor2019discretized.arff -c 2)".format(dataDir = mcv.DATA_DIR),
+
+
           ]
 
-    learners = [
-            r"-l trees.HATBoost",
-            r"-l (trees.EFDTDecay -D 0.1 -V)",
-            r"-l (trees.EFDTDecay -D 0.5 -V)",
-            r"-l (trees.EFDTDecay -D 0.9 -V)",
-            r"-l (trees.EFDTDecay -D 0.1 -A)",
-            r"-l (trees.EFDTDecay -D 0.5 -A)",
-            r"-l (trees.EFDTDecay -D 0.9 -A)",
-            r"-l (trees.EFDTDecay -D 0.1 -V -A)",
-            r"-l (trees.EFDTDecay -D 0.5 -V -A)",
-            r"-l (trees.EFDTDecay -D 0.9 -V -A)",
-            r"-l (trees.EFDTDecay -D 0.1 -E -V -A)",
-            r"-l (trees.EFDTDecay -D 0.5 -E -V -A)",
-            r"-l (trees.EFDTDecay -D 0.9 -E -V -A)",
-            ]
-            #lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees 
+#    learners = [
+#            ]
+            learners = lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees 
             #r"-l (meta.ARF -l ARFVFDT)",
             #r"-l (meta.ARF -l ARFEFDT)",
             #r"-l (meta.AdaptiveRandomForest)", # original MOA version with buggy HoeffdingTree
