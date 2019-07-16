@@ -466,7 +466,7 @@ def chart11():
         r"-s (generators.HyperplaneGenerator -k 10 -t 0.0001)",
         r"-s (generators.SEAGenerator -n 50)",
         r"-s (generators.SEAGenerator -n 50000)",
-        r"-s (ArffFileStream -f /mnt/datasets/covtype/covtypeNorm.arff)"
+        r"-s (ArffFileStream -f {dataDir}/covtype/covtypeNorm.arff)"
            ]
     evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
     #runexp(learners, generators, evaluators, 3)
@@ -545,7 +545,7 @@ def chart15():
         r"-s (generators.HyperplaneGenerator -k 10 -t 0.0001)",
         r"-s (generators.SEAGenerator -n 50)",
         r"-s (generators.SEAGenerator -n 50000)",
-        r"-s (ArffFileStream -f /mnt/datasets/covtype/covtypeNorm.arff)"
+        r"-s (ArffFileStream -f {dataDir}/covtype/covtypeNorm.arff)"
            ]
     evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
     #runexp(learners, generators, evaluators, 3)
@@ -659,7 +659,7 @@ def chart20():
             ] 
 
     generators= [
-        r"-s (ArffFileStream -f /mnt/datasets/covtype/covtypeNorm.arff)"
+        r"-s (ArffFileStream -f {dataDir}/covtype/covtypeNorm.arff)"
           ]
     evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
     #runexp(learners, generators, evaluators, 3)
@@ -682,7 +682,7 @@ def chart21():
             ] 
 
     generators= [
-        r"-s (ArffFileStream -f /mnt/datasets/covtype/covtypeNorm.arff)"
+        r"-s (ArffFileStream -f {dataDir}/covtype/covtypeNorm.arff)"
           ]
     evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
     #runexp(learners, generators, evaluators, 3)
@@ -705,7 +705,7 @@ def chart22():
             ] 
 
     generators= [
-        r"-s (ArffFileStream -f /mnt/datasets/covtype/covtypeNorm.arff)"
+        r"-s (ArffFileStream -f {dataDir}/covtype/covtypeNorm.arff)"
           ]
     evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
     #runexp(learners, generators, evaluators, 3)
@@ -728,7 +728,7 @@ def chart23():
             ] 
 
     generators= [
-        r"-s (ArffFileStream -f /mnt/datasets/covtype/covtypeNorm.arff)"
+        r"-s (ArffFileStream -f {dataDir}/covtype/covtypeNorm.arff)"
           ]
     evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
     #runexp(learners, generators, evaluators, 3)
@@ -836,18 +836,18 @@ def chart24():
            ]
  
     gReal= [
-        r"-s (ArffFileStream -f /mnt/datasets/covtype/covtypeNorm.arff)",
-        r"-s (ArffFileStream -f /mnt/datasets/cpe/cpe.arff -c -1)",
-        r"-s (ArffFileStream -f /mnt/datasets/sensor/sensor.arff -c -1)",
-        r"-s (ArffFileStream -f /mnt/datasets/airlines.arff -c -1)",
-        r"-s (ArffFileStream -f /mnt/datasets/skin/skin.arff -c -1)",
-        r"-s (ArffFileStream -f /mnt/datasets/pamap2/pamap2_9subjects_unshuf.arff -c 2)",
-        r"-s (ArffFileStream -f /mnt/datasets/fonts/fonts.arff -c 1)",
-        r"-s (ArffFileStream -f /mnt/datasets/chess.arff -c -1)",
-        r"-s (ArffFileStream -f /mnt/datasets/wisdm/wisdm.arff -c -1)",
-        r"-s (ArffFileStream -f /mnt/datasets/kdd/KDDCup99_full.arff -c -1)",
-        r"-s (ArffFileStream -f /mnt/datasets/harpagwag/harpagwag.arff -c -1)",
-        r"-s (ArffFileStream -f /mnt/datasets/poker/poker-lsn.arff -c -1)",
+        r"-s (ArffFileStream -f {dataDir}/covtype/covtypeNorm.arff)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/cpe/cpe.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/sensor/sensor.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/airlines.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/skin/skin.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/pamap2/pamap2_9subjects_unshuf.arff -c 2)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/fonts/fonts.arff -c 1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/chess.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/wisdm/wisdm.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/kdd/KDDCup99_full.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/harpagwag/harpagwag.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/poker/poker-lsn.arff -c -1)".format(dataDir = mcv.DATA_DIR),
           ]
 
     learners = [

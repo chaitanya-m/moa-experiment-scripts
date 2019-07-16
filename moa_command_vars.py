@@ -3,12 +3,13 @@
 
 from os.path import expanduser
 HOME_DIR = expanduser("~")
-RESULTS_DIR = "/mnt"
+RESULTS_DIR = "/mnt/exp_dir_results"
+DATA_DIR = "/mnt/datasets"
 
 #HOME_DIR = '/home/chait'
 MOA_DIR = '{home_dir}/javacode/driftgen/dependency_jars'.format(home_dir = HOME_DIR)
-OUTPUT_DIR = '{resultsDir}/exp_dir_results/output'.format(resultsDir = RESULTS_DIR)
-FIG_DIR = '{resultsDir}/exp_dir_results/figures'.format(resultsDir = RESULTS_DIR)
+OUTPUT_DIR = '{resultsDir}/output'.format(resultsDir = RESULTS_DIR)
+FIG_DIR = '{resultsDir}/figures'.format(resultsDir = RESULTS_DIR)
 OUTPUT_PREFIX = 'out'
 
 #MOA_STUMP = "java -cp commons-math3-3.6.1.jar:guava-22.0.jar:moa.jar:cdgen3.jar -javaagent:sizeofag-1.0.0.jar"
