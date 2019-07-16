@@ -843,19 +843,19 @@ def chart24():
            ]
  
     gReal= [
-        r"-s (ArffFileStream -f {dataDir}/covtype/covtypeNorm.arff)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/cpe/cpe.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/sensor/sensor.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/airlines.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/skin/skin.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/pamap2/pamap2_9subjects_unshuf.arff -c 2)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/fonts/fonts.arff -c 1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/chess.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/wisdm/wisdm.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/kdd/KDDCup99_full.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/harpagwag/harpagwag.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/poker/poker-lsn.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-
+#        r"-s (ArffFileStream -f {dataDir}/covtype/covtypeNorm.arff)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/cpe/cpe.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/sensor/sensor.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/airlines.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/skin/skin.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/pamap2/pamap2_9subjects_unshuf.arff -c 2)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/fonts/fonts.arff -c 1)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/chess.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/wisdm/wisdm.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/kdd/KDDCup99_full.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/harpagwag/harpagwag.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/poker/poker-lsn.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+#
         r"-s (ArffFileStream -f {dataDir}/nbaiot/nbaiot.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/aws/aws_discrete.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/sensortemp2019/gassensor2019discretized.arff -c 2)".format(dataDir = mcv.DATA_DIR),
