@@ -1,0 +1,100 @@
+ 2363  ls
+ 2364  head MiniBooNE_PID.txt 
+ 2365  head -n 36500 MiniBooNE_PID.txt > signalEvents
+ 2366  man tail
+ 2367  tail -n 93565 MiniBooNE_PID.txt > noiseEvents
+ 2368  cat signalEvents noiseEvents > joined
+ 2369  diff joined MiniBooNE_PID.txt 
+ 2370  history
+ 2371  ls
+ 2372  rm joined 
+ 2373  vim signalEvents 
+ 2374  head -2 signalEvents 
+ 2375  head -2 signalEvents | sed s/ /,/g
+ 2376  head -2 signalEvents | sed s/ /,/g;
+ 2377  head -2 signalEvents | %sed s/ /,/g
+ 2378  head -2 signalEvents | sed s/ /\,/g
+ 2379  head -2 signalEvents | sed -e s/ /\,/g
+ 2380  man sed
+ 2381  head -2 signalEvents | sed  "s/ /\,/g"
+ 2382  head -2 signalEvents | sed  "s/  /\,/g"
+ 2383  head -2 signalEvents | sed  "s/^/\:/g"
+ 2384  head -2 signalEvents | sed  "s/^  /\:/g"
+ 2385  head -2 signalEvents | sed  "s/^  //g"
+ 2386  head -2 signalEvents 
+ 2387  cat signalEvents | sed -i "s/^  //g"
+ 2388  sed -i "s/^  //g" signalEvents
+ 2389  head -2 signalEvents 
+ 2390  sed -i "s/  /,/g" signalEvents
+ 2391  head -2 signalEvents 
+ 2392  sed -i "s/^  //g" noiseEvents 
+ 2393  sed -i "s/  /,/g" noiseEvents 
+ 2394  head -2 noiseEvents 
+ 2395  head -2 noiseEvents | sed "s/$/,Noise/g"
+ 2396  sed -i "s/$/,Noise/g" noiseEvents 
+ 2397  sed -i "s/$/,Signal/g" signalEvents 
+ 2398  head -2 noiseEvents 
+ 2399  head -2 signalEvents 
+ 2400  cat noiseEvents signalEvents > miniboone.csv
+ 2401  ls
+ 2402  history | grep -rniI "weka"
+ 2403  history
+ 2404  history | grep -rniI cat
+ 2405  history | grep -rniI "cat"
+ 2406  cat history | grep -rniI "cat"
+ 2407  history | grep -rniI "cat"
+ 2408  history | grep -rniI cat
+ 2409  history | grep cat
+ 2410  history | grep weka
+ 2411  java -Xmx20480M -cp  weka.jar weka.core.converters.CSVLoader
+ 2412  java -Xmx20480M -cp  weka.jar weka.core.converters.CSVLoader --help
+ 2413  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader --help
+ 2414  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader 
+ 2415  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader -H miniboone.csv 
+ 2416  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv -H
+ 2417  head -2 miniboone.csv 
+ 2418  sed -i "s/ /,/g" miniboone.csv 
+ 2419  head -2 miniboone.csv 
+ 2420  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv -H
+ 2421  R
+ 2422  ls
+ 2423  for ((i = 0; i < 50; i++)) do cat "X$i" >> header done
+ 2424  for ((i = 0; i < 50; i++)); do cat "X$i" >> header; done
+ 2425  for ((i = 0; i < 50; i++)); do echo "X$i," >> header; done
+ 2426  less header 
+ 2427  for ((i = 0; i < 50; i++)); do printf "X$i," >> header; done
+ 2428  rm header 
+ 2429  for ((i = 0; i < 50; i++)); do printf "X$i," >> header; done
+ 2430  less header 
+ 2431  vim header 
+ 2432  mv header csvheader
+ 2433  cat csvheader miniboone.csv > miniboone.csv 
+ 2434  cat csvheader miniboone.csv > miniboone && mv miniboone miniboone.csv 
+ 2435  less miniboone.csv 
+ 2436  cat noiseEvents signalEvents > miniboone.csv 
+ 2437  less miniboone.csv 
+ 2438  cat csvheader miniboone.csv > miniboone & mv miniboone miniboone.csv 
+ 2439  less miniboone.csv 
+ 2440  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv -H
+ 2441  sed -i "s/ /,/g" miniboone.csv 
+ 2442  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv -H
+ 2443  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv
+ 2444  vim miniboone.csv 
+ 2445  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv
+ 2446  vim miniboone.csv 
+ 2447  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv
+ 2448  history | grep xargs
+ 2449  head -n 3 miniboone.csv > temp & java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader temp
+ 2450  head -n 88 miniboone.csv > temp & java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader temp
+ 2451  head -n 89 miniboone.csv > temp & java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader temp
+ 2452  head -n 90 miniboone.csv > temp & java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader temp
+ 2453  vim miniboone.csv 
+ 2454  sed -i "s/^,//g" miniboone.csv 
+ 2455  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv
+ 2456  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv > miniboone.arff
+ 2457  history | grep weka
+ 2458  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv -B 100000 > miniboone.arff
+ 2459  less miniboone.arff 
+ 2460  history | tail -n 200 > ~/moa-experiment-scripts/dataprep/miniboone
+ 2461  history | tail -n 200
+ 2462  history | tail -n 100 > ~/moa-experiment-scripts/dataprep/miniboone

@@ -141,5 +141,8 @@
 
 #mv nbaiot/nbaiot.csv nbaiot/nbaiotr.csv 
 #cut -f1 -d"," --complement nbaiot/nbaiotr.csv > nbaiot/nbaiot.csv # Much faster!
-java -Xmx30480M -cp  weka.jar weka.core.converters.CSVLoader  ../nbaiot/nbaiot.csv > ../nbaiot/nbaiot.arff
-time java -Xmx50480M -cp  weka.jar weka.core.converters.CSVLoader  ../nbaiot/nbaiot.csv -L "class:ack_mirai,scan_mirai,syn_mirai,udp_mirai,udpplain_mirai,combo_gafgyt,junk_gafgyt,scan_gafgyt,tcp_gafgyt,udp_gafgyt,benign_traffic" -B 100000 > ../nbaiot/nbaiot.arff
+#java -Xmx30480M -cp  weka.jar weka.core.converters.CSVLoader  ../nbaiot/nbaiot.csv > ../nbaiot/nbaiot.arff
+#time java -Xmx50480M -cp  weka.jar weka.core.converters.CSVLoader  ../nbaiot/nbaiot.csv -L "class:ack_mirai,scan_mirai,syn_mirai,udp_mirai,udpplain_mirai,combo_gafgyt,junk_gafgyt,scan_gafgyt,tcp_gafgyt,udp_gafgyt,benign_traffic" -B 100000 > ../nbaiot/nbaiot.arff
+
+
+

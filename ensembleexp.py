@@ -856,16 +856,23 @@ def chart24():
 #        r"-s (ArffFileStream -f {dataDir}/harpagwag/harpagwag.arff -c -1)".format(dataDir = mcv.DATA_DIR),
 #        r"-s (ArffFileStream -f {dataDir}/poker/poker-lsn.arff -c -1)".format(dataDir = mcv.DATA_DIR),
 #
-        r"-s (ArffFileStream -f {dataDir}/nbaiot/nbaiot.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/aws/aws_discrete.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/sensortemp2019/gassensor2019discretized.arff -c 2)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/nbaiot/nbaiot.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/sensortemp2019/gassensor2019discretized.arff -c 2)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/aws/aws_discrete.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+#
+
+        r"-s (ArffFileStream -f {dataDir}/miniboone/miniboone.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/posturespucrio/pucrio.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/localization/localization.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/tnelec/eb.arff -c 3)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/nswelec/elecNormNew.arff -c -1)".format(dataDir = mcv.DATA_DIR),
 
 
           ]
 
 #    learners = [
 #            ]
-            learners = lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees 
+    learners = lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees 
             #r"-l (meta.ARF -l ARFVFDT)",
             #r"-l (meta.ARF -l ARFEFDT)",
             #r"-l (meta.AdaptiveRandomForest)", # original MOA version with buggy HoeffdingTree
@@ -883,10 +890,10 @@ def chart24():
     generators = gReal
 
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, 100)
+    #time.sleep(60)
     makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'))
 
     #runexp(learners, generators, evaluators, 3)
-    #time.sleep(10)
 
 
 

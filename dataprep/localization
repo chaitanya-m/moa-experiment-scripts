@@ -1,0 +1,100 @@
+ 2417  head -2 miniboone.csv 
+ 2418  sed -i "s/ /,/g" miniboone.csv 
+ 2419  head -2 miniboone.csv 
+ 2420  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv -H
+ 2421  R
+ 2422  ls
+ 2423  for ((i = 0; i < 50; i++)) do cat "X$i" >> header done
+ 2424  for ((i = 0; i < 50; i++)); do cat "X$i" >> header; done
+ 2425  for ((i = 0; i < 50; i++)); do echo "X$i," >> header; done
+ 2426  less header 
+ 2427  for ((i = 0; i < 50; i++)); do printf "X$i," >> header; done
+ 2428  rm header 
+ 2429  for ((i = 0; i < 50; i++)); do printf "X$i," >> header; done
+ 2430  less header 
+ 2431  vim header 
+ 2432  mv header csvheader
+ 2433  cat csvheader miniboone.csv > miniboone.csv 
+ 2434  cat csvheader miniboone.csv > miniboone && mv miniboone miniboone.csv 
+ 2435  less miniboone.csv 
+ 2436  cat noiseEvents signalEvents > miniboone.csv 
+ 2437  less miniboone.csv 
+ 2438  cat csvheader miniboone.csv > miniboone & mv miniboone miniboone.csv 
+ 2439  less miniboone.csv 
+ 2440  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv -H
+ 2441  sed -i "s/ /,/g" miniboone.csv 
+ 2442  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv -H
+ 2443  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv
+ 2444  vim miniboone.csv 
+ 2445  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv
+ 2446  vim miniboone.csv 
+ 2447  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv
+ 2448  history | grep xargs
+ 2449  head -n 3 miniboone.csv > temp & java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader temp
+ 2450  head -n 88 miniboone.csv > temp & java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader temp
+ 2451  head -n 89 miniboone.csv > temp & java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader temp
+ 2452  head -n 90 miniboone.csv > temp & java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader temp
+ 2453  vim miniboone.csv 
+ 2454  sed -i "s/^,//g" miniboone.csv 
+ 2455  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv
+ 2456  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv > miniboone.arff
+ 2457  history | grep weka
+ 2458  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader miniboone.csv -B 100000 > miniboone.arff
+ 2459  less miniboone.arff 
+ 2460  history | tail -n 200 > ~/moa-experiment-scripts/dataprep/miniboone
+ 2461  history | tail -n 200
+ 2462  history | tail -n 100 > ~/moa-experiment-scripts/dataprep/miniboone
+ 2463  history | tail -n 100
+ 2464  printf "hello"
+ 2465  printf "hello\n"
+ 2466  scanf
+ 2467  cd ../localization/
+ 2468  ls
+ 2469  head -n 2 ConfLongDemo_JSI.txt 
+ 2470  cut --help
+ 2471  head -n 2 ConfLongDemo_JSI.txt | cut -d, -f
+ 2472  head -n 2 ConfLongDemo_JSI.txt | cut -fd, 
+ 2473  head -n 2 ConfLongDemo_JSI.txt | cut -f -dd, 
+ 2474  head -n 2 ConfLongDemo_JSI.txt | cut -f -d, 
+ 2475  head -n 2 ConfLongDemo_JSI.txt | cut -f -d',' 
+ 2476  head -n 2 ConfLongDemo_JSI.txt | cut -f -d "," 
+ 2477  head -n 2 ConfLongDemo_JSI.txt | cut -f --delimiter=,
+ 2478  head -n 2 ConfLongDemo_JSI.txt | cut -f=1 --delimiter=,
+ 2479  head -n 2 ConfLongDemo_JSI.txt | cut -f1 --delimiter=,
+ 2480  head -n 2 ConfLongDemo_JSI.txt | cut -f2 --delimiter=,
+ 2481  head -n 2 ConfLongDemo_JSI.txt | cut -f3 --delimiter=,
+ 2482  head -n 2 ConfLongDemo_JSI.txt | cut -f4 --delimiter=,
+ 2483  head -n 2 ConfLongDemo_JSI.txt | cut -f-4 --delimiter=,
+ 2484  history | grep cut
+ 2485  head -n 2 ConfLongDemo_JSI.txt | cut -f-4 --delimiter=, --complement
+ 2486  head -n 2 ConfLongDemo_JSI.txt
+ 2487  head -n 2 ConfLongDemo_JSI.txt | cut -f4 --delimiter=, --complement
+ 2488  cat | cut -f4 --delimiter=, --complement
+ 2489  cat ConfLongDemo_JSI.txt | cut -f4 --delimiter=, --complement | head -n 2
+ 2490  cat ConfLongDemo_JSI.txt | cut -f4 --delimiter=, --complement > localization.csv
+ 2491  head -n 3 localization.csv 
+ 2492  for ((i = 0; i < 6; i++ )); do printf "X$i" > csvheader; done
+ 2493  less csvheader 
+ 2494  for ((i = 0; i < 6; i++ )); do printf "X$i," >> csvheader; done
+ 2495  less csvheader 
+ 2496  vim csvheader 
+ 2497  cat csvheader localization.csv > localization & mv localization localization.csv 
+ 2498  head localization.csv 
+ 2499  java -Xmx20480M -cp  ../weka-3-8-3/weka.jar weka.core.converters.CSVLoader localization.csv -B 1000000 > localization.arff
+ 2500  head localization.arff 
+ 2501  head -n 6localization.arff 
+ 2502  head -n 6 localization.arff 
+ 2503  head -n 16 localization.arff 
+ 2504  ls
+ 2505  cd ../
+ 2506  ls
+ 2507  cd kdd
+ 2508  ls
+ 2509  cd ..
+ 2510  ls
+ 2511  cd posturespucrio/
+ 2512  ls
+ 2513  head example-data.dat 
+ 2514  head -20example-data.dat 
+ 2515  head -20 example-data.dat 
+ 2516  history | tail -n 100 > ~/moa-experiment-scripts/dataprep/localization
