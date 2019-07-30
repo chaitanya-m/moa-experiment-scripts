@@ -1,4 +1,7 @@
 
+# -i and -r MOA options are always for random seeds, do not use them for other reasons!
+# Ensure generators in MOA do not misuse -i and -r
+
 import os
 import sys
 import utilities
@@ -42,7 +45,7 @@ def getOutputDir(exp_dir, learner, generator):
     output_dir = lrn_dir + '/' + generator
     return output_dir
 
-def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average, numparallel=50):
+def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average, numparallel=50, shuffle = False):
     # This one does Multiple Learners and Generators
 
     running_processes = []
@@ -52,13 +55,71 @@ def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num
     new_col_names_counter = 0
        
     for learner in learners:
-        for gen_string in generators:
+        for gen_string in generators: # either swap this around or only shuffle with one learner
             output_dir = getOutputDir(exp_dir, learner, gen_string)
             seeded_generators = []
+            subprocesses = []
+            shufprefix = ""
+            tailfile = ""
+            headfile = ""
+
+            if num_streams > 1 and re.search('.arff',gen_string) is not None:
+                output_dir = output_dir + '/shuf'
+                pattern = re.compile("-f ((.*\/)((.*)\.arff))")
+                match = re.search(pattern, gen_string)
+
+
+                filepath = match.group(2)
+                arfffile = match.group(3)
+                filestem = match.group(4)
+
+
+                tailfile = filepath + filestem + "tail"
+                headfile = filepath + filestem + "head"
+
+                shufprefix = filestem+"shuf"
+                # if generator  has .arff in it and num_streams > 1
+                    # put result in the /shuf folder(add shuf to output_dir), and for makeChart, retrieve from the /shuf folder
+                    # get head, which ends with @data and any newlines following it
+                    # get tail, which is everything afterwards
+                    # shuffle the stream tail with randomSeed, this is the current gen_string
+                    # As long as the arff stream doesn't have -i or -r options the multiSeededGenBuilder can be used as is
+                    # merge head and tail, and that's the arff
+                    # add the correct arff strings that will be created
+ 
+
             for randomSeed in range(0, num_streams): # num_streams streams to average per generator
-                gen_cmd = se.CompositeExperiment.multiSeededGenBuilder(gen_string, randomSeed)
+                shuf_gen_string = gen_string
+                if num_streams > 1 and re.search('.arff',gen_string) is not None:
+                    shuf_gen_string = gen_string.replace(arfffile, shufprefix + str(randomSeed) + ".arff")
+
+                # shuffle if real data, otherwise the below function handles synthetic
+                gen_cmd = se.CompositeExperiment.multiSeededGenBuilder(shuf_gen_string, randomSeed)
+                print gen_cmd
                 seeded_generators.append(gen_cmd)
-    
+
+            if num_streams > 1 and shuffle == True and re.search('.arff',gen_string) is not None:
+            # Start the shuffling
+            # Need executable = /bin/bash, Otherwise it will use /bin/sh, 
+            # which on Ubuntu is dash, a basic shell that doesn't recognize ( symbols
+            # start the shuffle process, it will terminate later
+                for randomSeed in range(0, num_streams):
+                    subprocesses.append(subprocess.Popen(['shuf -o ' 
+                        + tailfile + str(randomSeed) + ' ' + tailfile 
+                        + ' ' + string.replace(random_source_str, 'seed', str(randomSeed)) ], 
+                        shell=True, executable = '/bin/bash'))
+ 
+                # Wait- Ensure all shuffled tails have been created for this gen_string 
+                exit_codes = [p.wait() for p in subprocesses] 
+                subprocesses = []
+                # Concatenate the tails with head to produce arffs
+                for randomSeed in range(0, num_streams):
+                    subprocesses.append(subprocess.Popen(['cat ' + ' ' + headfile + ' ' 
+                    + ' ' + tailfile + str(randomSeed) +'>'+ filepath + shufprefix + str(randomSeed) 
+                    + ".arff"], shell=True, executable = '/bin/bash'))
+                exit_codes = [p.wait() for p in subprocesses]
+                subprocesses = []
+ 
             seeded_experiments = se.CompositeExperiment.make_experiments(mcv.MOA_STUMP, evaluators, [learner], seeded_generators)
     
             for exp in seeded_experiments:
@@ -843,29 +904,29 @@ def chart24():
            ]
  
     gReal= [
-#        r"-s (ArffFileStream -f {dataDir}/covtype/covtypeNorm.arff)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/covtype/covtype.arff)".format(dataDir = mcv.DATA_DIR),
 #        r"-s (ArffFileStream -f {dataDir}/cpe/cpe.arff -c -1)".format(dataDir = mcv.DATA_DIR),
 #        r"-s (ArffFileStream -f {dataDir}/sensor/sensor.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/airlines.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/airlines/airlines.arff -c -1)".format(dataDir = mcv.DATA_DIR),
 #        r"-s (ArffFileStream -f {dataDir}/skin/skin.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/pamap2/pamap2_9subjects_unshuf.arff -c 2)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/pamap2/pamap2_9subjects_.arff -c 2)".format(dataDir = mcv.DATA_DIR),
 #        r"-s (ArffFileStream -f {dataDir}/fonts/fonts.arff -c 1)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/chess.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/chess/chess.arff -c -1)".format(dataDir = mcv.DATA_DIR),
 #        r"-s (ArffFileStream -f {dataDir}/wisdm/wisdm.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/kdd/KDDCup99_full.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/kdd/kdd.arff -c -1)".format(dataDir = mcv.DATA_DIR),
 #        r"-s (ArffFileStream -f {dataDir}/harpagwag/harpagwag.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/poker/poker-lsn.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/poker/poker.arff -c -1)".format(dataDir = mcv.DATA_DIR),
 #
 #        r"-s (ArffFileStream -f {dataDir}/nbaiot/nbaiot.arff -c -1)".format(dataDir = mcv.DATA_DIR),
 #        r"-s (ArffFileStream -f {dataDir}/sensortemp2019/gassensor2019discretized.arff -c 2)".format(dataDir = mcv.DATA_DIR),
 #        r"-s (ArffFileStream -f {dataDir}/aws/aws_discrete.arff -c -1)".format(dataDir = mcv.DATA_DIR),
 #
 
-        r"-s (ArffFileStream -f {dataDir}/miniboone/miniboone.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/posturespucrio/pucrio.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/localization/localization.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/tnelec/eb.arff -c 3)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/nswelec/elecNormNew.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        #r"-s (ArffFileStream -f {dataDir}/miniboone/miniboone.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        #r"-s (ArffFileStream -f {dataDir}/posturespucrio/pucrio.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        #r"-s (ArffFileStream -f {dataDir}/localization/localization.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        #r"-s (ArffFileStream -f {dataDir}/tnelec/eb.arff -c 3)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/nswelec/elec.arff -c -1)".format(dataDir = mcv.DATA_DIR),
 
 
           ]
@@ -873,6 +934,7 @@ def chart24():
 #    learners = [
 #            ]
     learners = lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees 
+    learners = [r"-l trees.EFDT"]
             #r"-l (meta.ARF -l ARFVFDT)",
             #r"-l (meta.ARF -l ARFEFDT)",
             #r"-l (meta.AdaptiveRandomForest)", # original MOA version with buggy HoeffdingTree
@@ -889,9 +951,10 @@ def chart24():
     evaluators = [r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
     generators = gReal
 
-    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, 100)
-    #time.sleep(60)
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'))
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, 100, True)
+    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, 100, False)
+    #time.sleep(1800)
+    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'))
 
     #runexp(learners, generators, evaluators, 3)
 
