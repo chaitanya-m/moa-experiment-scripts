@@ -934,6 +934,11 @@ def chart24():
 #    learners = [
 #            ]
     learners = lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees 
+
+    # A quick and dirty way to simply run with one learner at a time, for slurm
+    if len(sys.argv) == 2: 
+        learners = learners[int(sys.argv[1])]
+
 #    learners = [r"-l trees.EFDT"]
             #r"-l (meta.ARF -l ARFVFDT)",
             #r"-l (meta.ARF -l ARFEFDT)",
