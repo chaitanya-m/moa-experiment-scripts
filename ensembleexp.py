@@ -904,29 +904,29 @@ def chart24():
            ]
  
     gReal= [
-#        r"-s (ArffFileStream -f {dataDir}/covtype/covtype.arff)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/cpe/cpe.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/sensor/sensor.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/airlines/airlines.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/skin/skin.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/pamap2/pamap2_9subjects_.arff -c 2)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/fonts/fonts.arff -c 1)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/chess/chess.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/wisdm/wisdm.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/kdd/kdd.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/harpagwag/harpagwag.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/poker/poker.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-#
-#        r"-s (ArffFileStream -f {dataDir}/nbaiot/nbaiot.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/sensortemp2019/gassensor2019discretized.arff -c 2)".format(dataDir = mcv.DATA_DIR),
-#        r"-s (ArffFileStream -f {dataDir}/aws/aws_discrete.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-#
+        r"-s (ArffFileStream -f {dataDir}/covtype/covtype.arff)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/cpe/cpe.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/sensor/sensor.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/skin/skin.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/pamap2/pamap2_9subjects_.arff -c 2)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/fonts/fonts.arff -c 1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/chess/chess.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/wisdm/wisdm.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/kdd/kdd.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/harpagwag/harpagwag.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/poker/poker.arff -c -1)".format(dataDir = mcv.DATA_DIR),
 
-        #r"-s (ArffFileStream -f {dataDir}/miniboone/miniboone.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        #r"-s (ArffFileStream -f {dataDir}/posturespucrio/pucrio.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        #r"-s (ArffFileStream -f {dataDir}/localization/localization.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        #r"-s (ArffFileStream -f {dataDir}/tnelec/eb.arff -c 3)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/sensortemp2019/gassensor2019discretized.arff -c 2)".format(dataDir = mcv.DATA_DIR),
+
+
+        r"-s (ArffFileStream -f {dataDir}/miniboone/miniboone.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/posturespucrio/pucrio.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/localization/localization.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/tnelec/eb.arff -c 3)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/nswelec/elec.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/aws/aws_discrete.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/nbaiot/nbaiot.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/airlines/airlines.arff -c -1)".format(dataDir = mcv.DATA_DIR),
 
 
           ]
@@ -934,7 +934,7 @@ def chart24():
 #    learners = [
 #            ]
     learners = lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees 
-    learners = [r"-l trees.EFDT"]
+#    learners = [r"-l trees.EFDT"]
             #r"-l (meta.ARF -l ARFVFDT)",
             #r"-l (meta.ARF -l ARFEFDT)",
             #r"-l (meta.AdaptiveRandomForest)", # original MOA version with buggy HoeffdingTree
@@ -948,10 +948,10 @@ def chart24():
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, 200)
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10)
 
-    evaluators = [r"EvaluatePrequential -i 10000000 -f 1000 -q 1000"]
+    evaluators = [r"EvaluatePrequential -i 100000000 -f 1000 -q 1000"]
     generators = gReal
 
-    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, 100, True)
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, 100, False)
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, 100, False)
     #time.sleep(1800)
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'))
