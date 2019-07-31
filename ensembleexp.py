@@ -934,10 +934,12 @@ def chart24():
 #    learners = [
 #            ]
     learners = lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees 
+    numparallel = 100
 
-    # A quick and dirty way to simply run with one learner at a time, for slurm
-    if len(sys.argv) == 2: 
+    # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
+    if len(sys.argv) > 1: 
         learners = learners[int(sys.argv[1])]
+        numparallel = int(sys.argv[2])
 
 #    learners = [r"-l trees.EFDT"]
             #r"-l (meta.ARF -l ARFVFDT)",
@@ -950,14 +952,14 @@ def chart24():
     #evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
     #generators = gsyntheticNoiseFree + gHyperplane + gSEA + gRBF
 
-    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, 200)
+    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel)
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10)
 
     evaluators = [r"EvaluatePrequential -i 100000000 -f 1000 -q 1000"]
     generators = gReal
 
-    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, 100, False)
-    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, 100, False)
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
+    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'))
 
