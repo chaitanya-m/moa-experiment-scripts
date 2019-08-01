@@ -1,22 +1,13 @@
 #!/bin/bash
 
-#SBATCH --nodes=2
 #SBATCH --job-name=moa_test
-#SBATCH --cpus-per-task=12
-#SBATCH --ntasks-per-node=4
-#SBATCH --mincpus=12
-#SBATCH --mem-per-cpu=5G
-
-#for i in `seq 100`; do  
-#srun --exclusive --nodes 1 --ntasks 1 ./program ${i} &
-#done
-#wait
-
+#SBATCH --cpus-per-task=10
+#SBATCH --mem=32G
+#SBATCH --ntasks=1
+#SBATCH --time=4-00:00:00
+#SBATCH --array=0-1039
 
 source myenv/bin/activate
+time python2.7 ensembleexp.py ${SLURM_ARRAY_TASK_ID} 1
 
-for i in {0..51}
-do
-srun --nodes=1 time python2.7 ensembleexp.py $i 10 &
-done
-wait
+exit 0
