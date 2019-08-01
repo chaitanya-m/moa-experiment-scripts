@@ -936,7 +936,7 @@ def chart24():
 
     # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
     if len(sys.argv) > 1: 
-        learners = list(learners[int(sys.argv[1])]) # otherwise you return a string!
+        learners = [learners[int(sys.argv[1])]] # otherwise you return a string!
         numparallel = int(sys.argv[2])
 
 #    learners = [r"-l trees.EFDT"]
@@ -953,7 +953,7 @@ def chart24():
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel)
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10)
 
-    evaluators = [r"EvaluatePrequential -i 100000000 -f 1000 -q 1000"]
+    evaluators = [r"EvaluatePrequential -i 2000 -f 1000 -q 1000"]
     generators = gReal
 
     runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
