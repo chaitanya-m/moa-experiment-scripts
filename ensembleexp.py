@@ -953,7 +953,7 @@ def chart24():
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel)
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10)
 
-    evaluators = [r"EvaluatePrequential -i 2000 -f 1000 -q 1000"]
+    evaluators = [r"EvaluatePrequential -i 100000000 -f 1000 -q 1000"]
     generators = gReal
 
     runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
