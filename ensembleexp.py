@@ -133,9 +133,10 @@ def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num
             while(sum(x is None for x in polls) > numparallel/2):
                 # poll once a minute to check if process count is down before continuing
                 # None if running and 0 if terminated
-                #print(polls)
-                #print(sum(x is None for x in polls))
-                #print("======================================================================\n")
+                print(polls)
+                print("Running processes: " + str(sum(x is None for x in polls)) + 
+			" Max parallel allowed: " + str(numparallel))
+                print("======================================================================\n")
                 time.sleep(5) 
                 polls = [p.poll() for p in running_processes]
    
@@ -906,14 +907,16 @@ def chart24():
  
     gReal= [
         r"-s (ArffFileStream -f {dataDir}/fonts/fonts.arff -c 1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/tnelec/eb.arff -c 3)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/nbaiot/nbaiot.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/nswelec/elec.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/aws/aws_discrete.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/skin/skin.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/pamap2/pamap2_9subjects_.arff -c 2)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/airlines/airlines.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/covtype/covtype.arff)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/cpe/cpe.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/sensor/sensor.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/skin/skin.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/pamap2/pamap2_9subjects_.arff -c 2)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/chess/chess.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/wisdm/wisdm.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/kdd/kdd.arff -c -1)".format(dataDir = mcv.DATA_DIR),
@@ -923,8 +926,6 @@ def chart24():
         r"-s (ArffFileStream -f {dataDir}/miniboone/miniboone.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/posturespucrio/pucrio.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/localization/localization.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/tnelec/eb.arff -c 3)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/nswelec/elec.arff -c -1)".format(dataDir = mcv.DATA_DIR),
 
 
           ]
@@ -933,11 +934,6 @@ def chart24():
 #            ]
     learners = lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees 
     numparallel = 100
-
-    # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
-    if len(sys.argv) > 1: 
-        learners = [learners[int(sys.argv[1])]] # otherwise you return a string!
-        numparallel = int(sys.argv[2])
 
 #    learners = [r"-l trees.EFDT"]
             #r"-l (meta.ARF -l ARFVFDT)",
@@ -950,14 +946,27 @@ def chart24():
     #evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
     #generators = gsyntheticNoiseFree + gHyperplane + gSEA + gRBF
 
-    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel)
-    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10)
-
-    evaluators = [r"EvaluatePrequential -i 100000000 -f 1000 -q 1000"]
+    evaluators = [r"EvaluatePrequential -i 1000000000 -f 1000 -q 1000"]
     generators = gReal
 
+    # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
+    if len(sys.argv) > 1: 
+	slurm_array_index = int(sys.argv[1])
+
+	learner_index = slurm_array_index/len(generators)
+	generator_index = slurm_array_index%len(generators)
+	
+	if learner_index >= len(learners) or generator_index >= len(generators):
+	    exit(0) # no such learner generator combo
+
+        learners = [learners[learner_index]] 
+	generators = [generators[generator_index]]
+        numparallel = int(sys.argv[2])
+	# [] otherwise you return a string!
+
+
     runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
-    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
+#    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'))
 
