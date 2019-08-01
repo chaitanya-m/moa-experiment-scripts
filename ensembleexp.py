@@ -43,6 +43,7 @@ def getOutputDir(exp_dir, learner, generator):
 
     lrn_dir = exp_dir + '/' + learner
     output_dir = lrn_dir + '/' + generator
+    output_dir = output_dir.replace(' ','_')
     return output_dir
 
 def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average, numparallel=50, shuffle = False):
