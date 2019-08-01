@@ -935,7 +935,7 @@ def chart24():
 
     # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
     if len(sys.argv) > 1: 
-        learners = learners[int(sys.argv[1])]
+        learners = list(learners[int(sys.argv[1])]) # otherwise you return a string!
         numparallel = int(sys.argv[2])
 
 #    learners = [r"-l trees.EFDT"]
