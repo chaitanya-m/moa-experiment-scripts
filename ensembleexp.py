@@ -64,8 +64,12 @@ def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num
             tailfile = ""
             headfile = ""
 
-            if num_streams > 1 and re.search('.arff',gen_string) is not None:
+	    if num_streams > 1:
                 output_dir = output_dir + '/shuf'
+	    else
+		output_dir = output_dir + '/standard'
+
+            if num_streams > 1 and re.search('.arff',gen_string) is not None:
                 pattern = re.compile("-f ((.*\/)((.*)\.arff))")
                 match = re.search(pattern, gen_string)
 
@@ -965,8 +969,8 @@ def chart24():
 	# [] otherwise you return a string!
 
 
-    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
-#    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
+#    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'))
 
