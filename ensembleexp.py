@@ -947,11 +947,11 @@ def chart24():
             #r"-l (meta.OzaBoost -l trees.EFDT)",
             #r"-l trees.HATErrorRedist",
             #]
-    #evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
-    #generators = gsyntheticNoiseFree + gHyperplane + gSEA + gRBF
+    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    generators = gsyntheticNoiseFree + gHyperplane + gSEA + gRBF
 
-    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
-    generators = gReal
+    #evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+    #generators = gReal
 
     # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
     if len(sys.argv) > 1: 
@@ -969,8 +969,8 @@ def chart24():
 	# [] otherwise you return a string!
 
 
-#    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
-    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
+#    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'))
 

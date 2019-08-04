@@ -31,6 +31,15 @@
 #sbatch --mem=18G --array [16-1039:20] runexpSlurm.sh
 #sbatch --mem=18G --array [17-1039:20] runexpSlurm.sh
 #
+
+
+#Unshuffled
+#sbatch --mem-per-cpu=5G --array [0-1039] --time 3:00:00 --cpus-per-task 1 --partition=short,comp,gpu runexpSlurm.sh
+
+# Synthetic (with proper indices!)
+#sbatch --mem=20G --array [0-1247] --time 5:00:00 --cpus-per-task 10 --partition=short,comp,gpu runexpSlurm.sh
+
+
 #             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
 #4682512_[8-1028:20      comp moa_test   cman39 PD       0:00      1 (Priority)
 #4682513_[9-1029:20      comp moa_test   cman39 PD       0:00      1 (Priority)
