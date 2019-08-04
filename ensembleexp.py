@@ -66,7 +66,7 @@ def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num
 
 	    if num_streams > 1:
                 output_dir = output_dir + '/shuf'
-	    else
+	    else:
 		output_dir = output_dir + '/standard'
 
             if num_streams > 1 and re.search('.arff',gen_string) is not None:
