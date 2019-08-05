@@ -197,7 +197,6 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
     for folder in output_dirs:
 	objgraph.show_most_common_types()
 
-        folderCounter = folderCounter + 1
         print("Folder: " + str(folderCounter) + " of " + str(numFolders) + "\n" + folder)
 
         files = [os.path.join(folder, f) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
@@ -265,6 +264,7 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
 #
         all_stream_mean = {} # Just in case memory is leaking - it does look like memory is leaking!
         all_stream_mean_df = {}
+        folderCounter = folderCounter + 1
 
     print(table)
     print(cells)
@@ -976,11 +976,11 @@ def chart24():
             #r"-l (meta.OzaBoost -l trees.EFDT)",
             #r"-l trees.HATErrorRedist",
             #]
-    #evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
-    #generators = gsyntheticNoiseFree + gHyperplane + gSEA + gRBF
+    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    generators = gsyntheticNoiseFree + gHyperplane + gSEA + gRBF
 
-    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
-    generators = gReal
+    #evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+    #generators = gReal
 
     # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
     if len(sys.argv) > 1: 
