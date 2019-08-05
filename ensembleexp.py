@@ -14,7 +14,8 @@ import pandas as pd
 import simpleExperiments as se
 import moa_command_vars as mcv
 import time
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Queue, Pool
+import objgraph
 
 num_streams_to_average = 10
 random_source_str = r'--random-source=<( openssl enc -aes-256-ctr -pass pass:seed -nosalt </dev/zero 2>/dev/null)'
@@ -143,8 +144,19 @@ def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num
                 print("======================================================================\n")
                 time.sleep(5) 
                 polls = [p.poll() for p in running_processes]
+
+def read_csv(filename):
+    #print("File: " + str(filename))
+    return pd.read_csv(filename, index_col=False, header=0, skiprows=0, low_memory=False, engine = 'c')
+
    
-def makeChart(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average, suffix):
+def makeChart(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average):
+    print("Starting makeChart")
+
+    if num_streams > 1:
+        suffix = '/shuf'
+    else:
+        suffix = '/standard'
 
     exp_dir = mcv.OUTPUT_DIR + "/" + str(expDirName) # folder for this experiment
 
@@ -160,6 +172,7 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
             # then, we need to map output_dirs to the cells so we know where to put our results.
             table[learner][gen_string] = {}
             cells[output_dir] = table[learner][gen_string]
+    print("Table structure created")
  
         # List of mean dataframes
     mean_dataframes = []
@@ -179,14 +192,26 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
         dict_of_dicts_avg[field] = dict()
 
         # average the streams, then plot
-
+    folderCounter = 0
+    numFolders = len(output_dirs)
     for folder in output_dirs:
+	objgraph.show_most_common_types()
+
+        folderCounter = folderCounter + 1
+        print("Folder: " + str(folderCounter) + " of " + str(numFolders) + "\n" + folder)
+
         files = [os.path.join(folder, f) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
         dataframes = []
-        for this_file in files:
-            print(this_file)
+
+        pool = Pool(processes = 10)
+        dataframes = pool.map(read_csv, files)
+	pool.close()
+	pool.join() # otherwise you may have a memory leak!
+
+        #for this_file in files:
+        #    print(this_file)
             #dataframes.append(pd.read_csv(this_file))
-            dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=0, low_memory=False, engine = 'c'))
+        #    dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=0, low_memory=False, engine = 'c'))
 
         all_stream_learning_data = pd.concat(dataframes)
         all_stream_mean = {}
@@ -205,7 +230,9 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
 
         error_df[folder.replace(exp_dir,'')
                 + " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.4f"%average_error) + ' |'] = all_stream_mean_df['error']
-        mean_dataframes.append(all_stream_mean_df)
+        #mean_dataframes.append(all_stream_mean_df) # Do I really need to store all these?? No. Only one is used for indexing reference!
+	if folderCounter == 0:
+	    mean_dataframes.append(all_stream_mean_df)
 
         for field in dict_of_dicts.keys():
             dict_of_dicts[field][folder.replace(exp_dir,'')] = all_stream_mean_df[field].iloc[-1]
@@ -236,11 +263,13 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
 #                #new_col_names[col_name_counter] # Use for papers, pass new_col_names
 #                + " "] = all_stream_mean_df['splits']
 #
+        all_stream_mean = {} # Just in case memory is leaking - it does look like memory is leaking!
+        all_stream_mean_df = {}
 
     print(table)
     print(cells)
     df_table = pd.concat({k: pd.DataFrame(v) for k, v in table.items()})
-    df_table.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Table.csv")
+    df_table.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Table1.csv")
 
     # Set the index column
     # error_df[mcv.INDEX_COL]
@@ -972,7 +1001,7 @@ def chart24():
 #    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
 #    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, '/shuf')
+    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10)
 
     #runexp(learners, generators, evaluators, 3)
 
