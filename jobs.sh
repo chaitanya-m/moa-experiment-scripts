@@ -109,3 +109,73 @@
 #slurm-4682990_693.out
 #slurm-4682990_773.out
 #slurm-4682990_793.out
+
+# Processing results
+#(myenv) [cman39@monarch-login1 moa-experiment-scripts]$ srun --mem=20G --time 5:00:00 --cpus-per-task 2 --partition=short,comp,gpu python ensembleexp.py
+#srun: job 4693727 queued and waiting for resources
+#srun: job 4693727 has been allocated resources
+#:q
+#
+#Process Process-1:
+#Traceback (most recent call last):
+#  File "/usr/lib64/python2.7/multiprocessing/process.py", line 258, in _bootstrap
+#    self.run()
+#  File "/usr/lib64/python2.7/multiprocessing/process.py", line 114, in run
+#    self._target(*self._args, **self._kwargs)
+#  File "ensembleexp.py", line 975, in chart24
+#    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'))
+#  File "ensembleexp.py", line 189, in makeChart
+#    dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=0))
+#  File "/home/cman39/moa-experiment-scripts/myenv/lib/python2.7/site-packages/pandas/io/parsers.py", line 702, in parser_f
+#    return _read(filepath_or_buffer, kwds)
+#  File "/home/cman39/moa-experiment-scripts/myenv/lib/python2.7/site-packages/pandas/io/parsers.py", line 435, in _read
+#    data = parser.read(nrows)
+#  File "/home/cman39/moa-experiment-scripts/myenv/lib/python2.7/site-packages/pandas/io/parsers.py", line 1139, in read
+#    ret = self._engine.read(nrows)
+#  File "/home/cman39/moa-experiment-scripts/myenv/lib/python2.7/site-packages/pandas/io/parsers.py", line 1995, in read
+#    data = self._reader.read(nrows)
+#  File "pandas/_libs/parsers.pyx", line 899, in pandas._libs.parsers.TextReader.read
+#  File "pandas/_libs/parsers.pyx", line 914, in pandas._libs.parsers.TextReader._read_low_memory
+#  File "pandas/_libs/parsers.pyx", line 968, in pandas._libs.parsers.TextReader._read_rows
+#  File "pandas/_libs/parsers.pyx", line 955, in pandas._libs.parsers.TextReader._tokenize_rows
+#  File "pandas/_libs/parsers.pyx", line 2172, in pandas._libs.parsers.raise_parser_error
+#ParserError: Error tokenizing data. C error: Expected 1 fields in line 9, saw 18
+
+# Something is wrong with line 9 of a file
+
+# find . -type f -wholename "*shuf*" | xargs --replace sed '9q;d' {} > ~/temp0
+# awk 'NF > 2 { print NR }' temp0 | xargs --replace sed '{}q;d' temp0
+
+# the errant line 9s look like this:
+#learning evaluation instances,evaluation time (cpu seconds),model cost (RAM-Hours),classified instances,classifications correct (percent),Kappa Statistic (percent),Kappa Temporal Statistic (percent),Kappa M Statistic (percent),model training instances,model serialized size (bytes),tree size (nodes),tree size (leaves),active learning leaves,tree depth,active leaf byte size estimate,inactive leaf byte size estimate,byte size estimate overhead,splits
+
+# There are 16 of them
+ 
+#7621
+#7622
+#7624
+#7625
+#7626
+#7628
+#7629
+#7630
+#10261
+#10262
+#10264
+#10265
+#10266
+#10268
+#10269
+#10270
+#
+
+# Listing the files and looking at them... there's debug output in the header hence the issues.
+#xxxxxxxxxxxxxx
+#false
+#false
+#false
+#xxxxxxxxxxxxxx
+#false
+#false
+#false
+#

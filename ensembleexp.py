@@ -144,7 +144,7 @@ def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num
                 time.sleep(5) 
                 polls = [p.poll() for p in running_processes]
    
-def makeChart(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average):
+def makeChart(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average, suffix):
 
     exp_dir = mcv.OUTPUT_DIR + "/" + str(expDirName) # folder for this experiment
 
@@ -154,7 +154,7 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
     for learner in learners:
         table[learner] = {} # table has learners as keys
         for gen_string in generators:
-            output_dir = getOutputDir(exp_dir, learner, gen_string)
+            output_dir = getOutputDir(exp_dir, learner, gen_string) + suffix
             output_dirs.append(output_dir)
             # table[learner] has generators as keys. Values are cells, each should be a dict with Accuracy, Time, etc as fields
             # then, we need to map output_dirs to the cells so we know where to put our results.
@@ -184,9 +184,9 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
         files = [os.path.join(folder, f) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
         dataframes = []
         for this_file in files:
-            #print(this_file)
+            print(this_file)
             #dataframes.append(pd.read_csv(this_file))
-            dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=0))
+            dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=0, low_memory=False, engine = 'c'))
 
         all_stream_learning_data = pd.concat(dataframes)
         all_stream_mean = {}
@@ -947,11 +947,11 @@ def chart24():
             #r"-l (meta.OzaBoost -l trees.EFDT)",
             #r"-l trees.HATErrorRedist",
             #]
-    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
-    generators = gsyntheticNoiseFree + gHyperplane + gSEA + gRBF
+    #evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    #generators = gsyntheticNoiseFree + gHyperplane + gSEA + gRBF
 
-    #evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
-    #generators = gReal
+    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+    generators = gReal
 
     # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
     if len(sys.argv) > 1: 
@@ -969,10 +969,10 @@ def chart24():
 	# [] otherwise you return a string!
 
 
-    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
+#    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
 #    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'))
+    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, '/shuf')
 
     #runexp(learners, generators, evaluators, 3)
 
