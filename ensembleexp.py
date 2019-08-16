@@ -14,7 +14,8 @@ import pandas as pd
 import simpleExperiments as se
 import moa_command_vars as mcv
 import time
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Queue, Pool
+import objgraph
 
 num_streams_to_average = 10
 random_source_str = r'--random-source=<( openssl enc -aes-256-ctr -pass pass:seed -nosalt </dev/zero 2>/dev/null)'
@@ -64,8 +65,12 @@ def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num
             tailfile = ""
             headfile = ""
 
-            if num_streams > 1 and re.search('.arff',gen_string) is not None:
+	    if num_streams > 1:
                 output_dir = output_dir + '/shuf'
+	    else:
+		output_dir = output_dir + '/standard'
+
+            if num_streams > 1 and re.search('.arff',gen_string) is not None:
                 pattern = re.compile("-f ((.*\/)((.*)\.arff))")
                 match = re.search(pattern, gen_string)
 
@@ -133,13 +138,25 @@ def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num
             while(sum(x is None for x in polls) > numparallel/2):
                 # poll once a minute to check if process count is down before continuing
                 # None if running and 0 if terminated
-                #print(polls)
-                #print(sum(x is None for x in polls))
-                #print("======================================================================\n")
+                print(polls)
+                print("Running processes: " + str(sum(x is None for x in polls)) + 
+			" Max parallel allowed: " + str(numparallel))
+                print("======================================================================\n")
                 time.sleep(5) 
                 polls = [p.poll() for p in running_processes]
+
+def read_csv(filename):
+    #print("File: " + str(filename))
+    return pd.read_csv(filename, index_col=False, header=0, skiprows=0, low_memory=False, engine = 'c')
+
    
 def makeChart(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average):
+    print("Starting makeChart")
+
+    if num_streams > 1:
+        suffix = '/shuf'
+    else:
+        suffix = '/standard'
 
     exp_dir = mcv.OUTPUT_DIR + "/" + str(expDirName) # folder for this experiment
 
@@ -149,12 +166,13 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
     for learner in learners:
         table[learner] = {} # table has learners as keys
         for gen_string in generators:
-            output_dir = getOutputDir(exp_dir, learner, gen_string)
+            output_dir = getOutputDir(exp_dir, learner, gen_string) + suffix
             output_dirs.append(output_dir)
             # table[learner] has generators as keys. Values are cells, each should be a dict with Accuracy, Time, etc as fields
             # then, we need to map output_dirs to the cells so we know where to put our results.
             table[learner][gen_string] = {}
             cells[output_dir] = table[learner][gen_string]
+    print("Table structure created")
  
         # List of mean dataframes
     mean_dataframes = []
@@ -174,14 +192,25 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
         dict_of_dicts_avg[field] = dict()
 
         # average the streams, then plot
-
+    folderCounter = 0
+    numFolders = len(output_dirs)
     for folder in output_dirs:
+	objgraph.show_most_common_types()
+
+        print("Folder: " + str(folderCounter) + " of " + str(numFolders) + "\n" + folder)
+
         files = [os.path.join(folder, f) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
         dataframes = []
-        for this_file in files:
-            #print(this_file)
+
+        pool = Pool(processes = 10)
+        dataframes = pool.map(read_csv, files)
+	pool.close()
+	pool.join() # otherwise you may have a memory leak!
+
+        #for this_file in files:
+        #    print(this_file)
             #dataframes.append(pd.read_csv(this_file))
-            dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=0))
+        #    dataframes.append(pd.read_csv(this_file, index_col=False, header=0, skiprows=0, low_memory=False, engine = 'c'))
 
         all_stream_learning_data = pd.concat(dataframes)
         all_stream_mean = {}
@@ -200,7 +229,9 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
 
         error_df[folder.replace(exp_dir,'')
                 + " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.4f"%average_error) + ' |'] = all_stream_mean_df['error']
-        mean_dataframes.append(all_stream_mean_df)
+        #mean_dataframes.append(all_stream_mean_df) # Do I really need to store all these?? No. Only one is used for indexing reference!
+	if folderCounter == 0:
+	    mean_dataframes.append(all_stream_mean_df)
 
         for field in dict_of_dicts.keys():
             dict_of_dicts[field][folder.replace(exp_dir,'')] = all_stream_mean_df[field].iloc[-1]
@@ -231,11 +262,14 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
 #                #new_col_names[col_name_counter] # Use for papers, pass new_col_names
 #                + " "] = all_stream_mean_df['splits']
 #
+        all_stream_mean = {} # Just in case memory is leaking - it does look like memory is leaking!
+        all_stream_mean_df = {}
+        folderCounter = folderCounter + 1
 
     print(table)
     print(cells)
     df_table = pd.concat({k: pd.DataFrame(v) for k, v in table.items()})
-    df_table.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Table.csv")
+    df_table.to_csv(mcv.OUTPUT_DIR + "/" + mcv.OUTPUT_PREFIX +  "Table1.csv")
 
     # Set the index column
     # error_df[mcv.INDEX_COL]
@@ -906,38 +940,33 @@ def chart24():
  
     gReal= [
         r"-s (ArffFileStream -f {dataDir}/fonts/fonts.arff -c 1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/nbaiot/nbaiot.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/aws/aws_discrete.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/airlines/airlines.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/covtype/covtype.arff)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/cpe/cpe.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/sensor/sensor.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/skin/skin.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/pamap2/pamap2_9subjects_.arff -c 2)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/chess/chess.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/wisdm/wisdm.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/nbaiot/nbaiot.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+
+        r"-s (ArffFileStream -f {dataDir}/aws/aws_discrete.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/localization/localization.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/cpe/cpe.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/kdd/kdd.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/pamap2/pamap2_9subjects_.arff -c 2)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/harpagwag/harpagwag.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+
+        r"-s (ArffFileStream -f {dataDir}/covtype/covtype.arff)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/poker/poker.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/sensortemp2019/gassensor2019discretized.arff -c 2)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/miniboone/miniboone.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/posturespucrio/pucrio.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/localization/localization.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/tnelec/eb.arff -c 3)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/nswelec/elec.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-
-
+        r"-s (ArffFileStream -f {dataDir}/skin/skin.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/sensor/sensor.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/chess/chess.arff -c -1)".format(dataDir = mcv.DATA_DIR),
           ]
 
 #    learners = [
 #            ]
     learners = lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees 
     numparallel = 100
-
-    # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
-    if len(sys.argv) > 1: 
-        learners = [learners[int(sys.argv[1])]] # otherwise you return a string!
-        numparallel = int(sys.argv[2])
 
 #    learners = [r"-l trees.EFDT"]
             #r"-l (meta.ARF -l ARFVFDT)",
@@ -947,19 +976,32 @@ def chart24():
             #r"-l (meta.OzaBoost -l trees.EFDT)",
             #r"-l trees.HATErrorRedist",
             #]
-    #evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
-    #generators = gsyntheticNoiseFree + gHyperplane + gSEA + gRBF
+    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    generators = gsyntheticNoiseFree + gHyperplane + gSEA + gRBF
 
-    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel)
-    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10)
+    #evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+    #generators = gReal
 
-    evaluators = [r"EvaluatePrequential -i 100000000 -f 1000 -q 1000"]
-    generators = gReal
+    # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
+    if len(sys.argv) > 1: 
+	slurm_array_index = int(sys.argv[1])
 
-    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
-    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
+	learner_index = slurm_array_index/len(generators)
+	generator_index = slurm_array_index%len(generators)
+	
+	if learner_index >= len(learners) or generator_index >= len(generators):
+	    exit(0) # no such learner generator combo
+
+        learners = [learners[learner_index]] 
+	generators = [generators[generator_index]]
+        numparallel = int(sys.argv[2])
+	# [] otherwise you return a string!
+
+
+#    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
+#    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'))
+    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10)
 
     #runexp(learners, generators, evaluators, 3)
 
