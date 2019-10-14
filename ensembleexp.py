@@ -367,7 +367,46 @@ def chart24():
             ] 
 
 
+    lhat = [
+            r"-l (trees.HAT)", # My base HAT
 
+            r"-l (trees.HAT -C)", # nominal attribute reuse
+            r"-l (trees.HAT -D)", # no averaging infogain
+            r"-l (trees.HAT -E)", # getWeightSeen instead of nodeTime
+            r"-l (trees.HAT -I)", # weighted leaves
+
+            r"-l (trees.HAT -A)", # Base HAT with single alternate voting
+            r"-l (trees.HAT -A -B)", # Base HAT with alternates of alternates. Alternates vote.
+
+            r"-l (trees.HAT -A -B -H)", # Alternates of alternates, alternates vote, but single leaf alternates don't vote
+            r"-l (trees.HAT -A -B -H -I)", # Alternates of alternates, alternates vote, but single leaf alternates don't vote, leafWeighting
+
+            r"-l (trees.HAT -C -D -E)", # HAT with HT undocumented features
+            r"-l (trees.HAT -C -D -E -A)", # HAT with HT undocumented features and alternate voting
+            r"-l (trees.HAT -C -D -E -A -B)", # HAT with HT undocumented features and alternate voting, alternates of alternates
+            r"-l (trees.HAT -C -D -E -A -B -I)", # HAT with HT undocumented features and alternate voting, alternates of alternates, leafWeighting
+
+            # HAT with HT undocumented features and alternate voting except single leaves, leafWeighting
+            r"-l (trees.HAT -C -D -E -A -B -H -I)", 
+
+	    # HAT with HT undocumented features, alternate voting except single leaves, Top level: an alternate of an alternate (or so on) substitutes the root in ADWIN substitution, and "When an alternate is split, its parent replaces the mainline child with the alternate", leafWeighting
+            r"-l (trees.HAT -C -D -E -A -B -H -I -F -G)", 
+
+	    # HAT with HT undocumented features and top level behavior 
+            r"-l (trees.HAT -C -D -E -F)",
+
+	    # HAT with HT undocumented features alternate split behavior 
+            r"-l (trees.HAT -C -D -E -G)",
+
+	    # HAT with HT undocumented features and top level behavior and alternate split behavior 
+            r"-l (trees.HAT -C -D -E -F -G)",
+
+	    # HAT with HAT undocumented features
+            r"-l (trees.HAT -A -B -H -I -E -F -G)",
+
+	    # Original HoeffdingAdaptiveTree
+            r"-l trees.HoeffdingAdaptiveTree",
+            ]
 
 
     gsyntheticNoiseFree = [
@@ -395,12 +434,31 @@ def chart24():
         r"-s (generators.HyperplaneGenerator -k 5 -t 0.001 -i 2)",
         r"-s (generators.HyperplaneGenerator -k 5 -t 0.0001 -i 2)",
         ]
-    gSEA = [
-        r"-s (generators.SEAGenerator -n 50 -i 2)",
-        r"-s (generators.SEAGenerator -n 50000 -i 2)",
-        r"-s (generators.SEAGenerator -n 100000 -i 2)",
-        r"-s (generators.SEAGenerator -n 200000 -i 2)",
-        ]
+
+#    gSEA = [
+#        r"-s (generators.SEAGenerator -n 50 -i 2)",
+#        r"-s (generators.SEAGenerator -n 50000 -i 2)",
+#        r"-s (generators.SEAGenerator -n 100000 -i 2)",
+#        r"-s (generators.SEAGenerator -n 200000 -i 2)",
+#        r"-s (generators.SEAGenerator -f 1 -n 5000 -i 2)",
+#        r"-s (generators.SEAGenerator -f 2 -n 5000 -i 2)",
+#        r"-s (generators.SEAGenerator -f 3 -n 5000 -i 2)",
+#        r"-s (generators.SEAGenerator -f 4 -n 5000 -i 2)",
+#        ]
+
+    gLED = [
+	r"generators.LEDGeneratorDrift -d 1 -i 2",
+	r"generators.LEDGeneratorDrift -d 3 -i 2",
+	r"generators.LEDGeneratorDrift -d 5 -i 2",
+	r"generators.LEDGeneratorDrift -d 7 -i 2",
+	]
+
+    gWaveform = [
+	r"generators.WaveformGeneratorDrift -d 1 -i 2 -n",
+	r"generators.WaveformGeneratorDrift -d 3 -i 2 -n",
+	r"generators.WaveformGeneratorDrift -d 5 -i 2 -n",
+	r"generators.WaveformGeneratorDrift -d 7 -i 2 -n",
+	]
 
     gRBF = [
         r"-s (generators.RandomRBFGeneratorDrift -s 0.001 -k 50 -i 2 -r 2)",
@@ -433,23 +491,6 @@ def chart24():
         r"-s (ArffFileStream -f {dataDir}/sensor/sensor.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/chess/chess.arff -c -1)".format(dataDir = mcv.DATA_DIR),
           ]
-
-    learners = [
-            r"-l (trees.HAT -C -D -E)",
-            r"-l (trees.HAT -C -D -E -A)",
-            r"-l (trees.HAT -C -D -E -A -B)",
-            r"-l (trees.HAT -C -D -E -A -B -H)",
-            r"-l (trees.HAT -C -D -E -A -B -H -F -G)",
-            r"-l (trees.HAT -C -D -E -F -G)",
-
-            r"-l (trees.HAT)",
-            r"-l (trees.HAT -A)",
-            r"-l (trees.HAT -A -B)",
-            r"-l (trees.HAT -A -B -H)",
-            r"-l (trees.HAT -A -B -H -F -G)",
-
-            r"-l trees.HoeffdingAdaptiveTree",
-            ]
     #learners = lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees 
     numparallel = 100
 
@@ -461,11 +502,11 @@ def chart24():
             #r"-l (meta.OzaBoost -l trees.EFDT)",
             #r"-l trees.HATErrorRedist",
             #]
-#    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
-#    generators = gsyntheticNoiseFree + gHyperplane + gSEA + gRBF
+    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF
 
-    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
-    generators = gReal
+#    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+#    generators = gReal
 
     # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
     if len(sys.argv) > 1: 
@@ -483,10 +524,10 @@ def chart24():
 	# [] otherwise you return a string!
 
 
-#    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
 #    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),1, "hatrealstan")
+#    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),1, "hatrealstan")
 
     #runexp(learners, generators, evaluators, 3)
 
