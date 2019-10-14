@@ -1,7 +1,7 @@
 
 #The parameter style in this file is different when the parameters correspond to MOAparameters directly (camel case vs underscores).
 
-PREFIX = "/mnt"
+PREFIX = "/home/cman39/p2016030006/cman39"
 
 from os.path import expanduser
 HOME_DIR = expanduser("~")
