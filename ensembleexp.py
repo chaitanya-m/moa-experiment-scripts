@@ -466,6 +466,17 @@ def chart24():
         r"-s (generators.RandomRBFGeneratorDrift -s 0.0001 -k 50 -i 2 -r 2)",
         r"-s (generators.RandomRBFGeneratorDrift -s 0.0001 -k 10 -i 2 -r 2)",
            ]
+
+     gOthers = [
+	r"-s generators.RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.RandomTreeGenerator -r 1 -i 1) -d (generators.RandomTreeGenerator -r 2 -i 2)",
+
+	r"-s generators.RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.SEAGenerator -f 2 -i 2) -d (generators.SEAGenerator -f 3 -i 3)",
+
+	r"-s generators.RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.AgrawalGenerator -f 2 -i 2) -d (generators.AgrawalGenerator -f 3 -i 3)",
+
+	r"-s generators.RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.STAGGERGenerator -i 2 -f 2) -d (generators.STAGGERGenerator -i 3 -f 3)",
+
+           ]
  
     gReal= [
         r"-s (ArffFileStream -f {dataDir}/fonts/fonts.arff -c 1)".format(dataDir = mcv.DATA_DIR),
@@ -502,8 +513,9 @@ def chart24():
             #r"-l (meta.OzaBoost -l trees.EFDT)",
             #r"-l trees.HATErrorRedist",
             #]
+    learners = lhat
     evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
-    generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF
+    generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF + gOthers
 
 #    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
 #    generators = gReal
