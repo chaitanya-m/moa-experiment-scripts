@@ -447,17 +447,17 @@ def chart24():
 #        ]
 
     gLED = [
-	r"generators.LEDGeneratorDrift -d 1 -i 2",
-	r"generators.LEDGeneratorDrift -d 3 -i 2",
-	r"generators.LEDGeneratorDrift -d 5 -i 2",
-	r"generators.LEDGeneratorDrift -d 7 -i 2",
+	r"-s (generators.LEDGeneratorDrift -d 1 -i 2)",
+	r"-s (generators.LEDGeneratorDrift -d 3 -i 2)",
+	r"-s (generators.LEDGeneratorDrift -d 5 -i 2)",
+	r"-s (generators.LEDGeneratorDrift -d 7 -i 2)",
 	]
 
     gWaveform = [
-	r"generators.WaveformGeneratorDrift -d 1 -i 2 -n",
-	r"generators.WaveformGeneratorDrift -d 3 -i 2 -n",
-	r"generators.WaveformGeneratorDrift -d 5 -i 2 -n",
-	r"generators.WaveformGeneratorDrift -d 7 -i 2 -n",
+	r"-s (generators.WaveformGeneratorDrift -d 1 -i 2 -n)",
+	r"-s (generators.WaveformGeneratorDrift -d 3 -i 2 -n)",
+	r"-s (generators.WaveformGeneratorDrift -d 5 -i 2 -n)",
+	r"-s (generators.WaveformGeneratorDrift -d 7 -i 2 -n)",
 	]
 
     gRBF = [
@@ -467,14 +467,14 @@ def chart24():
         r"-s (generators.RandomRBFGeneratorDrift -s 0.0001 -k 10 -i 2 -r 2)",
            ]
 
-     gOthers = [
-	r"-s generators.RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.RandomTreeGenerator -r 1 -i 1) -d (generators.RandomTreeGenerator -r 2 -i 2)",
+    gOthers = [
+	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.RandomTreeGenerator -r 1 -i 1) -d (generators.RandomTreeGenerator -r 2 -i 2))",
 
-	r"-s generators.RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.SEAGenerator -f 2 -i 2) -d (generators.SEAGenerator -f 3 -i 3)",
+	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.SEAGenerator -f 2 -i 2) -d (generators.SEAGenerator -f 3 -i 3))",
 
-	r"-s generators.RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.AgrawalGenerator -f 2 -i 2) -d (generators.AgrawalGenerator -f 3 -i 3)",
+	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.AgrawalGenerator -f 2 -i 2) -d (generators.AgrawalGenerator -f 3 -i 3))",
 
-	r"-s generators.RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.STAGGERGenerator -i 2 -f 2) -d (generators.STAGGERGenerator -i 3 -f 3)",
+	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.STAGGERGenerator -i 2 -f 2) -d (generators.STAGGERGenerator -i 3 -f 3))",
 
            ]
  
