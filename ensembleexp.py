@@ -536,10 +536,10 @@ def chart24():
 	# [] otherwise you return a string!
 
 
-    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
+#    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
 #    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-#    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),1, "hatrealstan")
+    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "hatsynshuf")
 
     #runexp(learners, generators, evaluators, 3)
 
