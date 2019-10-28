@@ -408,7 +408,12 @@ def chart24():
             r"-l trees.HoeffdingAdaptiveTree",
             ]
 
-
+    lvfdt = [
+	    r"-l (trees.VFDT -C)",
+	    r"-l (trees.VFDT -D)",
+	    r"-l (trees.VFDT -E)",
+	    r"-l (trees.VFDT -C -D -E)",
+            ]
     gsyntheticNoiseFree = [
         r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 2 -n 2 -v 2 -r 2 -b 200000 -d Recurrent)",
         r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 3 -n 2 -v 2 -r 2 -b 200000 -d Recurrent)",
@@ -513,7 +518,7 @@ def chart24():
             #r"-l (meta.OzaBoost -l trees.EFDT)",
             #r"-l trees.HATErrorRedist",
             #]
-    learners = lhat
+    learners = lvfdt
     evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
     generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF + gOthers
 
@@ -536,13 +541,28 @@ def chart24():
 	# [] otherwise you return a string!
 
 
-#    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
 #    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "hatsynshuf")
+#    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "hatsynshuf")
 
     #runexp(learners, generators, evaluators, 3)
 
+
+def chart25(): # no slurm for this!
+
+    learners = [ 
+            r"-l trees.VFDT",
+	    r"-l trees.VFDTUnforgetting",
+	]
+    generators= [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 5 -n 5 -v 5 -r 2 -b 150000)",
+#        r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 3 -n 3 -v 3 -r 2 -b 100000 -d Recurrent)",
+#        r"-s (RecurrentConceptDriftStream -x 100000 -y 100000 -z 175 -s (generators.monash.AbruptDriftGenerator -c -o 0.7 -z 5 -n 5 -v 5 -r 2 -b 99999999) -d (generators.monash.AbruptDriftGenerator -c -o 0.7 -z 5 -n 5 -v 5 -r 2 -b 1))"
+
+    evaluators = [r"EvaluatePrequential -i 400000 -f 1000 -q 1000"]
+                                      
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
 
 
     # without the main sentinel below code will always get run, even when imported as a module!
@@ -550,10 +570,8 @@ if __name__=="__main__":
 
     processes = {}
 
-
-
-# Leveraging Bagging
-    processes[24] = Process(target=chart24)  #bunch of things with Drift from Bifet Leveraging Bagging paper
+    processes[24] = Process(target=chart24)  #
+#    processes[24] = Process(target=chart24)  #
 
     for key in processes:
       processes[key].start()
