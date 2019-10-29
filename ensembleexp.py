@@ -291,7 +291,7 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
 
     df_end = pd.DataFrame(dict_of_dicts).T # get dataframe with final values
     df_avg = pd.DataFrame(dict_of_dicts_avg).T # get dataframe with final values
-    #se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(expDirName).zfill(3), None, df_end, df_avg) # no splits
+    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(expDirName).zfill(3), None, df_end, df_avg) # no splits
 
     #se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(expDirName).zfill(3), split_df, df_end, df_avg)
 
@@ -557,21 +557,23 @@ def chart25(): # no slurm for this!
 	]
     generators= [
         r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 5 -n 5 -v 5 -r 2 -b 150000)",
+	]
 #        r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 3 -n 3 -v 3 -r 2 -b 100000 -d Recurrent)",
 #        r"-s (RecurrentConceptDriftStream -x 100000 -y 100000 -z 175 -s (generators.monash.AbruptDriftGenerator -c -o 0.7 -z 5 -n 5 -v 5 -r 2 -b 99999999) -d (generators.monash.AbruptDriftGenerator -c -o 0.7 -z 5 -n 5 -v 5 -r 2 -b 1))"
 
     evaluators = [r"EvaluatePrequential -i 400000 -f 1000 -q 1000"]
                                       
-    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
+#    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('25'), 10, 1, False)
 
+    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('25'),10, "eidetic")
 
     # without the main sentinel below code will always get run, even when imported as a module!
 if __name__=="__main__": 
 
     processes = {}
 
-    processes[24] = Process(target=chart24)  #
-#    processes[24] = Process(target=chart24)  #
+#    processes[24] = Process(target=chart24)
+    processes[25] = Process(target=chart25)
 
     for key in processes:
       processes[key].start()

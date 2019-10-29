@@ -11,7 +11,8 @@ DATA_DIR = "{prefix}/datasets".format(prefix = PREFIX)
 #HOME_DIR = '/home/chait'
 MOA_DIR = '{home_dir}/javacode/driftgen/dependency_jars'.format(home_dir = HOME_DIR)
 OUTPUT_DIR = '{resultsDir}/output'.format(resultsDir = RESULTS_DIR)
-FIG_DIR = '{resultsDir}/figures'.format(resultsDir = RESULTS_DIR)
+#FIG_DIR = '{resultsDir}/figures'.format(resultsDir = RESULTS_DIR)
+FIG_DIR = './figures'.format(resultsDir = RESULTS_DIR)
 OUTPUT_PREFIX = 'out'
 
 #MOA_STUMP = "java -cp commons-math3-3.6.1.jar:guava-22.0.jar:moa.jar:cdgen3.jar -javaagent:sizeofag-1.0.0.jar"

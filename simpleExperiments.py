@@ -1,9 +1,13 @@
 
+import matplotlib
+matplotlib.use('Agg') # so you don't call a display over ssh
+
 import os, subprocess, shlex, shutil
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-import matplotlib
+
+
 import pylab
 import numpy as np
 
