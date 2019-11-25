@@ -414,6 +414,7 @@ def chart24():
 	    r"-l (trees.VFDT -D)",
 	    r"-l (trees.VFDT -E)",
 	    r"-l (trees.VFDT -C -D -E)",
+	    r"-l (trees.VFDT -C -J)",
             ]
     gsyntheticNoiseFree = [
         r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 2 -n 2 -v 2 -r 2 -b 200000 -d Recurrent)",
@@ -511,7 +512,8 @@ def chart24():
     #learners = lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees 
     numparallel = 100
 
-#    learners = [r"-l trees.EFDT"]
+    learners = [r"-l (trees.VFDT -C -J)"]
+	    #[r"-l trees.EFDT"]
             #r"-l (meta.ARF -l ARFVFDT)",
             #r"-l (meta.ARF -l ARFEFDT)",
             #r"-l (meta.AdaptiveRandomForest)", # original MOA version with buggy HoeffdingTree
@@ -519,7 +521,7 @@ def chart24():
             #r"-l (meta.OzaBoost -l trees.EFDT)",
             #r"-l trees.HATErrorRedist",
             #]
-    learners = lvfdt
+    #learners = lvfdt
     evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
     generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF + gOthers
 
@@ -545,7 +547,7 @@ def chart24():
 #    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
 #    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "vfdtvariants")
+    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "vfdtvariantscjonly")
 
     #runexp(learners, generators, evaluators, 3)
 
