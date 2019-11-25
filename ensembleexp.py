@@ -409,6 +409,7 @@ def chart24():
             ]
 
     lvfdt = [
+            r"-l trees.VFDT",
 	    r"-l (trees.VFDT -C)",
 	    r"-l (trees.VFDT -D)",
 	    r"-l (trees.VFDT -E)",
@@ -541,10 +542,10 @@ def chart24():
 	# [] otherwise you return a string!
 
 
-    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
+#    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
 #    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-#    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "hatsynshuf")
+    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "vfdtvariants")
 
     #runexp(learners, generators, evaluators, 3)
 
@@ -572,8 +573,8 @@ if __name__=="__main__":
 
     processes = {}
 
-#    processes[24] = Process(target=chart24)
-    processes[25] = Process(target=chart25)
+    processes[24] = Process(target=chart24)
+#    processes[25] = Process(target=chart25)
 
     for key in processes:
       processes[key].start()
