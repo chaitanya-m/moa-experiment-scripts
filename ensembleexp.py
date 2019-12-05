@@ -312,6 +312,7 @@ def chart24():
             r"-l (meta.OzaBag -l trees.EFDT)",
             r"-l (meta.OzaBagAdwin -l trees.EFDT)",
             r"-l (meta.LeveragingBag -l trees.EFDT)",
+            r"-l (meta.LevBagNoAdwin -l trees.EFDT)",
             r"-l (meta.OzaBoost -l trees.EFDT)",
             r"-l (meta.OzaBoostAdwin -l trees.EFDT)",
             r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.EFDT)",
@@ -319,19 +320,20 @@ def chart24():
             r"-l (meta.OnlineSmoothBoost -l trees.EFDT)",
             r"-l (meta.ARF -l ARFEFDT)",
             r"-l (meta.ARF -l (ARFEFDT -g 200 -c 0.0000001) -o (Percentage (M * (m / 100))) -m 80 -q)",
-            ] 
+            ]  
     lmetaVFDT = [ 
             r"-l (meta.OzaBag -l trees.VFDT)",
             r"-l (meta.OzaBagAdwin -l trees.VFDT)",
             r"-l (meta.LeveragingBag -l trees.VFDT)",
+            r"-l (meta.LevBagNoAdwin -l trees.VFDT)",
             r"-l (meta.OzaBoost -l trees.VFDT)",
             r"-l (meta.OzaBoostAdwin -l trees.VFDT)",
             r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.VFDT)",
             r"-l (meta.BOLE -l trees.VFDT)",
             r"-l (meta.OnlineSmoothBoost -l trees.VFDT)",
             r"-l (meta.ARF -l ARFVFDT)",
-            r"-l (meta.AdaptiveRandomForest)", # original MOA version with buggy HoeffdingTree
             r"-l (meta.ARF -l (ARFVFDT -g 200 -c 0.0000001) -o (Percentage (M * (m / 100))) -m 80 -q)",
+            r"-l (meta.AdaptiveRandomForest)", # original MOA version with buggy HoeffdingTree
             ] 
     ltrees = [ 
             r"-l trees.VFDT",
@@ -504,15 +506,23 @@ def chart24():
         r"-s (ArffFileStream -f {dataDir}/miniboone/miniboone.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/posturespucrio/pucrio.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/tnelec/eb.arff -c 3)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/nswelec/elec.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+	r"-s (ArffFileStream -f {dataDir}/nswelec/elec.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/skin/skin.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/sensor/sensor.arff -c -1)".format(dataDir = mcv.DATA_DIR),
         r"-s (ArffFileStream -f {dataDir}/chess/chess.arff -c -1)".format(dataDir = mcv.DATA_DIR),
           ]
-    #learners = lmetaDecisionStump + lmetaVFDT + lmetaEFDT + ltrees 
+
     numparallel = 100
 
-    learners = [r"-l (trees.VFDT -C -J)"]
+    #learners = lmetaVFDT + lmetaEFDT #+  lmetaDecisionStump + ltrees 
+    learners = [ 
+            r"-l (meta.LevBagNoAdwin -l trees.VFDT)",
+            r"-l (meta.LevBagNoAdwin -l trees.EFDT)",
+	    r"-l (meta.StreamingRandomPatches -l trees.VFDT -t (Resampling (bagging)))", 
+	    r"-l (meta.StreamingRandomPatches -l trees.EFDT -t (Resampling (bagging)))", 
+	]
+	#[r"-l (meta.LeveragingBag -l trees.VFDT -w 1.0 -a 1.0)", r"-l (meta.LeveragingBag -l trees.EFDT -w 1.0 -a 1.0)"]
+	#[r"-l (trees.VFDT -C -J)"]
 	    #[r"-l trees.EFDT"]
             #r"-l (meta.ARF -l ARFVFDT)",
             #r"-l (meta.ARF -l ARFEFDT)",
@@ -523,6 +533,7 @@ def chart24():
             #]
     #learners = lvfdt
     evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    #generators = gsyntheticNoiseFree + gHyperplane + gWaveform + gRBF #gLED + gOthers
     generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF + gOthers
 
 #    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
@@ -544,10 +555,10 @@ def chart24():
 	# [] otherwise you return a string!
 
 
-#    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
 #    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "vfdtvariantscjonly")
+#    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaefdtvfdtsynthetic")
 
     #runexp(learners, generators, evaluators, 3)
 
