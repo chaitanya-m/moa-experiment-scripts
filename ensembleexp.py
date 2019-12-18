@@ -312,6 +312,7 @@ def chart24():
             r"-l (meta.OzaBag -l trees.EFDT)",
             r"-l (meta.OzaBagAdwin -l trees.EFDT)",
             r"-l (meta.LeveragingBag -l trees.EFDT)",
+            r"-l (meta.LeveragingBag -l (trees.EFDT -R 1410065407))",#disables EFDT rechecking unless you have over 1.4 billion instances
             r"-l (meta.LevBagNoAdwin -l trees.EFDT)",
             r"-l (meta.OzaBoost -l trees.EFDT)",
             r"-l (meta.OzaBoostAdwin -l trees.EFDT)",
@@ -320,6 +321,7 @@ def chart24():
             r"-l (meta.OnlineSmoothBoost -l trees.EFDT)",
             r"-l (meta.ARF -l ARFEFDT)",
             r"-l (meta.ARF -l (ARFEFDT -g 200 -c 0.0000001) -o (Percentage (M * (m / 100))) -m 80 -q)",
+
             ]  
     lmetaVFDT = [ 
             r"-l (meta.OzaBag -l trees.VFDT)",
@@ -514,13 +516,14 @@ def chart24():
 
     numparallel = 100
 
-    #learners = lmetaVFDT + lmetaEFDT #+  lmetaDecisionStump + ltrees 
-    learners = [ 
-            r"-l (meta.LevBagNoAdwin -l trees.VFDT)",
-            r"-l (meta.LevBagNoAdwin -l trees.EFDT)",
-	    r"-l (meta.StreamingRandomPatches -l trees.VFDT -t (Resampling (bagging)))", 
-	    r"-l (meta.StreamingRandomPatches -l trees.EFDT -t (Resampling (bagging)))", 
-	]
+    learners = [r"-l trees.VFDT", r"-l trees.EFDT"] + lmetaVFDT + lmetaEFDT 
+#+  lmetaDecisionStump + ltrees 
+    #learners = [ 
+            #r"-l (meta.LevBagNoAdwin -l trees.VFDT)",
+            #r"-l (meta.LevBagNoAdwin -l trees.EFDT)",
+	    #r"-l (meta.StreamingRandomPatches -l trees.VFDT -t (Resampling (bagging)))", 
+	    #r"-l (meta.StreamingRandomPatches -l trees.EFDT -t (Resampling (bagging)))", 
+#	]
 	#[r"-l (meta.LeveragingBag -l trees.VFDT -w 1.0 -a 1.0)", r"-l (meta.LeveragingBag -l trees.EFDT -w 1.0 -a 1.0)"]
 	#[r"-l (trees.VFDT -C -J)"]
 	    #[r"-l trees.EFDT"]
@@ -532,12 +535,12 @@ def chart24():
             #r"-l trees.HATErrorRedist",
             #]
     #learners = lvfdt
-    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    #evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
     #generators = gsyntheticNoiseFree + gHyperplane + gWaveform + gRBF #gLED + gOthers
-    generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF + gOthers
+    #generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF + gOthers
 
-#    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
-#    generators = gReal
+    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+    generators = gReal
 
     # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
     if len(sys.argv) > 1: 
@@ -555,10 +558,10 @@ def chart24():
 	# [] otherwise you return a string!
 
 
-    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
-#    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
+    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-#    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaefdtvfdtsynthetic")
+#    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaefdtvfdtreal")
 
     #runexp(learners, generators, evaluators, 3)
 

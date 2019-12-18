@@ -181,5 +181,10 @@
 #
 
 
+######################################################################################3
+#sbatch --mem=32G --array=[20-23,52-55,58,73-79,80-83] runexpSlurm.sh 
+#For Levbag, around 8 synthetic streams, and for SRP 8 synthetic streams need 32GB
+#for srp synthetic, around 8 streams needed more than 32gb 84-87, 118-119. 
+
 
 
