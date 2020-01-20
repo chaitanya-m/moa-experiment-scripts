@@ -2,10 +2,10 @@
 
 #SBATCH --job-name=moa_test
 #SBATCH --cpus-per-task=10
-#SBATCH --mem=10G
+#SBATCH --mem=20G
 #SBATCH --ntasks=1
 #SBATCH --time=23:59:00
-#SBATCH --array=0-127
+#SBATCH --array=0-519
 #SBATCH --partition=comp,short,gpu # himem, gquick
 
 source myenv/bin/activate
