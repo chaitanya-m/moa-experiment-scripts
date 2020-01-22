@@ -553,12 +553,12 @@ def chart24():
             #r"-l trees.HATErrorRedist",
             #]
     #learners = lvfdt
-    #evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
     #generators = gsyntheticNoiseFree + gHyperplane + gWaveform + gRBF #gLED + gOthers
-    #generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF + gOthers
+    generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF + gOthers
 
-    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
-    generators = gReal
+    #evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+    #generators = gReal
 
     # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
     if len(sys.argv) > 1: 
