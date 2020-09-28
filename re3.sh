@@ -5,7 +5,7 @@
 #SBATCH --mem=12G
 #SBATCH --ntasks=1
 #SBATCH --time=23:59:00
-#SBATCH --array=0-239
+#SBATCH --array=0-383
 #SBATCH --partition=comp,short,gpu # himem, gquick
 
 source myenv/bin/activate

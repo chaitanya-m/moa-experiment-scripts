@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=moa_test
-#SBATCH --cpus-per-task=10
+#SBATCH --cpus-per-task=1
 #SBATCH --mem=12G
 #SBATCH --ntasks=1
 #SBATCH --time=23:59:00
