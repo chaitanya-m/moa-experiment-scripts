@@ -291,7 +291,8 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
 
     df_end = pd.DataFrame(dict_of_dicts).T # get dataframe with final values
     df_avg = pd.DataFrame(dict_of_dicts_avg).T # get dataframe with final values
-    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(expDirName).zfill(3), None, df_end, df_avg) # no splits
+    #se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(expDirName).zfill(3), None, df_end, df_avg) # no splits
+    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(expDirName).zfill(3), None, None, None) # no endtable
 
     #se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(expDirName).zfill(3), split_df, df_end, df_avg)
 
@@ -600,15 +601,15 @@ def chart25(): # no slurm for this!
                                       
 #    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('25'), 10, 1, False)
 
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('25'),10, "eidetic")
+    makeChart("Effect of inherent amnesia in Hoeffding Tree", learners, generators, evaluators, str('25'),10, "eidetic")
 
     # without the main sentinel below code will always get run, even when imported as a module!
 if __name__=="__main__": 
 
     processes = {}
 
-    processes[24] = Process(target=chart24)
-#    processes[25] = Process(target=chart25)
+#    processes[24] = Process(target=chart24)
+    processes[25] = Process(target=chart25)
 
     for key in processes:
       processes[key].start()
