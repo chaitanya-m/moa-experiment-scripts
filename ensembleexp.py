@@ -540,7 +540,8 @@ def chart24():
     numparallel = 100
 
     #learners = [r"-l (trees.EFDT -R 1410065407)"] + lmetaEFDTNoRevision
-    learners = [r"-l trees.VFDT", r"-l trees.EFDT"] + lmetaVFDT + lmetaEFDT 
+    #learners = [r"-l trees.VFDT", r"-l trees.EFDT"] + lmetaVFDT + lmetaEFDT 
+    learners = lhat + lvfdt
 #+  lmetaDecisionStump + ltrees 
     #learners = [ 
             #r"-l (meta.LevBagNoAdwin -l trees.VFDT)",
