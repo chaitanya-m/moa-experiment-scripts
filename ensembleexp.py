@@ -496,13 +496,17 @@ def chart24():
            ]
 
     gOthers = [
-	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.RandomTreeGenerator -r 1 -i 1) -d (generators.RandomTreeGenerator -r 2 -i 2))",
+	#r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.RandomTreeGenerator -r 1 -i 1) -d (generators.RandomTreeGenerator -r 2 -i 2))",
 
-	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.SEAGenerator -f 2 -i 2) -d (generators.SEAGenerator -f 3 -i 3))",
+	#r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.SEAGenerator -f 2 -i 2) -d (generators.SEAGenerator -f 3 -i 3))",
 
-	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.AgrawalGenerator -f 2 -i 2) -d (generators.AgrawalGenerator -f 3 -i 3))",
+	#r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.AgrawalGenerator -f 2 -i 2) -d (generators.AgrawalGenerator -f 3 -i 3))",
 
-	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.STAGGERGenerator -i 2 -f 2) -d (generators.STAGGERGenerator -i 3 -f 3))",
+	#r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.STAGGERGenerator -i 2 -f 2) -d (generators.STAGGERGenerator -i 3 -f 3))",
+
+	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.LEDGenerator -i 2) -d (generators.LEDGeneratorDrift -i 3 -d 7))",
+
+	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.WaveformGenerator -i 2 -n) -d (generators.WaveformGeneratorDrift -i 3 -d 40 -n))",
 
            ]
  
@@ -533,8 +537,8 @@ def chart24():
 
     numparallel = 100
 
-    learners = [r"-l (trees.EFDT -R 1410065407)"] + lmetaEFDTNoRevision
-#[r"-l trees.VFDT", r"-l trees.EFDT"] + lmetaVFDT + lmetaEFDT 
+    #learners = [r"-l (trees.EFDT -R 1410065407)"] + lmetaEFDTNoRevision
+    learners = [r"-l trees.VFDT", r"-l trees.EFDT"] + lmetaVFDT + lmetaEFDT 
 #+  lmetaDecisionStump + ltrees 
     #learners = [ 
             #r"-l (meta.LevBagNoAdwin -l trees.VFDT)",
@@ -553,12 +557,14 @@ def chart24():
             #r"-l trees.HATErrorRedist",
             #]
     #learners = lvfdt
-    #evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    generators = gOthers + gsyntheticNoiseFree + gHyperplane + gRBF
+
     #generators = gsyntheticNoiseFree + gHyperplane + gWaveform + gRBF #gLED + gOthers
     #generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF + gOthers
 
-    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
-    generators = gReal
+    #evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+    #generators = gReal
 
     # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
     if len(sys.argv) > 1: 
@@ -576,10 +582,10 @@ def chart24():
 	# [] otherwise you return a string!
 
 
-    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaeftdnorevisionrealshuf")
+    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaeftdnorevisionrealshuf")
 
     #runexp(learners, generators, evaluators, 3)
 
