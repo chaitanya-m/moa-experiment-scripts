@@ -138,6 +138,7 @@ def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num
             while(sum(x is None for x in polls) > numparallel/2):
                 # poll once a minute to check if process count is down before continuing
                 # None if running and 0 if terminated
+		# numparallel should be 1 if using slurm - 1 process at a time
                 print(polls)
                 print("Running processes: " + str(sum(x is None for x in polls)) + 
 			" Max parallel allowed: " + str(numparallel))
@@ -559,7 +560,7 @@ def chart24():
             #]
     #learners = lvfdt
     evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
-    generators = gOthers + gsyntheticNoiseFree + gHyperplane + gRBF
+    generators = gOthers #+ gsyntheticNoiseFree + gHyperplane + gRBF
 
     #generators = gsyntheticNoiseFree + gHyperplane + gWaveform + gRBF #gLED + gOthers
     #generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF + gOthers
@@ -570,7 +571,8 @@ def chart24():
     # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
     if len(sys.argv) > 1: 
 	slurm_array_index = int(sys.argv[1])
-
+	
+	# This converts every slurm index into a learner-generator combo
 	learner_index = slurm_array_index/len(generators)
 	generator_index = slurm_array_index%len(generators)
 	
@@ -581,6 +583,7 @@ def chart24():
 	generators = [generators[generator_index]]
         numparallel = int(sys.argv[2])
 	# [] otherwise you return a string!
+	# numparallel should be 1 for slurm
 
 
     runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
@@ -614,8 +617,8 @@ if __name__=="__main__":
 
     processes = {}
 
-#    processes[24] = Process(target=chart24)
-    processes[25] = Process(target=chart25)
+    processes[24] = Process(target=chart24)
+#    processes[25] = Process(target=chart25)
 
     for key in processes:
       processes[key].start()
