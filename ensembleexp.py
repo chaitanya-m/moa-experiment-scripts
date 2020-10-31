@@ -389,6 +389,14 @@ def chart24():
             r"-l (trees.EFDTDecay -D 0.001 -V)",
             ] 
 
+    lhatefdt = [
+            r"-l trees.HATEFDT",
+            r"-l trees.HAT",
+            r"-l trees.EFDT",
+            r"-l trees.VFDT",
+            r"-l trees.HATBoost",
+            r"-l trees.HATErrorRedist",
+	] 
 
     lhat = [
             r"-l (trees.HAT)", # My base HAT
@@ -491,6 +499,8 @@ def chart24():
 	]
 
     gRBF = [
+        r"-s (generators.RandomRBFGeneratorDrift -s 0.01 -k 50 -i 2 -r 2)",
+        r"-s (generators.RandomRBFGeneratorDrift -s 0.01 -k 10 -i 2 -r 2)",
         r"-s (generators.RandomRBFGeneratorDrift -s 0.001 -k 50 -i 2 -r 2)",
         r"-s (generators.RandomRBFGeneratorDrift -s 0.001 -k 10 -i 2 -r 2)",
         r"-s (generators.RandomRBFGeneratorDrift -s 0.0001 -k 50 -i 2 -r 2)",
@@ -498,13 +508,13 @@ def chart24():
            ]
 
     gOthers = [
-	#r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.RandomTreeGenerator -r 1 -i 1) -d (generators.RandomTreeGenerator -r 2 -i 2))",
+	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.RandomTreeGenerator -r 1 -i 1) -d (generators.RandomTreeGenerator -r 2 -i 2))",
 
-	#r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.SEAGenerator -f 2 -i 2) -d (generators.SEAGenerator -f 3 -i 3))",
+	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.SEAGenerator -f 2 -i 2) -d (generators.SEAGenerator -f 3 -i 3))",
 
-	#r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.AgrawalGenerator -f 2 -i 2) -d (generators.AgrawalGenerator -f 3 -i 3))",
+	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.AgrawalGenerator -f 2 -i 2) -d (generators.AgrawalGenerator -f 3 -i 3))",
 
-	#r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.STAGGERGenerator -i 2 -f 2) -d (generators.STAGGERGenerator -i 3 -f 3))",
+	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.STAGGERGenerator -i 2 -f 2) -d (generators.STAGGERGenerator -i 3 -f 3))",
 
 	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.LEDGenerator -i 2) -d (generators.LEDGeneratorDrift -i 3 -d 7))",
 
@@ -541,7 +551,9 @@ def chart24():
 
     #learners = [r"-l (trees.EFDT -R 1410065407)"] + lmetaEFDTNoRevision
     #learners = [r"-l trees.VFDT", r"-l trees.EFDT"] + lmetaVFDT + lmetaEFDT 
-    learners = lhat + lvfdt
+    #learners = lhat
+    #learners = lvfdt
+    learners = lhatefdt
 #+  lmetaDecisionStump + ltrees 
     #learners = [ 
             #r"-l (meta.LevBagNoAdwin -l trees.VFDT)",
@@ -560,14 +572,17 @@ def chart24():
             #r"-l trees.HATErrorRedist",
             #]
     #learners = lvfdt
-    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
-    generators = gOthers #+ gsyntheticNoiseFree + gHyperplane + gRBF
+
+#    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+#    generators = gOthers + gHyperplane + gRBF + gsyntheticNoiseFree
+
+    #generators = gsyntheticNoiseFree + gHyperplane + gRBF + gOthers
 
     #generators = gsyntheticNoiseFree + gHyperplane + gWaveform + gRBF #gLED + gOthers
     #generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF + gOthers
 
-    #evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
-    #generators = gReal
+    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+    generators = gReal
 
     # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
     if len(sys.argv) > 1: 
@@ -587,10 +602,10 @@ def chart24():
 	# numparallel should be 1 for slurm
 
 
-    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
+    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaeftdnorevisionrealshuf")
+    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),1, "hatefdt")
 
     #runexp(learners, generators, evaluators, 3)
 
