@@ -357,18 +357,18 @@ def chart24():
             r"-l (meta.AdaptiveRandomForest)", # original MOA version with buggy HoeffdingTree
             ] 
     ltrees = [ 
-            #r"-l trees.VFDT",
-            #r"-l trees.RandomVFDT",
-            #r"-l trees.EFDT",
+            r"-l trees.VFDT",
+            r"-l trees.RandomVFDT",
+            r"-l trees.EFDT",
             r"-l trees.EFDTBoost",
-            #r"-l trees.HAT",
-            #r"-l trees.HoeffdingAdaptiveTree",
-            #r"-l trees.HATErrorRedist",
-            #r"-l trees.CVFDT",
-            #r"-l trees.ECVFDT",
-            #r"-l trees.DecisionStumpBugfixed",
-            #r"-l trees.HATEFDT",
-            #r"-l trees.HATBoost",
+            r"-l trees.HAT",
+            r"-l trees.HoeffdingAdaptiveTree",
+            r"-l trees.HATErrorRedist",
+            r"-l trees.CVFDT",
+            r"-l trees.ECVFDT",
+            r"-l trees.DecisionStumpBugfixed",
+            r"-l trees.HATEFDT",
+            r"-l trees.HATBoost",
 	    ]
     ldecay = [
             r"-l (trees.EFDTDecay -D 0.1 -V)",
