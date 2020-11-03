@@ -186,5 +186,30 @@
 #For Levbag, around 8 synthetic streams, and for SRP 8 synthetic streams need 32GB
 #for srp synthetic, around 8 streams needed more than 32gb 84-87, 118-119. 
 
+######################################################################################
 
+
+######
+#this is with 64 GB memory for HAT(original, with unspecified features) ensembles...
+#OzaBoostAdwin with tnebshuf, covpokelecshuf 
+#####
+#slurm-6493217_106.out:java.io.IOException: Cannot allocate memory
+#slurm-6493217_106.out:slurmstepd: error: Detected 9 oom-kill event(s) in step 6493531.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+#slurm-6493217_115.out:Task failed. Reason: stackoverflowerror
+#increased stack size to 24g from 12g!
+
+
+#####
+#slurm-6493217_140.out:java.io.IOException - memory
+#BOLE with font shuf 
+
+#slurm-6493217_144.out:java.io.IOException: Cannot allocate memory
+#BOLE with aws shuf 
+####
+
+####
+#slurm-6493217_160.out:slurmstepd: error: Detected 15 oom-kill event(s) in step 6493906.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+#OnlineSmoothBoost with Fonts
+####
 

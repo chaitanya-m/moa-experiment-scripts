@@ -138,6 +138,7 @@ def runMultiStreamExpML(title, learners, generators, evaluators, expDirName, num
             while(sum(x is None for x in polls) > numparallel/2):
                 # poll once a minute to check if process count is down before continuing
                 # None if running and 0 if terminated
+		# numparallel should be 1 if using slurm - 1 process at a time
                 print(polls)
                 print("Running processes: " + str(sum(x is None for x in polls)) + 
 			" Max parallel allowed: " + str(numparallel))
@@ -291,7 +292,8 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
 
     df_end = pd.DataFrame(dict_of_dicts).T # get dataframe with final values
     df_avg = pd.DataFrame(dict_of_dicts_avg).T # get dataframe with final values
-    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(expDirName).zfill(3), None, df_end, df_avg) # no splits
+    #se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(expDirName).zfill(3), None, df_end, df_avg) # no splits
+    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(expDirName).zfill(3), None, None, None) # no endtable
 
     #se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(expDirName).zfill(3), split_df, df_end, df_avg)
 
@@ -312,17 +314,80 @@ def chart24():
             r"-l (meta.OzaBag -l trees.EFDT)",
             r"-l (meta.OzaBagAdwin -l trees.EFDT)",
             r"-l (meta.LeveragingBag -l trees.EFDT)",
-            r"-l (meta.LeveragingBag -l (trees.EFDT -R 1410065407))",#disables EFDT rechecking unless you have over 1.4 billion instances
+            #r"-l (meta.LeveragingBag -l (trees.EFDT -R 1410065407))",#disables EFDT rechecking unless you have over 1.4 billion instances
             r"-l (meta.LevBagNoAdwin -l trees.EFDT)",
             r"-l (meta.OzaBoost -l trees.EFDT)",
             r"-l (meta.OzaBoostAdwin -l trees.EFDT)",
             r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.EFDT)",
             r"-l (meta.BOLE -l trees.EFDT)",
             r"-l (meta.OnlineSmoothBoost -l trees.EFDT)",
-            r"-l (meta.ARF -l ARFEFDT)",
-            r"-l (meta.ARF -l (ARFEFDT -g 200 -c 0.0000001) -o (Percentage (M * (m / 100))) -m 80 -q)",
+            #r"-l (meta.ARF -l ARFEFDT)",
+            #r"-l (meta.ARF -l (ARFEFDT -g 200 -c 0.0000001) -o (Percentage (M * (m / 100))) -m 80 -q)",
 
             ]  
+
+    lmetaHoeffdingAdaptiveTree = [ 
+            r"-l (meta.OzaBag -l trees.HoeffdingAdaptiveTree)",
+            r"-l (meta.OzaBagAdwin -l trees.HoeffdingAdaptiveTree)",
+            r"-l (meta.LeveragingBag -l trees.HoeffdingAdaptiveTree)",
+            r"-l (meta.LevBagNoAdwin -l trees.HoeffdingAdaptiveTree)",
+            r"-l (meta.OzaBoost -l trees.HoeffdingAdaptiveTree)",
+            r"-l (meta.OzaBoostAdwin -l trees.HoeffdingAdaptiveTree)",
+            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.HoeffdingAdaptiveTree)",
+            r"-l (meta.BOLE -l trees.HoeffdingAdaptiveTree)",
+            r"-l (meta.OnlineSmoothBoost -l trees.HoeffdingAdaptiveTree)",
+            ]  
+
+    lmetaHoeffdingAdaptiveTreeEager = [ 
+            r"-l (meta.OzaBag -l trees.HoeffdingAdaptiveTreeEager)",
+            r"-l (meta.OzaBagAdwin -l trees.HoeffdingAdaptiveTreeEager)",
+            r"-l (meta.LeveragingBag -l trees.HoeffdingAdaptiveTreeEager)",
+            r"-l (meta.LevBagNoAdwin -l trees.HoeffdingAdaptiveTreeEager)",
+            r"-l (meta.OzaBoost -l trees.HoeffdingAdaptiveTreeEager)",
+            r"-l (meta.OzaBoostAdwin -l trees.HoeffdingAdaptiveTreeEager)",
+            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.HoeffdingAdaptiveTreeEager)",
+            r"-l (meta.BOLE -l trees.HoeffdingAdaptiveTreeEager)",
+            r"-l (meta.OnlineSmoothBoost -l trees.HoeffdingAdaptiveTreeEager)",
+            ]  
+
+
+    lmetaHATEFDT = [ 
+            r"-l (meta.OzaBag -l trees.HATEFDT)",
+            r"-l (meta.OzaBagAdwin -l trees.HATEFDT)",
+            r"-l (meta.LeveragingBag -l trees.HATEFDT)",
+            r"-l (meta.LevBagNoAdwin -l trees.HATEFDT)",
+            r"-l (meta.OzaBoost -l trees.HATEFDT)",
+            r"-l (meta.OzaBoostAdwin -l trees.HATEFDT)",
+            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.HATEFDT)",
+            r"-l (meta.BOLE -l trees.HATEFDT)",
+            r"-l (meta.OnlineSmoothBoost -l trees.HATEFDT)",
+            ]  
+
+    lmetaHATnodeEvisceration = [ 
+            r"-l (meta.OzaBag -l (trees.HAT -C -J))",
+            r"-l (meta.OzaBagAdwin -l (trees.HAT -C -J))",
+            r"-l (meta.LeveragingBag -l (trees.HAT -C -J))",
+            r"-l (meta.LevBagNoAdwin -l (trees.HAT -C -J))",
+            r"-l (meta.OzaBoost -l (trees.HAT -C -J))",
+            r"-l (meta.OzaBoostAdwin -l (trees.HAT -C -J))",
+            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l (trees.HAT -C -J))",
+            r"-l (meta.BOLE -l (trees.HAT -C -J))",
+            r"-l (meta.OnlineSmoothBoost -l (trees.HAT -C -J))",
+            ]  
+
+
+    lmetaHATEFDTnodeEviscerationNoRevision = [ 
+            r"-l (meta.OzaBag -l (trees.HATEFDT -C -J -R 1410065407))",
+            r"-l (meta.OzaBagAdwin -l (trees.HATEFDT -C -J -R 1410065407))",
+            r"-l (meta.LeveragingBag -l (trees.HATEFDT -C -J -R 1410065407))",
+            r"-l (meta.LevBagNoAdwin -l (trees.HATEFDT -C -J -R 1410065407))",
+            r"-l (meta.OzaBoost -l (trees.HATEFDT -C -J -R 1410065407))",
+            r"-l (meta.OzaBoostAdwin -l (trees.HATEFDT -C -J -R 1410065407))",
+            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l (trees.HATEFDT -C -J -R 1410065407))",
+            r"-l (meta.BOLE -l (trees.HATEFDT -C -J -R 1410065407))",
+            r"-l (meta.OnlineSmoothBoost -l (trees.HATEFDT -C -J -R 1410065407))",
+            ]  
+
 
 
     lmetaEFDTNoRevision = [ 
@@ -355,18 +420,23 @@ def chart24():
             r"-l (meta.AdaptiveRandomForest)", # original MOA version with buggy HoeffdingTree
             ] 
     ltrees = [ 
-            r"-l trees.VFDT",
-            r"-l trees.RandomVFDT",
-            r"-l trees.EFDT",
-            r"-l trees.EFDTBoost",
-            r"-l trees.HAT",
+#            r"-l trees.VFDT",
+#            r"-l trees.RandomVFDT",
+#            r"-l trees.EFDT",
+#            r"-l trees.EFDTBoost",
+#            r"-l trees.HAT",
             r"-l trees.HoeffdingAdaptiveTree",
-            r"-l trees.HATErrorRedist",
-            r"-l trees.CVFDT",
-            r"-l trees.ECVFDT",
-            r"-l trees.DecisionStumpBugfixed",
-            r"-l trees.HATEFDT",
-            r"-l trees.HATBoost",
+#            r"-l trees.HATErrorRedist",
+#            r"-l trees.CVFDT",
+#            r"-l trees.ECVFDT",
+#            r"-l trees.DecisionStumpBugfixed",
+#            r"-l trees.HATEFDT",
+#            r"-l trees.HATBoost",
+#            r"-l (trees.HATEFDT -C -J -R 1410065407)",
+#            r"-l (trees.HAT -C -J)",
+            r"-l trees.HoeffdingAdaptiveTreeEager",
+	    ]
+    ldecay = [
             r"-l (trees.EFDTDecay -D 0.1 -V)",
             r"-l (trees.EFDTDecay -D 0.5 -V)",
             r"-l (trees.EFDTDecay -D 0.9 -V)",
@@ -387,6 +457,16 @@ def chart24():
             r"-l (trees.EFDTDecay -D 0.001 -V)",
             ] 
 
+    lhatefdt = [
+            r"-l trees.HATEFDT",
+            r"-l (trees.HATEFDT -C -J -R 1410065407)",
+            r"-l (trees.HAT -C -J)",
+            r"-l trees.HAT",
+            r"-l trees.EFDT",
+            r"-l trees.VFDT",
+            r"-l trees.HATBoost",
+            r"-l trees.HATErrorRedist",
+	] 
 
     lhat = [
             r"-l (trees.HAT)", # My base HAT
@@ -435,7 +515,7 @@ def chart24():
 	    r"-l (trees.VFDT -D)",
 	    r"-l (trees.VFDT -E)",
 	    r"-l (trees.VFDT -C -D -E)",
-	    r"-l (trees.VFDT -C -J)",
+	    r"-l (trees.VFDT -C -J)", # node evisceration strategy
             ]
     gsyntheticNoiseFree = [
         r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 2 -n 2 -v 2 -r 2 -b 200000 -d Recurrent)",
@@ -455,10 +535,10 @@ def chart24():
 
 
     gHyperplane = [
-        r"-s (generators.HyperplaneGenerator -k 10 -t 0.01 -i 2)",
+        #r"-s (generators.HyperplaneGenerator -k 10 -t 0.01 -i 2)",
         r"-s (generators.HyperplaneGenerator -k 10 -t 0.001 -i 2)",
         r"-s (generators.HyperplaneGenerator -k 10 -t 0.0001 -i 2)",
-        r"-s (generators.HyperplaneGenerator -k 5 -t 0.01 -i 2)",
+        #r"-s (generators.HyperplaneGenerator -k 5 -t 0.01 -i 2)",
         r"-s (generators.HyperplaneGenerator -k 5 -t 0.001 -i 2)",
         r"-s (generators.HyperplaneGenerator -k 5 -t 0.0001 -i 2)",
         ]
@@ -489,6 +569,8 @@ def chart24():
 	]
 
     gRBF = [
+        #r"-s (generators.RandomRBFGeneratorDrift -s 0.01 -k 50 -i 2 -r 2)",
+        #r"-s (generators.RandomRBFGeneratorDrift -s 0.01 -k 10 -i 2 -r 2)",
         r"-s (generators.RandomRBFGeneratorDrift -s 0.001 -k 50 -i 2 -r 2)",
         r"-s (generators.RandomRBFGeneratorDrift -s 0.001 -k 10 -i 2 -r 2)",
         r"-s (generators.RandomRBFGeneratorDrift -s 0.0001 -k 50 -i 2 -r 2)",
@@ -503,6 +585,10 @@ def chart24():
 	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.AgrawalGenerator -f 2 -i 2) -d (generators.AgrawalGenerator -f 3 -i 3))",
 
 	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.STAGGERGenerator -i 2 -f 2) -d (generators.STAGGERGenerator -i 3 -f 3))",
+
+	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.LEDGenerator -i 2) -d (generators.LEDGeneratorDrift -i 3 -d 7))",
+
+	r"-s (RecurrentConceptDriftStream -x 200000 -y 200000 -z 100 -s (generators.WaveformGenerator -i 2 -n) -d (generators.WaveformGeneratorDrift -i 3 -d 40 -n))",
 
            ]
  
@@ -533,8 +619,15 @@ def chart24():
 
     numparallel = 100
 
-    learners = [r"-l (trees.EFDT -R 1410065407)"] + lmetaEFDTNoRevision
-#[r"-l trees.VFDT", r"-l trees.EFDT"] + lmetaVFDT + lmetaEFDT 
+    #learners = [r"-l (trees.EFDT -R 1410065407)"] + lmetaEFDTNoRevision
+    #learners = [r"-l trees.VFDT", r"-l trees.EFDT"] + lmetaVFDT + lmetaEFDT 
+    learners = lmetaHoeffdingAdaptiveTreeEager #+ lmetaEFDT 
+    #learners = lhat
+    #learners = ltrees
+    #learners = lvfdt
+    #learners = lhatefdt
+    #learners = lmetaHATEFDTnodeEviscerationNoRevision + lhatefdt
+    #learners = lmetaHoeffdingAdaptiveTree + lmetaHATEFDT + lmetaEFDT
 #+  lmetaDecisionStump + ltrees 
     #learners = [ 
             #r"-l (meta.LevBagNoAdwin -l trees.VFDT)",
@@ -553,17 +646,23 @@ def chart24():
             #r"-l trees.HATErrorRedist",
             #]
     #learners = lvfdt
-    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
-    #generators = gsyntheticNoiseFree + gHyperplane + gWaveform + gRBF #gLED + gOthers
-    generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF + gOthers
 
-    #evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
-    #generators = gReal
+    #evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    #generators = gOthers + gHyperplane + gRBF + gsyntheticNoiseFree
+
+    #generators = gsyntheticNoiseFree + gHyperplane + gRBF + gOthers
+
+    #generators = gsyntheticNoiseFree + gHyperplane + gWaveform + gRBF #gLED + gOthers
+    #generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF + gOthers
+
+    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+    generators = gReal
 
     # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
     if len(sys.argv) > 1: 
 	slurm_array_index = int(sys.argv[1])
-
+	
+	# This converts every slurm index into a learner-generator combo
 	learner_index = slurm_array_index/len(generators)
 	generator_index = slurm_array_index%len(generators)
 	
@@ -574,12 +673,14 @@ def chart24():
 	generators = [generators[generator_index]]
         numparallel = int(sys.argv[2])
 	# [] otherwise you return a string!
+	# numparallel should be 1 for slurm
 
 
-    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
+    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaeftdnorevisionsynthetic")
+    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaefdthatreal")
+    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),1, "hatefdt")
 
     #runexp(learners, generators, evaluators, 3)
 
@@ -600,7 +701,7 @@ def chart25(): # no slurm for this!
                                       
 #    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('25'), 10, 1, False)
 
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('25'),10, "eidetic")
+    makeChart("Effect of inherent amnesia in Hoeffding Tree", learners, generators, evaluators, str('25'),10, "eidetic")
 
     # without the main sentinel below code will always get run, even when imported as a module!
 if __name__=="__main__": 

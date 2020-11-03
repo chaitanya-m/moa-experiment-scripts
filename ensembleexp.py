@@ -314,17 +314,80 @@ def chart24():
             r"-l (meta.OzaBag -l trees.EFDT)",
             r"-l (meta.OzaBagAdwin -l trees.EFDT)",
             r"-l (meta.LeveragingBag -l trees.EFDT)",
-            r"-l (meta.LeveragingBag -l (trees.EFDT -R 1410065407))",#disables EFDT rechecking unless you have over 1.4 billion instances
+            #r"-l (meta.LeveragingBag -l (trees.EFDT -R 1410065407))",#disables EFDT rechecking unless you have over 1.4 billion instances
             r"-l (meta.LevBagNoAdwin -l trees.EFDT)",
             r"-l (meta.OzaBoost -l trees.EFDT)",
             r"-l (meta.OzaBoostAdwin -l trees.EFDT)",
             r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.EFDT)",
             r"-l (meta.BOLE -l trees.EFDT)",
             r"-l (meta.OnlineSmoothBoost -l trees.EFDT)",
-            r"-l (meta.ARF -l ARFEFDT)",
-            r"-l (meta.ARF -l (ARFEFDT -g 200 -c 0.0000001) -o (Percentage (M * (m / 100))) -m 80 -q)",
+            #r"-l (meta.ARF -l ARFEFDT)",
+            #r"-l (meta.ARF -l (ARFEFDT -g 200 -c 0.0000001) -o (Percentage (M * (m / 100))) -m 80 -q)",
 
             ]  
+
+    lmetaHoeffdingAdaptiveTree = [ 
+            r"-l (meta.OzaBag -l trees.HoeffdingAdaptiveTree)",
+            r"-l (meta.OzaBagAdwin -l trees.HoeffdingAdaptiveTree)",
+            r"-l (meta.LeveragingBag -l trees.HoeffdingAdaptiveTree)",
+            r"-l (meta.LevBagNoAdwin -l trees.HoeffdingAdaptiveTree)",
+            r"-l (meta.OzaBoost -l trees.HoeffdingAdaptiveTree)",
+            r"-l (meta.OzaBoostAdwin -l trees.HoeffdingAdaptiveTree)",
+            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.HoeffdingAdaptiveTree)",
+            r"-l (meta.BOLE -l trees.HoeffdingAdaptiveTree)",
+            r"-l (meta.OnlineSmoothBoost -l trees.HoeffdingAdaptiveTree)",
+            ]  
+
+    lmetaHoeffdingAdaptiveTreeEager = [ 
+            r"-l (meta.OzaBag -l trees.HoeffdingAdaptiveTreeEager)",
+            r"-l (meta.OzaBagAdwin -l trees.HoeffdingAdaptiveTreeEager)",
+            r"-l (meta.LeveragingBag -l trees.HoeffdingAdaptiveTreeEager)",
+            r"-l (meta.LevBagNoAdwin -l trees.HoeffdingAdaptiveTreeEager)",
+            r"-l (meta.OzaBoost -l trees.HoeffdingAdaptiveTreeEager)",
+            r"-l (meta.OzaBoostAdwin -l trees.HoeffdingAdaptiveTreeEager)",
+            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.HoeffdingAdaptiveTreeEager)",
+            r"-l (meta.BOLE -l trees.HoeffdingAdaptiveTreeEager)",
+            r"-l (meta.OnlineSmoothBoost -l trees.HoeffdingAdaptiveTreeEager)",
+            ]  
+
+
+    lmetaHATEFDT = [ 
+            r"-l (meta.OzaBag -l trees.HATEFDT)",
+            r"-l (meta.OzaBagAdwin -l trees.HATEFDT)",
+            r"-l (meta.LeveragingBag -l trees.HATEFDT)",
+            r"-l (meta.LevBagNoAdwin -l trees.HATEFDT)",
+            r"-l (meta.OzaBoost -l trees.HATEFDT)",
+            r"-l (meta.OzaBoostAdwin -l trees.HATEFDT)",
+            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.HATEFDT)",
+            r"-l (meta.BOLE -l trees.HATEFDT)",
+            r"-l (meta.OnlineSmoothBoost -l trees.HATEFDT)",
+            ]  
+
+    lmetaHATnodeEvisceration = [ 
+            r"-l (meta.OzaBag -l (trees.HAT -C -J))",
+            r"-l (meta.OzaBagAdwin -l (trees.HAT -C -J))",
+            r"-l (meta.LeveragingBag -l (trees.HAT -C -J))",
+            r"-l (meta.LevBagNoAdwin -l (trees.HAT -C -J))",
+            r"-l (meta.OzaBoost -l (trees.HAT -C -J))",
+            r"-l (meta.OzaBoostAdwin -l (trees.HAT -C -J))",
+            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l (trees.HAT -C -J))",
+            r"-l (meta.BOLE -l (trees.HAT -C -J))",
+            r"-l (meta.OnlineSmoothBoost -l (trees.HAT -C -J))",
+            ]  
+
+
+    lmetaHATEFDTnodeEviscerationNoRevision = [ 
+            r"-l (meta.OzaBag -l (trees.HATEFDT -C -J -R 1410065407))",
+            r"-l (meta.OzaBagAdwin -l (trees.HATEFDT -C -J -R 1410065407))",
+            r"-l (meta.LeveragingBag -l (trees.HATEFDT -C -J -R 1410065407))",
+            r"-l (meta.LevBagNoAdwin -l (trees.HATEFDT -C -J -R 1410065407))",
+            r"-l (meta.OzaBoost -l (trees.HATEFDT -C -J -R 1410065407))",
+            r"-l (meta.OzaBoostAdwin -l (trees.HATEFDT -C -J -R 1410065407))",
+            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l (trees.HATEFDT -C -J -R 1410065407))",
+            r"-l (meta.BOLE -l (trees.HATEFDT -C -J -R 1410065407))",
+            r"-l (meta.OnlineSmoothBoost -l (trees.HATEFDT -C -J -R 1410065407))",
+            ]  
+
 
 
     lmetaEFDTNoRevision = [ 
@@ -357,18 +420,21 @@ def chart24():
             r"-l (meta.AdaptiveRandomForest)", # original MOA version with buggy HoeffdingTree
             ] 
     ltrees = [ 
-            r"-l trees.VFDT",
-            r"-l trees.RandomVFDT",
-            r"-l trees.EFDT",
-            r"-l trees.EFDTBoost",
-            r"-l trees.HAT",
+#            r"-l trees.VFDT",
+#            r"-l trees.RandomVFDT",
+#            r"-l trees.EFDT",
+#            r"-l trees.EFDTBoost",
+#            r"-l trees.HAT",
             r"-l trees.HoeffdingAdaptiveTree",
-            r"-l trees.HATErrorRedist",
-            r"-l trees.CVFDT",
-            r"-l trees.ECVFDT",
-            r"-l trees.DecisionStumpBugfixed",
-            r"-l trees.HATEFDT",
-            r"-l trees.HATBoost",
+#            r"-l trees.HATErrorRedist",
+#            r"-l trees.CVFDT",
+#            r"-l trees.ECVFDT",
+#            r"-l trees.DecisionStumpBugfixed",
+#            r"-l trees.HATEFDT",
+#            r"-l trees.HATBoost",
+#            r"-l (trees.HATEFDT -C -J -R 1410065407)",
+#            r"-l (trees.HAT -C -J)",
+            r"-l trees.HoeffdingAdaptiveTreeEager",
 	    ]
     ldecay = [
             r"-l (trees.EFDTDecay -D 0.1 -V)",
@@ -393,6 +459,8 @@ def chart24():
 
     lhatefdt = [
             r"-l trees.HATEFDT",
+            r"-l (trees.HATEFDT -C -J -R 1410065407)",
+            r"-l (trees.HAT -C -J)",
             r"-l trees.HAT",
             r"-l trees.EFDT",
             r"-l trees.VFDT",
@@ -447,7 +515,7 @@ def chart24():
 	    r"-l (trees.VFDT -D)",
 	    r"-l (trees.VFDT -E)",
 	    r"-l (trees.VFDT -C -D -E)",
-	    r"-l (trees.VFDT -C -J)",
+	    r"-l (trees.VFDT -C -J)", # node evisceration strategy
             ]
     gsyntheticNoiseFree = [
         r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 2 -n 2 -v 2 -r 2 -b 200000 -d Recurrent)",
@@ -553,10 +621,13 @@ def chart24():
 
     #learners = [r"-l (trees.EFDT -R 1410065407)"] + lmetaEFDTNoRevision
     #learners = [r"-l trees.VFDT", r"-l trees.EFDT"] + lmetaVFDT + lmetaEFDT 
+    learners = lmetaHoeffdingAdaptiveTree #+ lmetaEFDT 
     #learners = lhat
+    #learners = ltrees
     #learners = lvfdt
     #learners = lhatefdt
-    learners = ltrees
+    #learners = lmetaHATEFDTnodeEviscerationNoRevision + lhatefdt
+    #learners = lmetaHoeffdingAdaptiveTree + lmetaHATEFDT + lmetaEFDT
 #+  lmetaDecisionStump + ltrees 
     #learners = [ 
             #r"-l (meta.LevBagNoAdwin -l trees.VFDT)",
@@ -576,16 +647,16 @@ def chart24():
             #]
     #learners = lvfdt
 
-    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
-    generators = gOthers + gHyperplane + gRBF + gsyntheticNoiseFree
+    #evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    #generators = gOthers + gHyperplane + gRBF + gsyntheticNoiseFree
 
     #generators = gsyntheticNoiseFree + gHyperplane + gRBF + gOthers
 
     #generators = gsyntheticNoiseFree + gHyperplane + gWaveform + gRBF #gLED + gOthers
     #generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF + gOthers
 
-    #evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
-    #generators = gReal
+    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+    generators = gReal
 
     # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
     if len(sys.argv) > 1: 
@@ -608,7 +679,7 @@ def chart24():
     runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "hatefdtsyn")
+    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaefdthatrealshuf")
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),1, "hatefdt")
 
     #runexp(learners, generators, evaluators, 3)
