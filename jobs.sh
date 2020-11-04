@@ -196,11 +196,17 @@
 #slurm-6493217_106.out:java.io.IOException: Cannot allocate memory
 #slurm-6493217_106.out:slurmstepd: error: Detected 9 oom-kill event(s) in step 6493531.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
 
+#####
 #slurm-6493217_115.out:Task failed. Reason: stackoverflowerror
 #increased stack size to 24g from 12g!
-
-
+#slurm-6494109_115.out
+# Failed again, same reason
+#at moa.classifiers.trees.HoeffdingAdaptiveTree$AdaSplitNode.learnFromInstance(HoeffdingAdaptiveTree.java:248)
+#this line repeats thousands of times so the tree is thousands of nodes deep
+#OzaboostAdwin with ebshuf
 #####
+
+
 #slurm-6493217_140.out:java.io.IOException - memory
 #BOLE with font shuf 
 
@@ -212,4 +218,9 @@
 #slurm-6493217_160.out:slurmstepd: error: Detected 15 oom-kill event(s) in step 6493906.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
 #OnlineSmoothBoost with Fonts
 ####
+
+####
+#slurm-6493217_164.out:slurmstepd: error: Detected 2 oom-kill event(s) in step 6494017.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+#OnlineSmoothBoost with aws shuf
+###
 
