@@ -363,29 +363,29 @@ def chart24():
             r"-l (meta.OnlineSmoothBoost -l trees.HATEFDT)",
             ]  
 
-    lmetaHATnodeEvisceration = [ 
-            r"-l (meta.OzaBag -l (trees.HAT -C -J))",
-            r"-l (meta.OzaBagAdwin -l (trees.HAT -C -J))",
-            r"-l (meta.LeveragingBag -l (trees.HAT -C -J))",
-            r"-l (meta.LevBagNoAdwin -l (trees.HAT -C -J))",
-            r"-l (meta.OzaBoost -l (trees.HAT -C -J))",
-            r"-l (meta.OzaBoostAdwin -l (trees.HAT -C -J))",
-            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l (trees.HAT -C -J))",
-            r"-l (meta.BOLE -l (trees.HAT -C -J))",
-            r"-l (meta.OnlineSmoothBoost -l (trees.HAT -C -J))",
+    lmetahat = [ 
+            r"-l (meta.OzaBag -l (trees.HAT -C -J -A -D -E -F -G -I))",
+            r"-l (meta.OzaBagAdwin -l (trees.HAT -C -J -A -D -E -F -G -I))",
+            r"-l (meta.LeveragingBag -l (trees.HAT -C -J -A -D -E -F -G -I))",
+            r"-l (meta.LevBagNoAdwin -l (trees.HAT -C -J -A -D -E -F -G -I))",
+            r"-l (meta.OzaBoost -l (trees.HAT -C -J -A -D -E -F -G -I))",
+            r"-l (meta.OzaBoostAdwin -l (trees.HAT -C -J -A -D -E -F -G -I))",
+            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l (trees.HAT -C -J -A -D -E -F -G -I))",
+            r"-l (meta.BOLE -l (trees.HAT -C -J -A -D -E -F -G -I))",
+            r"-l (meta.OnlineSmoothBoost -l (trees.HAT -C -J -A -D -E -F -G -I))",
             ]  
 
 
-    lmetaHATEFDTnodeEviscerationNoRevision = [ 
-            r"-l (meta.OzaBag -l (trees.HATEFDT -C -J -R 1410065407))",
-            r"-l (meta.OzaBagAdwin -l (trees.HATEFDT -C -J -R 1410065407))",
-            r"-l (meta.LeveragingBag -l (trees.HATEFDT -C -J -R 1410065407))",
-            r"-l (meta.LevBagNoAdwin -l (trees.HATEFDT -C -J -R 1410065407))",
-            r"-l (meta.OzaBoost -l (trees.HATEFDT -C -J -R 1410065407))",
-            r"-l (meta.OzaBoostAdwin -l (trees.HATEFDT -C -J -R 1410065407))",
-            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l (trees.HATEFDT -C -J -R 1410065407))",
-            r"-l (meta.BOLE -l (trees.HATEFDT -C -J -R 1410065407))",
-            r"-l (meta.OnlineSmoothBoost -l (trees.HATEFDT -C -J -R 1410065407))",
+    lmetahateager = [ 
+            r"-l (meta.OzaBag -l (trees.HAT -C -J -A -D -E -F -G -I -K))",
+            r"-l (meta.OzaBagAdwin -l (trees.HAT -C -J -A -D -E -F -G -I -K))",
+            r"-l (meta.LeveragingBag -l (trees.HAT -C -J -A -D -E -F -G -I -K))",
+            r"-l (meta.LevBagNoAdwin -l (trees.HAT -C -J -A -D -E -F -G -I -K))",
+            r"-l (meta.OzaBoost -l (trees.HAT -C -J -A -D -E -F -G -I -K))",
+            r"-l (meta.OzaBoostAdwin -l (trees.HAT -C -J -A -D -E -F -G -I -K))",
+            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l (trees.HAT -C -J -A -D -E -F -G -I -K))",
+            r"-l (meta.BOLE -l (trees.HAT -C -J -A -D -E -F -G -I -K))",
+            r"-l (meta.OnlineSmoothBoost -l (trees.HAT -C -J -A -D -E -F -G -I -K))",
             ]  
 
 
@@ -419,23 +419,44 @@ def chart24():
             r"-l (meta.ARF -l (ARFVFDT -g 200 -c 0.0000001) -o (Percentage (M * (m / 100))) -m 80 -q)",
             r"-l (meta.AdaptiveRandomForest)", # original MOA version with buggy HoeffdingTree
             ] 
+
+# -C is resplitting on used attributes
+# -C -J is node evisceration (use both options simultaneously)
+# -A is alternates voting
+# -D is infogain approximation.
+# -E is weight instead of nodeTime
+# -I is leaf weighting
+# -F is replacing root when a root alternate splits instead of the alternate leaf
+# -G is replacing nonroot mainline when its alternate splits instead of the alternate leaf
+# -R 1410065407 is how long EFDT waits before revision- effectively turning off revision. 
+
+# -H is single leaf alternate doesn't vote
+# -B is alternates have alternates
+#  This max_num is far greater than the few million examples we use at most.
+
     ltrees = [ 
 #            r"-l trees.VFDT",
-#            r"-l trees.RandomVFDT",
 #            r"-l trees.EFDT",
-#            r"-l trees.EFDTBoost",
+#            r"-l trees.HoeffdingAdaptiveTree",
 #            r"-l trees.HAT",
-            r"-l trees.HoeffdingAdaptiveTree",
+            r"-l (trees.HAT -C -J -A -D -E -F -G -I)",
+#            r"-l trees.HATEFDT",
+            r"-l (trees.HAT -C -J -A -D -E -F -G -I -K)",
+
 #            r"-l trees.HATErrorRedist",
+#            r"-l trees.RandomVFDT",
+#            r"-l trees.EFDTBoost",
 #            r"-l trees.CVFDT",
 #            r"-l trees.ECVFDT",
 #            r"-l trees.DecisionStumpBugfixed",
-#            r"-l trees.HATEFDT",
 #            r"-l trees.HATBoost",
-#            r"-l (trees.HATEFDT -C -J -R 1410065407)",
-#            r"-l (trees.HAT -C -J)",
-            r"-l trees.HoeffdingAdaptiveTreeEager",
+#            r"-l trees.HoeffdingAdaptiveTreeEager",
 	    ]
+
+
+
+
+
     ldecay = [
             r"-l (trees.EFDTDecay -D 0.1 -V)",
             r"-l (trees.EFDTDecay -D 0.5 -V)",
@@ -621,9 +642,9 @@ def chart24():
 
     #learners = [r"-l (trees.EFDT -R 1410065407)"] + lmetaEFDTNoRevision
     #learners = [r"-l trees.VFDT", r"-l trees.EFDT"] + lmetaVFDT + lmetaEFDT 
-    learners = lmetaHoeffdingAdaptiveTree #+ lmetaEFDT 
+    #learners = lmetaHoeffdingAdaptiveTree #+ lmetaEFDT 
     #learners = lhat
-    #learners = ltrees
+    learners = ltrees + lmetahat + lmetahateager
     #learners = lvfdt
     #learners = lhatefdt
     #learners = lmetaHATEFDTnodeEviscerationNoRevision + lhatefdt
@@ -647,16 +668,16 @@ def chart24():
             #]
     #learners = lvfdt
 
-    #evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
-    #generators = gOthers + gHyperplane + gRBF + gsyntheticNoiseFree
+    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    generators = gOthers + gHyperplane + gRBF + gsyntheticNoiseFree
 
     #generators = gsyntheticNoiseFree + gHyperplane + gRBF + gOthers
 
     #generators = gsyntheticNoiseFree + gHyperplane + gWaveform + gRBF #gLED + gOthers
     #generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF + gOthers
 
-    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
-    generators = gReal
+    #evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+    #generators = gReal
 
     # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
     if len(sys.argv) > 1: 

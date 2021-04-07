@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=moa_test
 #SBATCH --cpus-per-task=10
-#SBATCH --mem=64G
+#SBATCH --mem=80G
 #SBATCH --ntasks=1
 #SBATCH --time=23:59:00
 #SBATCH --array=0-240
