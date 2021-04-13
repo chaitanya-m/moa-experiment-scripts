@@ -169,10 +169,10 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
         for gen_string in generators:
             output_dir = getOutputDir(exp_dir, learner, gen_string) + suffix
             output_dirs.append(output_dir)
-            # table[learner] has generators as keys. Values are cells, each should be a dict with Accuracy, Time, etc as fields
+            # the value table[learner] is a dict that has generators as keys. Values are cells, each should be a dict with Accuracy, Time, etc as fields
             # then, we need to map output_dirs to the cells so we know where to put our results.
             table[learner][gen_string] = {}
-            cells[output_dir] = table[learner][gen_string]
+            cells[output_dir] = table[learner][gen_string] # both have reference to same object
     print("Table structure created")
  
         # List of mean dataframes
@@ -215,18 +215,34 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
 
         all_stream_learning_data = pd.concat(dataframes)
         all_stream_mean = {}
+	all_stream_std = {}
         num_rows = dataframes[0].shape[0]
 
         for i in range(num_rows):
-            all_stream_mean[i] = all_stream_learning_data[i::num_rows].mean()
+            all_stream_mean[i] = all_stream_learning_data[i::num_rows].mean() # means for t = 1000, t= 2000, etc over all streams
+	    all_stream_std[i]  = all_stream_learning_data[i::num_rows].std()  # std dev for t = 1000, t = 2000, etc over all streams
+	    
 
         all_stream_mean_df = pd.DataFrame(all_stream_mean).transpose()
         all_stream_mean_df['error'] = (100.0 - all_stream_mean_df['classifications correct (percent)'])/100.0
 
+        all_stream_std_df = pd.DataFrame(all_stream_std).transpose()
+        all_stream_std_df['std'] = (all_stream_std_df['classifications correct (percent)']) # not dividing by 100.0; show std dev as max percent for any given epoch's error
+
         average_error = all_stream_mean_df['error'].sum()/num_rows
-        cpu_time = all_stream_mean_df['evaluation time (cpu seconds)'].iloc[num_rows-1] # yes this is avg cpu_time
+        cpu_time = all_stream_mean_df['evaluation time (cpu seconds)'].iloc[num_rows-1] # yes this is avg cpu_time - avg for how long it gets to last epoch 
+        max_error_std = all_stream_mean_df['std'].max() # this is where max std dev for any epoch is found
+	leaf_key = '[avg] tree size (leaves)' # leaf key for ensembles 
+	if leaf_key in all_stream_mean_df:
+	    pass
+	else:
+	    leaf_key = 'tree size (leaves)' # leaf key for individual trees
+        leaves = all_stream_mean_df[leaf_key].iloc[num_rows-1] # avg leaves	
+
         cells[folder]["E"] = average_error
         cells[folder]["T"] = cpu_time
+        cells[folder]["S"] = max_error_std
+        cells[folder]["L"] = leaves
 
         error_df[folder.replace(exp_dir,'')
                 + " | T: " + ("%.2f"%cpu_time) + 's | ' + " E:" + ("%.4f"%average_error) + ' |'] = all_stream_mean_df['error']
@@ -697,7 +713,7 @@ def chart24():
 	# numparallel should be 1 for slurm
 
 
-    runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
+    #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaefdthatrealshuf")
