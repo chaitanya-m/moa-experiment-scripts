@@ -231,13 +231,16 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
 
         average_error = all_stream_mean_df['error'].sum()/num_rows
         cpu_time = all_stream_mean_df['evaluation time (cpu seconds)'].iloc[num_rows-1] # yes this is avg cpu_time - avg for how long it gets to last epoch 
-        max_error_std = all_stream_mean_df['std'].max() # this is where max std dev for any epoch is found
+        max_error_std = all_stream_std_df['std'].max() # this is where max std dev for any epoch is found
 	leaf_key = '[avg] tree size (leaves)' # leaf key for ensembles 
+	leaves = -1
 	if leaf_key in all_stream_mean_df:
-	    pass
+	    leaves = all_stream_mean_df[leaf_key].iloc[num_rows-1] # avg leaves	
+	elif 'tree size (leaves)' in all_stream_mean_df: # leaf key for individual trees
+	    leaf_key = 'tree size (leaves)'
+	    leaves = all_stream_mean_df[leaf_key].iloc[num_rows-1] # avg leaves	
 	else:
-	    leaf_key = 'tree size (leaves)' # leaf key for individual trees
-        leaves = all_stream_mean_df[leaf_key].iloc[num_rows-1] # avg leaves	
+	    pass	
 
         cells[folder]["E"] = average_error
         cells[folder]["T"] = cpu_time
@@ -330,15 +333,15 @@ def chart24():
             r"-l (meta.OzaBag -l trees.EFDT)",
             r"-l (meta.OzaBagAdwin -l trees.EFDT)",
             r"-l (meta.LeveragingBag -l trees.EFDT)",
-            #r"-l (meta.LeveragingBag -l (trees.EFDT -R 1410065407))",#disables EFDT rechecking unless you have over 1.4 billion instances
+            r"-l (meta.LeveragingBag -l (trees.EFDT -R 1410065407))",#disables EFDT rechecking unless you have over 1.4 billion instances
             r"-l (meta.LevBagNoAdwin -l trees.EFDT)",
             r"-l (meta.OzaBoost -l trees.EFDT)",
             r"-l (meta.OzaBoostAdwin -l trees.EFDT)",
             r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.EFDT)",
             r"-l (meta.BOLE -l trees.EFDT)",
             r"-l (meta.OnlineSmoothBoost -l trees.EFDT)",
-            #r"-l (meta.ARF -l ARFEFDT)",
-            #r"-l (meta.ARF -l (ARFEFDT -g 200 -c 0.0000001) -o (Percentage (M * (m / 100))) -m 80 -q)",
+            r"-l (meta.ARF -l ARFEFDT)",
+            r"-l (meta.ARF -l (ARFEFDT -g 200 -c 0.0000001) -o (Percentage (M * (m / 100))) -m 80 -q)",
 
             ]  
 
@@ -657,10 +660,10 @@ def chart24():
     numparallel = 100
 
     #learners = [r"-l (trees.EFDT -R 1410065407)"] + lmetaEFDTNoRevision
-    #learners = [r"-l trees.VFDT", r"-l trees.EFDT"] + lmetaVFDT + lmetaEFDT 
+    learners = [r"-l trees.VFDT", r"-l trees.EFDT"] + lmetaVFDT + lmetaEFDT 
     #learners = lmetaHoeffdingAdaptiveTree #+ lmetaEFDT 
     #learners = lhat
-    learners = ltrees + lmetahat + lmetahateager
+    #learners = ltrees + lmetahat + lmetahateager
     #learners = lvfdt
     #learners = lhatefdt
     #learners = lmetaHATEFDTnodeEviscerationNoRevision + lhatefdt
@@ -684,16 +687,16 @@ def chart24():
             #]
     #learners = lvfdt
 
-    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
-    generators = gOthers + gHyperplane + gRBF + gsyntheticNoiseFree
+    #evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    #generators = gOthers + gHyperplane + gRBF + gsyntheticNoiseFree
 
     #generators = gsyntheticNoiseFree + gHyperplane + gRBF + gOthers
 
     #generators = gsyntheticNoiseFree + gHyperplane + gWaveform + gRBF #gLED + gOthers
     #generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF + gOthers
 
-    #evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
-    #generators = gReal
+    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+    generators = gReal
 
     # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
     if len(sys.argv) > 1: 
@@ -716,7 +719,7 @@ def chart24():
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaefdthatrealshuf")
+    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaefdtvfdtrealshufetsl")
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),1, "hatefdt")
 
     #runexp(learners, generators, evaluators, 3)
