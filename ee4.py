@@ -671,11 +671,11 @@ def chart24():
     numparallel = 100
 
     #learners = [r"-l (trees.EFDT -R 1410065407)"] + lmetaEFDTNoRevision
-    learners = [r"-l trees.VFDT", r"-l trees.EFDT"] + lmetaVFDT + lmetaEFDT 
+    #learners = [r"-l trees.VFDT", r"-l trees.EFDT"] + lmetaVFDT + lmetaEFDT 
     #learners = lmetaHoeffdingAdaptiveTree #+ lmetaEFDT 
     #learners = lhat
     #learners = ltrees + lmetahat + lmetahateager
-    #learners = lvfdt
+    learners = lvfdt
     #learners = lhatefdt
     #learners = lmetaHATEFDTnodeEviscerationNoRevision + lhatefdt
     #learners = lmetaHoeffdingAdaptiveTree + lmetaHATEFDT + lmetaEFDT
@@ -730,7 +730,7 @@ def chart24():
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaefdtvfdsynshuf")
+    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "vfdtvariantssynshuf")
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),1, "hatefdt")
 
     #runexp(learners, generators, evaluators, 3)

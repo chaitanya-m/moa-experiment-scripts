@@ -11,6 +11,7 @@ import subprocess
 import shlex
 import string
 import pandas as pd
+import numpy as np
 import simpleExperiments as se
 import moa_command_vars as mcv
 import time
@@ -216,11 +217,14 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
         all_stream_learning_data = pd.concat(dataframes)
         all_stream_mean = {}
 	all_stream_std = {}
+	all_stream_var = {}
         num_rows = dataframes[0].shape[0]
+
 
         for i in range(num_rows):
             all_stream_mean[i] = all_stream_learning_data[i::num_rows].mean() # means for t = 1000, t= 2000, etc over all streams
 	    all_stream_std[i]  = all_stream_learning_data[i::num_rows].std()  # std dev for t = 1000, t = 2000, etc over all streams
+            all_stream_var[i]  = all_stream_learning_data[i::num_rows].var()  # var for error at t = 1000, t = 2000, etc over all streams
 	    
 
         all_stream_mean_df = pd.DataFrame(all_stream_mean).transpose()
@@ -228,10 +232,16 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
 
         all_stream_std_df = pd.DataFrame(all_stream_std).transpose()
         all_stream_std_df['std'] = (all_stream_std_df['classifications correct (percent)']) # not dividing by 100.0; show std dev as max percent for any given epoch's error
+	# the result of processing classifications correct (percent) so it's all std devs 
+
+	all_stream_var_df = pd.DataFrame(all_stream_var).transpose()
+        all_stream_var_df['var'] = (all_stream_var_df['classifications correct (percent)'])/10000.0 # div by 10000 because var is a square
+	# the result of processing classifications correct (percent) so it's all variances 
 
         average_error = all_stream_mean_df['error'].sum()/num_rows
         cpu_time = all_stream_mean_df['evaluation time (cpu seconds)'].iloc[num_rows-1] # yes this is avg cpu_time - avg for how long it gets to last epoch 
         max_error_std = all_stream_std_df['std'].max() # this is where max std dev for any epoch is found
+        avg_error_var = all_stream_var_df['var'].sum()/num_rows # this is where max var for any epoch is found
 	leaf_key = '[avg] tree size (leaves)' # leaf key for ensembles 
 	leaves = -1
 	if leaf_key in all_stream_mean_df:
@@ -245,6 +255,7 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
         cells[folder]["E"] = average_error
         cells[folder]["T"] = cpu_time
         cells[folder]["S"] = max_error_std
+        cells[folder]["V"] = avg_error_var
         cells[folder]["L"] = leaves
 
         error_df[folder.replace(exp_dir,'')
@@ -719,7 +730,7 @@ def chart24():
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaefdtvfdtrealshufetsl")
+    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaefdtvfdtrealshuf")
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),1, "hatefdt")
 
     #runexp(learners, generators, evaluators, 3)
