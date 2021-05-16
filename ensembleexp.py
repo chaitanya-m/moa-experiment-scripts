@@ -730,8 +730,8 @@ def chart24():
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaefdtvfdtrealshuf")
-    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),1, "hatefdt")
+    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaefdtvfdtrealshuf")
+    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),1, "metaefdtvfdtreal")
 
     #runexp(learners, generators, evaluators, 3)
 
