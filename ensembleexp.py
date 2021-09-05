@@ -341,18 +341,18 @@ def chart24():
             r"-l (meta.OnlineSmoothBoost -l trees.DecisionStumpBugfixed)",
             ]
     lmetaEFDT = [ 
-            r"-l (meta.OzaBag -l trees.EFDT)",
-            r"-l (meta.OzaBagAdwin -l trees.EFDT)",
-            r"-l (meta.LeveragingBag -l trees.EFDT)",
-            r"-l (meta.LeveragingBag -l (trees.EFDT -R 1410065407))",#disables EFDT rechecking unless you have over 1.4 billion instances
-            r"-l (meta.LevBagNoAdwin -l trees.EFDT)",
-            r"-l (meta.OzaBoost -l trees.EFDT)",
-            r"-l (meta.OzaBoostAdwin -l trees.EFDT)",
-            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.EFDT)",
-            r"-l (meta.BOLE -l trees.EFDT)",
-            r"-l (meta.OnlineSmoothBoost -l trees.EFDT)",
-            r"-l (meta.ARF -l ARFEFDT)",
-            r"-l (meta.ARF -l (ARFEFDT -g 200 -c 0.0000001) -o (Percentage (M * (m / 100))) -m 80 -q)",
+            r"-l (meta.OzaBag -l trees.EFDT -s 50)",
+            r"-l (meta.OzaBagAdwin -l trees.EFDT -s 50)",
+            r"-l (meta.LeveragingBag -l trees.EFDT -s 50)",
+            r"-l (meta.LeveragingBag -l (trees.EFDT -R 1410065407) -s 50)",#disables EFDT rechecking unless you have over 1.4 billion instances
+            r"-l (meta.LevBagNoAdwin -l trees.EFDT -s 50)",
+            r"-l (meta.OzaBoost -l trees.EFDT -s 50)",
+            r"-l (meta.OzaBoostAdwin -l trees.EFDT -s 50)",
+            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.EFDT -s 50)",
+            r"-l (meta.BOLE -l trees.EFDT -s 50)",
+            r"-l (meta.OnlineSmoothBoost -l trees.EFDT -s 50)",
+            r"-l (meta.ARF -l ARFEFDT -s 50)",
+            r"-l (meta.ARF -l (ARFEFDT -g 200 -c 0.0000001) -s 50 -o (Percentage (M * (m / 100))) -m 80 -q)",
 
             ]  
 
@@ -436,17 +436,17 @@ def chart24():
 		      ]
 
     lmetaVFDT = [ 
-            r"-l (meta.OzaBag -l trees.VFDT)",
-            r"-l (meta.OzaBagAdwin -l trees.VFDT)",
-            r"-l (meta.LeveragingBag -l trees.VFDT)",
-            r"-l (meta.LevBagNoAdwin -l trees.VFDT)",
-            r"-l (meta.OzaBoost -l trees.VFDT)",
-            r"-l (meta.OzaBoostAdwin -l trees.VFDT)",
-            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.VFDT)",
-            r"-l (meta.BOLE -l trees.VFDT)",
-            r"-l (meta.OnlineSmoothBoost -l trees.VFDT)",
-            r"-l (meta.ARF -l ARFVFDT)",
-            r"-l (meta.ARF -l (ARFVFDT -g 200 -c 0.0000001) -o (Percentage (M * (m / 100))) -m 80 -q)",
+            r"-l (meta.OzaBag -l trees.VFDT -s 50)",
+            r"-l (meta.OzaBagAdwin -l trees.VFDT -s 50)",
+            r"-l (meta.LeveragingBag -l trees.VFDT -s 50)",
+            r"-l (meta.LevBagNoAdwin -l trees.VFDT -s 50)",
+            r"-l (meta.OzaBoost -l trees.VFDT -s 50)",
+            r"-l (meta.OzaBoostAdwin -l trees.VFDT -s 50)",
+            r"-l (meta.AdaptableDiversityBasedOnlineBoosting -l trees.VFDT -s 50)",
+            r"-l (meta.BOLE -l trees.VFDT -s 50)",
+            r"-l (meta.OnlineSmoothBoost -l trees.VFDT -s 50)",
+            r"-l (meta.ARF -l ARFVFDT -s 50)",
+            r"-l (meta.ARF -l (ARFVFDT -g 200 -c 0.0000001) -s 50 -o (Percentage (M * (m / 100))) -m 80 -q)",
             r"-l (meta.AdaptiveRandomForest)", # original MOA version with buggy HoeffdingTree
             ] 
 
@@ -701,11 +701,6 @@ def chart24():
     #evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
     #generators = gOthers + gHyperplane + gRBF + gsyntheticNoiseFree
 
-    #generators = gsyntheticNoiseFree + gHyperplane + gRBF + gOthers
-
-    #generators = gsyntheticNoiseFree + gHyperplane + gWaveform + gRBF #gLED + gOthers
-    #generators = gsyntheticNoiseFree + gHyperplane + gLED + gWaveform + gRBF + gOthers
-
     evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
     generators = gReal
 
@@ -730,8 +725,8 @@ def chart24():
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 10, numparallel, False)
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
-    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaefdtvfdtrealshuf")
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),1, "metaefdtvfdtreal")
+    #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaefdtvfdtsynshuf50")
+    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),1, "metaefdtvfdtreal50")
 
     #runexp(learners, generators, evaluators, 3)
 
