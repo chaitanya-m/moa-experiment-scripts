@@ -466,12 +466,12 @@ def chart24():
 
     ltrees = [ 
 #            r"-l trees.VFDT",
-#            r"-l trees.EFDT",
+            r"-l trees.EFDT",
 #            r"-l trees.HoeffdingAdaptiveTree",
 #            r"-l trees.HAT",
-            r"-l (trees.HAT -C -J -A -D -E -F -G -I)",
+#            r"-l (trees.HAT -C -J -A -D -E -F -G -I)",
 #            r"-l trees.HATEFDT",
-            r"-l (trees.HAT -C -J -A -D -E -F -G -I -K)",
+#            r"-l (trees.HAT -C -J -A -D -E -F -G -I -K)",
 
 #            r"-l trees.HATErrorRedist",
 #            r"-l trees.RandomVFDT",
@@ -480,7 +480,7 @@ def chart24():
 #            r"-l trees.ECVFDT",
 #            r"-l trees.DecisionStumpBugfixed",
 #            r"-l trees.HATBoost",
-#            r"-l trees.HoeffdingAdaptiveTreeEager",
+            r"-l trees.HoeffdingAdaptiveTreeEager",
 	    ]
 
 
@@ -671,7 +671,8 @@ def chart24():
     numparallel = 100
 
     #learners = [r"-l (trees.EFDT -R 1410065407)"] + lmetaEFDTNoRevision
-    learners = [r"-l trees.VFDT", r"-l trees.EFDT"] + lmetaVFDT + lmetaEFDT 
+    #learners = [r"-l trees.VFDT", r"-l trees.EFDT"] + lmetaVFDT + lmetaEFDT 
+    learners = ltrees
     #learners = lmetaHoeffdingAdaptiveTree #+ lmetaEFDT 
     #learners = lhat
     #learners = ltrees + lmetahat + lmetahateager
@@ -698,11 +699,11 @@ def chart24():
             #]
     #learners = lvfdt
 
-    #evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
-    #generators = gOthers + gHyperplane + gRBF + gsyntheticNoiseFree
+    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+    generators = gOthers + gHyperplane + gRBF + gsyntheticNoiseFree
 
-    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
-    generators = gReal
+    #evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+    #generators = gReal
 
     # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
     if len(sys.argv) > 1: 
@@ -726,7 +727,7 @@ def chart24():
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaefdtvfdtsynshuf50")
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),1, "metaefdtvfdtreal50")
+    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "efdtefhatsyn")
 
     #runexp(learners, generators, evaluators, 3)
 
