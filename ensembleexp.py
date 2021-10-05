@@ -841,8 +841,6 @@ def chart27():
     	)
 
 
-#, r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
-
 
 if __name__=="__main__": 
 
