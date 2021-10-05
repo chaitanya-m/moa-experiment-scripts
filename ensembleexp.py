@@ -152,7 +152,7 @@ def read_csv(filename):
     return pd.read_csv(filename, index_col=False, header=0, skiprows=0, low_memory=False, engine = 'c')
 
    
-def makeChart(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average, chart_file_name='table'):
+def makeChart(title, learners, generators, evaluators, expDirName, num_streams=num_streams_to_average, chart_file_name='table', fig_name ='', legend = []):
     print("Starting makeChart")
 
     if num_streams > 1:
@@ -323,7 +323,12 @@ def makeChart(title, learners, generators, evaluators, expDirName, num_streams=n
     df_end = pd.DataFrame(dict_of_dicts).T # get dataframe with final values
     df_avg = pd.DataFrame(dict_of_dicts_avg).T # get dataframe with final values
     #se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(expDirName).zfill(3), None, df_end, df_avg) # no splits
-    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(expDirName).zfill(3), None, None, None) # no endtable
+    #se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(expDirName).zfill(3), None, None, None) # no endtable
+    print("Plotting chart")
+    print(len(error_df.columns))
+    error_df.columns = legend
+    print(len(error_df.columns))
+    se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+fig_name, None, None, None) # no endtable
 
     #se.Plot.plot_df(title, error_df, "Error", mcv.FIG_DIR+"/"+str(expDirName).zfill(3), split_df, df_end, df_avg)
 
@@ -751,12 +756,102 @@ def chart25(): # no slurm for this!
     makeChart("Effect of inherent amnesia in Hoeffding Tree", learners, generators, evaluators, str('25'),10, "eidetic")
 
     # without the main sentinel below code will always get run, even when imported as a module!
+
+
+def chart26():  # no slurm for this!
+
+    learners = [
+        r"-l trees.EFDT",
+        r"-l trees.HoeffdingAdaptiveTree",
+        r"-l trees.HoeffdingAdaptiveTreeEager",
+    ]
+
+#
+#    generators = [
+##        r"-s (ArffFileStream -f {dataDir}/pamap2/pamap2_9subjects_.arff -c 2)".format(dataDir = mcv.DATA_DIR),
+#        r"-s (ArffFileStream -f {dataDir}/nbaiot/nbaiot.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+#        #r"-s (ArffFileStream -f {dataDir}/wisdm/wisdm.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+#    ]
+#    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+#
+#
+#    makeChart(
+#        "EFDT, HAT, EFHAT: nbaiot Dataset",
+#        learners,
+#        generators,
+#        evaluators,
+#        str("24"), # 24 is the folder with the results
+#        1,
+#        fig_name="comparisonnbaiot",
+#	legend = ["EFDT", "HAT", "EFHAT"]
+#    )
+#
+#
+
+    generators = [
+#        r"-s (ArffFileStream -f {dataDir}/pamap2/pamap2_9subjects_.arff -c 2)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/nbaiot/nbaiot.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        #r"-s (ArffFileStream -f {dataDir}/wisdm/wisdm.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+    ]
+    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+
+
+    makeChart(
+        "EFDT, HAT, EFHAT: Shuffled nbaiot Dataset",
+        learners,
+        generators,
+        evaluators,
+        str("24"), # 24 is the folder with the results
+        10,
+        fig_name="comparisonnbaiotshuf",
+	legend = ["EFDT", "HAT", "EFHAT"]
+    )
+
+
+
+def chart27():
+    learners = [
+        r"-l trees.EFDT",
+        r"-l trees.HoeffdingAdaptiveTree",
+        r"-l trees.HoeffdingAdaptiveTreeEager",
+    ]
+ 
+    generators = [
+        r"-s (generators.monash.AbruptDriftGenerator -c  -o 1.0 -z 5 -n 5 -v 5 -r 2 -b 200000 -d Recurrent)",
+        r"-s (generators.RandomRBFGeneratorDrift -s 0.0001 -k 50 -i 2 -r 2)",
+        r"-s (generators.HyperplaneGenerator -k 10 -t 0.001 -i 2)",
+    ]
+ 
+    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+
+
+
+    titles = ["Recurrent Abrupt Drift", "RBF", "Hyperplane"]
+
+    for i in range(len(titles)):
+	    makeChart(
+        	"EFDT, HAT, EFHAT: " + titles[i],
+	        learners,
+	        [generators[i]],
+	        evaluators,
+        	str("24"), # 24 is the folder with the results
+	        10,
+        	fig_name="comparison"+str(i),
+		legend = ["EFDT", "HAT", "EFHAT"]
+    	)
+
+
+#, r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+
+
 if __name__=="__main__": 
 
     processes = {}
 
-    processes[24] = Process(target=chart24)
 #    processes[25] = Process(target=chart25)
+#    processes[24] = Process(target=chart24)
+#    processes[26] = Process(target=chart26)
+    processes[27] = Process(target=chart27)
 
     for key in processes:
       processes[key].start()

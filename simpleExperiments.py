@@ -54,16 +54,16 @@ class Plot:
     matplotlib.style.use('seaborn-ticks')
 #   styles = ['seaborn-darkgrid', 'seaborn-white', 'fivethirtyeight', 'seaborn-bright', 'seaborn-pastel', 'ggplot', 'classic', 'seaborn-notebook', '_classic_test', 'seaborn-ticks', 'seaborn-poster', 'dark_background', 'seaborn-paper', 'seaborn-colorblind', 'seaborn-talk', 'grayscale', 'seaborn-dark-palette', 'seaborn-dark', 'bmh', 'seaborn-deep', 'seaborn', 'seaborn-whitegrid', 'seaborn-muted']
 
-    linestyles = [':', '-', '-.', '--', ':', ':', '-', '-.', '--', ':']
-    linewidths = [2, 1, 1, 2, 1.5, 2, 1, 1, 2, 1.5]
-    dashes = [[4,1], [], [4,1,1,1], [1, 1], [], [3,1], [2,1,2,1], [], [4,1,2,1], [3,1]]
-    alphas = [0.5, 1.0, 0.9, 0.8, 0.8, 1.0, 1.0, 1.0, 0.9, 0.8]
+    linestyles = ['-.', ':', '-', '--', ':', ':', '-', '-.', '--', ':']
+    linewidths = [5, 5, 5, 2, 1.5, 2, 1, 1, 2, 1.5]
+    dashes = [[4,3], [3,1], [4,1,1,1], [1, 1], [], [3,1], [2,1,2,1], [], [4,1,2,1], [3,1]]
+    alphas = [0.7, 0.9, 0.9, 0.8, 0.8, 1.0, 1.0, 1.0, 0.9, 0.8]
     colors = ['green','black','red','blue', 'magenta', 'cyan','lime','gray','maroon','fuchsia']
     cellHeight = 0.057
     headerHeight = 0.2
 
     fig = plt.figure(figsize=(24, 36))
-    fig.text(0.5,0.9, caption, ha='center', fontsize=30)
+    fig.text(0.5,0.9, caption, ha='center', fontsize=50)
     gs = gridspec.GridSpec(nrows=3, ncols=1, height_ratios=[1.3,1,1.1])
     gs.update(hspace=0.25)
 
@@ -82,12 +82,12 @@ class Plot:
       l.set_color(colors[i])
 
     #ax.set_yscale("log")
-    ax.set_ylabel('Error rate', fontsize=22)
-    ax.set_xlabel('Instances (x 1,000)', fontsize=22)
-    ax.xaxis.label.set_size(22)
+    ax.set_ylabel('Error rate', fontsize=44)
+    ax.set_xlabel('Instances (x 1,000)', fontsize=44)
+    ax.xaxis.label.set_size(44)
     ax.set_ylim([0.0, 1.0])
     ax.set_facecolor((1.0, 1.0, 1.0))
-    ax.tick_params(labelsize=22)
+    ax.tick_params(labelsize=44)
     
     #legend = ax.legend(loc=1, fancybox=True, prop={'size': 22}, frameon=True) #loc = upper right
     # use above for papers
@@ -95,7 +95,7 @@ class Plot:
     labels = [ '\n'.join(wrap(l, 50)) for l in data_frame.columns]
     #labels = ["VFDT                     E: 0.3368 | T: 2.51 s" , "VFDT Unforgetting E: 0.5782 | T: 2.41 s"]
     legend = ax.legend(labels, loc='upper right', #bbox_to_anchor=(0.5, 1.15),
-            fancybox=True, shadow=True, ncol=1, prop = {'size': 18}) # this one for thesis
+            fancybox=True, shadow=True, ncol=1, prop = {'size': 36}) # this one for thesis
     legend.get_frame().set_color((1.0,1.0,1.0))
     legend.get_frame().set_alpha(0.7)
 
@@ -103,14 +103,14 @@ class Plot:
     if df_aux is not None:
       ax2 = ax.twinx()
       ax2 = df_aux.plot(style=['-',':'], kind='line', ax=ax2, alpha = 0.8, secondary_y=False)
-      ax2.set_ylabel('Splits', fontsize=22)
+      ax2.set_ylabel('Splits', fontsize=44)
       ax2.tick_params(labelsize=22)
       if df_aux.values.max() <= 10:
         ax2.set_yticks(np.arange(0,max(3, df_aux.values.max()+1),1))
       else:
         ax2.set_yticks(np.arange(0,max(3, df_aux.values.max()+1),3))
 	
-      legend2 = ax2.legend(loc=2, fancybox=True, prop={'size': 22}) #loc = upper right
+      legend2 = ax2.legend(loc=2, fancybox=True, prop={'size': 44}) #loc = upper right
       legend2.get_frame().set_alpha(0.1)
 
    # Print the last of the commands used     
@@ -120,13 +120,13 @@ class Plot:
       ax4.xaxis.set_visible(False) 
       ax4.yaxis.set_visible(False)
       ax4.axis("off")
-      ax4.set_title("Endpoint Averages\n", fontsize=26)
+      ax4.set_title("Endpoint Averages\n", fontsize=52)
       table_end = ax4.table(cellText=df_end.values,
               colLabels=[x[:3] for x in df_end.columns], 
               #colLabels=[str(x+1) for x in range(len(df_end.columns))], 
               rowLabels=list(df_end.index),loc='center')
       table_end.auto_set_font_size(False)
-      table_end.set_fontsize(18)
+      table_end.set_fontsize(36)
   
   # the row labels column is... -1 !! But col labels row is 0.
   # This really really messes up indexing
@@ -145,14 +145,14 @@ class Plot:
       ax3.xaxis.set_visible(False) 
       ax3.yaxis.set_visible(False)
       ax3.axis("off")
-      ax3.set_title("Averages of Averages", fontsize=26)
+      ax3.set_title("Averages of Averages", fontsize=52)
       table_avg = ax3.table(cellText=df_avg.values,
               colLabels=[x[:3] for x in df_avg.columns], 
               #colLabels=["\n".join(wrap(x)) for x in df_avg.columns], 
               #colLabels=[str(x+1) for x in range(len(df_avg.columns))], 
               rowLabels=list(df_avg.index),loc='center')
       table_avg.auto_set_font_size(False)
-      table_avg.set_fontsize(18)
+      table_avg.set_fontsize(36)
   
       cellDict = table_avg.get_celld()
       for i in range(1, len(df_avg)+1):
