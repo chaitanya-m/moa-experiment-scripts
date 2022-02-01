@@ -677,7 +677,8 @@ def chart24():
 
     #learners = [r"-l (trees.EFDT -R 1410065407)"] + lmetaEFDTNoRevision
     #learners = [r"-l trees.VFDT", r"-l trees.EFDT"] + lmetaVFDT + lmetaEFDT 
-    learners = ltrees
+    learners = [r"-l trees.VFDT", r"-l (trees.VFDT -c 0.01)"] # default is 0.0000001
+    #learners = ltrees
     #learners = lmetaHoeffdingAdaptiveTree #+ lmetaEFDT 
     #learners = lhat
     #learners = ltrees + lmetahat + lmetahateager
@@ -704,11 +705,11 @@ def chart24():
             #]
     #learners = lvfdt
 
-    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
-    generators = gOthers + gHyperplane + gRBF + gsyntheticNoiseFree
+#    evaluators = [r"EvaluatePrequential -i 1000000 -f 1000 -q 1000"]
+#    generators = gOthers + gHyperplane + gRBF + gsyntheticNoiseFree
 
-    #evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
-    #generators = gReal
+    evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
+    generators = gReal
 
     # A quick and dirty way to simply run with one learner at a time, for slurm parallelization
     if len(sys.argv) > 1: 
@@ -732,7 +733,7 @@ def chart24():
     #runMultiStreamExpML("Diversity vs Adaptation", learners, generators, evaluators, str('24'), 1, numparallel, False)
     #time.sleep(1800)
     #makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "metaefdtvfdtsynshuf50")
-    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),10, "efdtefhatsyn")
+    makeChart("Diversity vs Adaptation", learners, generators, evaluators, str('24'),1, "vfdtvfdtlowconfidence10-2real")
 
     #runexp(learners, generators, evaluators, 3)
 
@@ -847,9 +848,9 @@ if __name__=="__main__":
     processes = {}
 
 #    processes[25] = Process(target=chart25)
-#    processes[24] = Process(target=chart24)
+    processes[24] = Process(target=chart24)
 #    processes[26] = Process(target=chart26)
-    processes[27] = Process(target=chart27)
+#    processes[27] = Process(target=chart27)
 
     for key in processes:
       processes[key].start()
