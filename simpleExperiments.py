@@ -55,7 +55,7 @@ class Plot:
 #   styles = ['seaborn-darkgrid', 'seaborn-white', 'fivethirtyeight', 'seaborn-bright', 'seaborn-pastel', 'ggplot', 'classic', 'seaborn-notebook', '_classic_test', 'seaborn-ticks', 'seaborn-poster', 'dark_background', 'seaborn-paper', 'seaborn-colorblind', 'seaborn-talk', 'grayscale', 'seaborn-dark-palette', 'seaborn-dark', 'bmh', 'seaborn-deep', 'seaborn', 'seaborn-whitegrid', 'seaborn-muted']
 
     linestyles = ['-.', ':', '-', '--', ':', ':', '-', '-.', '--', ':']
-    linewidths = [5, 5, 5, 2, 1.5, 2, 1, 1, 2, 1.5]
+    linewidths = [6, 3, 4, 2, 1.5, 2, 1, 1, 2, 1.5]
     dashes = [[4,3], [3,1], [4,1,1,1], [1, 1], [], [3,1], [2,1,2,1], [], [4,1,2,1], [3,1]]
     alphas = [0.7, 0.9, 0.9, 0.8, 0.8, 1.0, 1.0, 1.0, 0.9, 0.8]
     colors = ['green','black','red','blue', 'magenta', 'cyan','lime','gray','maroon','fuchsia']
@@ -86,6 +86,7 @@ class Plot:
     ax.set_xlabel('Instances (x 1,000)', fontsize=44)
     ax.xaxis.label.set_size(44)
     ax.set_ylim([0.0, 1.0])
+    ax.set_xlim([0.0, 200])
     ax.set_facecolor((1.0, 1.0, 1.0))
     ax.tick_params(labelsize=44)
     

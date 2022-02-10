@@ -790,21 +790,21 @@ def chart26():  # no slurm for this!
 #
 
     generators = [
-#        r"-s (ArffFileStream -f {dataDir}/pamap2/pamap2_9subjects_.arff -c 2)".format(dataDir = mcv.DATA_DIR),
-        r"-s (ArffFileStream -f {dataDir}/nbaiot/nbaiot.arff -c -1)".format(dataDir = mcv.DATA_DIR),
-        #r"-s (ArffFileStream -f {dataDir}/wisdm/wisdm.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        #r"-s (ArffFileStream -f {dataDir}/pamap2/pamap2_9subjects_.arff -c 2)".format(dataDir = mcv.DATA_DIR),
+        #r"-s (ArffFileStream -f {dataDir}/nbaiot/nbaiot.arff -c -1)".format(dataDir = mcv.DATA_DIR),
+        r"-s (ArffFileStream -f {dataDir}/wisdm/wisdm.arff -c -1)".format(dataDir = mcv.DATA_DIR),
     ]
+
     evaluators = [r"EvaluatePrequential -i -1 -f 1000 -q 1000"]
 
-
     makeChart(
-        "EFDT, HAT, EFHAT: Shuffled nbaiot Dataset",
+        "EFDT, HAT, EFHAT: wisdm Dataset",
         learners,
         generators,
         evaluators,
         str("24"), # 24 is the folder with the results
-        10,
-        fig_name="comparisonnbaiotshuf",
+        1,
+        fig_name="comparisonwisdm",
 	legend = ["EFDT", "HAT", "EFHAT"]
     )
 
@@ -848,8 +848,8 @@ if __name__=="__main__":
     processes = {}
 
 #    processes[25] = Process(target=chart25)
-    processes[24] = Process(target=chart24)
-#    processes[26] = Process(target=chart26)
+#    processes[24] = Process(target=chart24)
+    processes[26] = Process(target=chart26)
 #    processes[27] = Process(target=chart27)
 
     for key in processes:
